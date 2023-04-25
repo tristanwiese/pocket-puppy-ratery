@@ -1,7 +1,11 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
+import 'package:pocket_puppy_rattery/Views/add_rat.dart';
+import 'package:pocket_puppy_rattery/Views/rat_info.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -11,21 +15,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
-  double getSize(){
-    if (MediaQuery.of(context).size.width < 435){
+  double getSize() {
+    if (MediaQuery.of(context).size.width < 435) {
       return MediaQuery.of(context).size.width / 2;
-    }
-    else{
+    } else {
       return MediaQuery.of(context).size.width / 3;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    print(MediaQuery.of(context).size.width);
+    log(MediaQuery.of(context).size.width.toString());
     return Container(
-      decoration: const BoxDecoration(image: DecorationImage(image: AssetImage("asstes/images/Paws.jpg"))),
+      decoration: const BoxDecoration(
+          image: DecorationImage(image: AssetImage("asstes/images/Paws.jpg"))),
       child: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance.collection('rats').snapshots(),
           builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -51,47 +54,39 @@ class _MyHomePageState extends State<MyHomePage> {
             BottomNavigationBarItem(
                 icon: Icon(Icons.logout_outlined), label: 'Logout')
           ]),
-
-
       body: rats.isEmpty
-      ?
-      const NoRatScreen()
-      :
-      Center(
-        child: ConstrainedBox(
-          constraints:
-              BoxConstraints(maxWidth: getSize()),
-          child: ListView.builder(
-              itemCount: rats.length,
-              itemBuilder: (BuildContext context, i) {
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ListTile(
-                    trailing: myIconButton(rats[i]['name']),
-                    title: Text(rats[i]['name']),
-                    shape: BeveledRectangleBorder(
-                        side: BorderSide(width: 1, color: secondaryThemeColor),
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(15))),
-                    contentPadding: const EdgeInsets.all(10),
-                  ),
-                );
-              }),
-        ),
-      ));
-
+          ? const NoRatScreen()
+          : Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: getSize()),
+                child: ListView.builder(
+                    itemCount: rats.length,
+                    itemBuilder: (BuildContext context, i) {
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ListTile(
+                          trailing: myIconButton(rats[i]['name']),
+                          title: Text(rats[i]['name']),
+                          shape: BeveledRectangleBorder(
+                              side: BorderSide(
+                                  width: 1, color: secondaryThemeColor),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(15))),
+                          contentPadding: const EdgeInsets.all(10),
+                        ),
+                      );
+                    }),
+              ),
+            ));
 
   IconButton myIconButton(name) => IconButton(
       onPressed: () =>
           FirebaseFirestore.instance.collection('rats').doc(name).delete(),
       icon: Icon(Icons.delete, color: Colors.red[200]));
 
-      
-
   FloatingActionButton myFloatingActionButton() {
     return FloatingActionButton(
-      onPressed: () =>
-          showDialog(context: context, builder: (context) => const AddRat()),
+      onPressed: () => navPush(context, const AddRat()),
       tooltip: "Add Rat",
       backgroundColor: secondaryThemeColor,
       child: const Icon(Icons.add),
@@ -101,64 +96,6 @@ class _MyHomePageState extends State<MyHomePage> {
   myAppBar(BuildContext context) {
     return AppBar(
       title: const Center(child: Text('Your Rats')),
-    );
-  }
-}
-
-class AddRat extends StatefulWidget {
-  const AddRat({super.key});
-
-  @override
-  State<AddRat> createState() => _AddRatState();
-}
-
-class _AddRatState extends State<AddRat> {
-  final TextEditingController nameController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: AlertDialog(
-        title: const Text('Rat Details'),
-        actions: [
-          Container(
-            margin: const EdgeInsets.only(left: 10, right: 10),
-            child: TextFormField(
-              controller: nameController,
-              decoration: const InputDecoration(hintText: 'Name', border: OutlineInputBorder()),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return "Name cannot be empty";
-                }
-                return null;
-              },
-            ),
-          ),
-          const SizedBox(height: 10),
-          Center(
-            child: ElevatedButton(
-                onPressed: () {
-                  if (!_formKey.currentState!.validate()) {
-                    return;
-                  }
-                  FirebaseFirestore.instance
-                      .collection('rats')
-                      .doc(nameController.text.trim())
-                      .set({"name": nameController.text.trim()});
-                  // navPop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(30)),
-                    ),
-                    minimumSize: const Size(100, 50),
-                    backgroundColor: secondaryThemeColor),
-                child: const Text('Save')),
-          )
-        ],
-      ),
     );
   }
 }
@@ -183,7 +120,7 @@ class _LoadScreenState extends State<LoadScreen>
       vsync: this,
     );
 
-    createHome();    
+    createHome();
   }
 
   @override
@@ -195,13 +132,12 @@ class _LoadScreenState extends State<LoadScreen>
   createHome() {
     _controller.forward();
     home = Scaffold(
-    body: Center(
+      body: Center(
           child: Column(
         children: [
           RotationTransition(
               turns: Tween(begin: 0.0, end: 1.0).animate(_controller),
-              child: Image.asset('asstes/images/image.png',
-                  height: 500)),
+              child: Image.asset('asstes/images/image.png', height: 500)),
           const SizedBox(height: 10),
           const Text(
             'Getting the Ratties out of their cages!',
@@ -225,12 +161,17 @@ class NoRatScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // Todo: Add Image Asset
-        Image.asset('/* Todo: Add Image Asset Here */', errorBuilder: (context, error, stackTrace) => const Icon(Icons.image),),
-        const Text('Oh, no! We will have to get you some rats!', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),textAlign: TextAlign.center,),
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        // Todo: Add Image Asset
+        Image.asset(
+          '', //TODO: Add Image Asset Here,
+          errorBuilder: (context, error, stackTrace) => const Icon(Icons.image),
+        ),
+        const Text(
+          'Oh, no! We will have to get you some rats!',
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+        ),
       ]),
     );
   }
