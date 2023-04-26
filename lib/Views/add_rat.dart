@@ -1,9 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:pocket_puppy_rattery/Models/rat.dart';
-import 'package:syncfusion_flutter_datepicker/datepicker.dart';
-
-
 import '../Functions/utils.dart';
 
 class AddRat extends StatefulWidget {

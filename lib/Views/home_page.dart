@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Views/add_rat.dart';
-import 'package:pocket_puppy_rattery/Views/rat_info.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
