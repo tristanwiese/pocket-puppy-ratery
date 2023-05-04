@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Views/add_rat.dart';
+import 'package:pocket_puppy_rattery/Views/rat_info.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -63,15 +64,20 @@ class _MyHomePageState extends State<MyHomePage> {
                     itemBuilder: (BuildContext context, i) {
                       return Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: ListTile(
-                          trailing: myIconButton(rats[i]['name']),
-                          title: Text(rats[i]['name']),
-                          shape: BeveledRectangleBorder(
-                              side: BorderSide(
-                                  width: 1, color: secondaryThemeColor),
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(15))),
-                          contentPadding: const EdgeInsets.all(10),
+                        child: InkWell(
+                          onTap: () {
+                           navPush(context, RatInfo(info: 'Yes'));
+                          },
+                          child: ListTile(
+                            trailing: myIconButton(rats[i]['name']),
+                            title: Text(rats[i]['name']),
+                            shape: BeveledRectangleBorder(
+                                side: BorderSide(
+                                    width: 1, color: secondaryThemeColor),
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(15))),
+                            contentPadding: const EdgeInsets.all(10),
+                          ),
                         ),
                       );
                     }),
@@ -163,7 +169,8 @@ class NoRatScreen extends StatelessWidget {
       child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
         // Todo: Add Image Asset
         Image.asset(
-          '', //TODO: Add Image Asset Here,
+          "asstes/images/Rat.png", 
+          height: 400,
           errorBuilder: (context, error, stackTrace) => const Icon(Icons.image),
         ),
         const Text(
