@@ -15,18 +15,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  double getSize() {
-    if (MediaQuery.of(context).size.width < 435) {
-      return MediaQuery.of(context).size.width / 2;
-    } else {
-      return MediaQuery.of(context).size.width / 3;
-    }
-  }
+
+  int bottomVanIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    log(MediaQuery.of(context).size.width.toString());
-    return Container(
+   return Container(
       decoration: const BoxDecoration(
           image: DecorationImage(image: AssetImage("asstes/images/Paws.jpg"))),
       child: StreamBuilder<QuerySnapshot>(
@@ -46,17 +40,11 @@ class _MyHomePageState extends State<MyHomePage> {
           FloatingActionButtonLocation.miniCenterFloat,
       appBar: myAppBar(context),
       floatingActionButton: myFloatingActionButton(),
-      bottomNavigationBar: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          items: const [
-            BottomNavigationBarItem(
-                icon: Icon(Icons.line_style_outlined), label: 'Details'),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.logout_outlined), label: 'Logout')
-          ]),
+      bottomNavigationBar: myBottomNavBar(),
       body: rats.isEmpty
           ? const NoRatScreen()
-          : Center(
+          : bottomVanIndex == 0?
+          Center(
               child: ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: getSize()),
                 child: ListView.builder(
@@ -66,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         padding: const EdgeInsets.all(8.0),
                         child: InkWell(
                           onTap: () {
-                           navPush(context, RatInfo(info: 'Yes'));
+                           navPush(context, RatInfo(info: rats[i]['name']));
                           },
                           child: ListTile(
                             trailing: myIconButton(rats[i]['name']),
@@ -82,7 +70,36 @@ class _MyHomePageState extends State<MyHomePage> {
                       );
                     }),
               ),
-            ));
+            )
+            :
+            geneCal()
+            );
+
+  Widget geneCal(){
+    return 
+
+    const Center(
+      child: Text("GeneCalculator: Coming Soon!"),
+    );
+  }
+
+Widget myBottomNavBar() {
+    return BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: bottomVanIndex,
+        onTap: (index) {
+          setState(() {
+            bottomVanIndex = index;
+          });
+        },
+        items: const [
+          BottomNavigationBarItem(
+              icon: Icon(Icons.line_style_outlined), label: 'Rats'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.calculate_outlined), label: 'Gene Calculator')
+        ]
+        );
+  }
 
   IconButton myIconButton(name) => IconButton(
       onPressed: () =>
@@ -98,10 +115,18 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  myAppBar(BuildContext context) {
+  AppBar myAppBar(BuildContext context) {
     return AppBar(
       title: const Center(child: Text('Your Rats')),
     );
+  }
+
+  double getSize() {
+    if (MediaQuery.of(context).size.width < 435) {
+      return MediaQuery.of(context).size.width /1.5;
+    } else {
+      return MediaQuery.of(context).size.width / 2;
+    }
   }
 }
 

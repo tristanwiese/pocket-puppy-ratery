@@ -3,6 +3,7 @@ import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'Views/home_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:pocket_puppy_rattery/Functions/utils.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,8 +25,9 @@ class _MyAppState extends State<MyApp>{
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Pocket Puppy Ratery',
       debugShowCheckedModeBanner: false,
+      scaffoldMessengerKey: scaffoldKey,
       theme: ThemeData(
         // This is the theme of your application.
         //

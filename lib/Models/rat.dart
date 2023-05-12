@@ -1,29 +1,26 @@
-enum Gender{
-  male,
-  female
-}
+enum Gender { male, female }
 
-enum Ears{
+enum Ears {
   // TODO: add ear types
   placeholder
 }
 
-enum Colours{
+enum Colours {
   // TODO: add colours
   placeholder
 }
 
-enum Markings{
+enum Markings {
   // TODO: add markings
   placeholder
 }
 
-enum Coats{
+enum Coats {
   // TODO: add coats
   placeholder
 }
 
-class Rat{
+class Rat {
   Rat({
     required this.name,
     required this.registeredName,
@@ -33,24 +30,37 @@ class Rat{
     required this.markings,
     required this.parents,
     required this.coat,
-    required this.bibrthday,
+    required this.birthday,
   });
-final String name;
-final String registeredName;
-final Gender gender;
-final Ears ears;
-final Colours colours;
-final Markings markings;
-final Parents parents;
-final Coats coat;
-final DateTime bibrthday;
+  final String name;
+  final String registeredName;
+  final Gender gender;
+  final String ears;
+  final String colours;
+  final String markings;
+  final Parents parents;
+  final String coat;
+  final DateTime birthday;
+
+  toDb(){
+    final Map<String,dynamic> rat = {
+      "name":name,
+      "registeredName":registeredName,
+      "gender":gender.name.toString(),
+      "ears":ears,
+      "colours":colours,
+      "markings":markings,
+      "mother":parents.mom,
+      "father":parents.dad,
+      "coat":coat,
+      "birthday":[birthday.year.toInt(),birthday.month.toInt(), birthday.day.toInt()],
+    };
+    return rat;
+  }
 }
 
-class Parents{
-  Parents({
-    required this.dad,
-    required this.mom
-  });
+class Parents {
+  Parents({required this.dad, required this.mom});
 
   final String mom;
   final String dad;

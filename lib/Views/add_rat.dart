@@ -1,4 +1,4 @@
-
+// ignore_for_file: use_build_context_synchronously
 
 import 'dart:developer';
 
@@ -7,15 +7,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import '../Functions/utils.dart';
+import '../Models/rat.dart';
 
-const List<Text> markings = <Text>[
-  Text('C-Locus'), Text('H-Locus')
-];
+const List<Text> markings = <Text>[Text('C-Locus'), Text('H-Locus')];
 
 final List<bool> selectedMarkings = <bool>[true, false];
 
-var markingList = ['hello', 'c2'];
-
+var markingList = ['C1', 'C2'];
 
 class AddRat extends StatefulWidget {
   const AddRat({super.key});
@@ -25,6 +23,7 @@ class AddRat extends StatefulWidget {
 }
 
 class _AddRatState extends State<AddRat> {
+
   //TextEditControllers
   final TextEditingController nameController = TextEditingController();
   final TextEditingController registeredNameController =
@@ -34,180 +33,247 @@ class _AddRatState extends State<AddRat> {
   final TextEditingController coatController = TextEditingController();
   final TextEditingController momController = TextEditingController();
   final TextEditingController dadController = TextEditingController();
-  final TextEditingController markingsController = TextEditingController();
 
-  String genderValue = 'Male';
-  String markingValue = 'hello';
+  String? genderValue;
+  Gender? _pickedGender;
+
+  String? markingValue;
+
+  DateTime? _pickedDate;
+  DateTime _selectedDate = DateTime.now();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Center(
-          child: SizedBox(
-            width: 500,
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  MyInputText(
-                      controller: nameController,
-                      hintText: 'Name',
-                      validatorMessage: 'Name required'),
-                  MyInputText(
-                      controller: registeredNameController,
-                      hintText: 'Regestered Name',
-                      validatorMessage: 'Regestered Name Required'),
-                  MyInputText(
-                      controller: coatController,
-                      hintText: 'Coat',
-                      validatorMessage: 'Coat Required'),
-                  MyInputText(
-                      controller: colourController,
-                      hintText: 'Colour',
-                      validatorMessage: 'Colour Required'),
-                  MyInputText(
-                      controller: earController,
-                      hintText: 'Ears',
-                      validatorMessage: 'Ears Required'),
-                  MyInputText(
-                      controller: momController,
-                      hintText: 'Parent: Mother',
-                      validatorMessage: 'Parent Required'),
-                  MyInputText(
-                      controller: dadController,
-                      hintText: 'Praent: Father',
-                      validatorMessage: 'Parent Required'),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ToggleButtons(
-                        onPressed: (index) {
-                         for (var i = 0; i < 2; i++){
-                           setState(() {
-                             selectedMarkings[i] = false;
-                           });
-                         }
-                         setState(() {
-                           selectedMarkings[index] = !selectedMarkings[index];
-                         });
-                         if (index == 0){
-                          setState(() {
-                            markingList = ['hello', 'c2'];
-                            markingValue = 'hello';
-                          });
-                         }else{
-                          setState(() {
-                            markingList = ['h1', 'h2'];
-                            markingValue = 'h1';
-                          });
-                         }
-                        },
-                        isSelected: selectedMarkings,
-                        direction: Axis.horizontal,
-                        borderRadius: const BorderRadius.all(Radius.circular(8)),
-                        selectedBorderColor: Colors.black,
-                        selectedColor: Colors.white,
-                        fillColor: secondaryThemeColor,
-                        color: secondaryThemeColor,
-                        constraints:
-                            const BoxConstraints(minHeight: 40.0, minWidth: 80),
-                        children: markings,
-                      ),
-                      const SizedBox(width: 20,),
-                      DropdownButton<String>(
-                          hint: const Text('Gender'),
-                          value: markingValue,
-                          items: markingList
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(
-                                value,
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (String? value) {
-                            setState(() {
-                              markingValue = value!;
-                            });
-                          },
-                        ),
-                    ],
-                  ),
-                  Container(
-                    margin: const EdgeInsets.only(left: 10, right: 10),
-                    child: Row(
+      appBar: myAppBar(),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Center(
+            child: SizedBox(
+              width: 500,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    MyInputText(
+                        controller: nameController,
+                        hintText: 'Name',
+                        validatorMessage: 'Name required'),
+                    MyInputText(
+                        controller: registeredNameController,
+                        hintText: 'Regestered Name',
+                        validatorMessage: 'Regestered Name Required'),
+                    MyInputText(
+                        controller: coatController,
+                        hintText: 'Coat',
+                        validatorMessage: 'Coat Required'),
+                    MyInputText(
+                        controller: colourController,
+                        hintText: 'Colour',
+                        validatorMessage: 'Colour Required'),
+                    MyInputText(
+                        controller: earController,
+                        hintText: 'Ears',
+                        validatorMessage: 'Ears Required'),
+                    MyInputText(
+                        controller: momController,
+                        hintText: 'Parent: Mother',
+                        validatorMessage: 'Parent Required'),
+                    MyInputText(
+                        controller: dadController,
+                        hintText: 'Parent: Father',
+                        validatorMessage: 'Parent Required'),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text('Gender: '),
-                        const SizedBox(height: 10),
-                        DropdownButton<String>(
-                          hint: const Text('Gender'),
-                          value: genderValue,
-                          items: <String>['Male', 'Female']
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(
-                                value,
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (String? value) {
-                            setState(() {
-                              genderValue = value!;
-                            });
+                        ToggleButtons(
+                          onPressed: (index) {
+                            for (var i = 0; i < 2; i++) {
+                              setState(() {
+                                selectedMarkings[i] = false;
+                              });
+                            }
+                            selectedMarkings[index] = !selectedMarkings[index];
+                            if (index == 0) {
+                              markingList = ['C1', 'C2'];
+                              markingValue = null;
+                            } else {
+                              markingList = ['H1', 'H2'];
+                              markingValue = null;
+                            }
+                            setState(() {});
                           },
+                          isSelected: selectedMarkings,
+                          direction: Axis.horizontal,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(8)),
+                          selectedBorderColor: Colors.black,
+                          selectedColor: Colors.white,
+                          fillColor: secondaryThemeColor,
+                          color: secondaryThemeColor,
+                          constraints: const BoxConstraints(
+                              minHeight: 40.0, minWidth: 80),
+                          children: markings,
                         ),
                         const SizedBox(
-                          width: 50,
+                          width: 20,
                         ),
-                        ElevatedButton(
-                            onPressed: () {
-                              showDatePicker(
+                        Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                  color: secondaryThemeColor, width: 2),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: DropdownButtonHideUnderline(
+                            child: DropdownButton<String>(
+                              hint: const Text('Locus'),
+                              value: markingValue,
+                              items: markingList.map<DropdownMenuItem<String>>(
+                                  (String value) {
+                                return DropdownMenuItem<String>(
+                                  value: value,
+                                  child: Text(
+                                    value,
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (String? value) {
+                                setState(() {
+                                  markingValue = value!;
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(left: 10, right: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text('Gender: '),
+                          const SizedBox(height: 10),
+                          Container(
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    color: secondaryThemeColor, width: 2),
+                                borderRadius: BorderRadius.circular(10)),
+                            child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                                hint: const Text('Gender'),
+                                value: genderValue,
+                                items: <String>[
+                                  'Male',
+                                  'Female'
+                                ].map<DropdownMenuItem<String>>((String value) {
+                                  return DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(
+                                      value,
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: (String? value) {
+                                  setState(() {
+                                    genderValue = value;
+                                    if (value! == "Male"){
+                                      _pickedGender = Gender.male;
+                                    }else{
+                                      _pickedGender = Gender.female;
+                                    }
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 30,
+                          ),
+                          ElevatedButton(
+                            onPressed: () async {
+                              _pickedDate = await showDatePicker(
                                 context: context,
-                                initialDate: DateTime.now(),
+                                initialDate: _selectedDate,
                                 firstDate: DateTime(2000),
                                 lastDate: DateTime.now(),
                               );
+                              if (_pickedDate != null && _pickedDate != _selectedDate) {
+                                setState(() {
+                                  _selectedDate = _pickedDate!;
+                                });
+                                log(_selectedDate.toString());
+                              }
                             },
-                            child: const Text('Brithday'))
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Center(
-                    child: ElevatedButton(
-                        onPressed: () async {
-                          if (!_formKey.currentState!.validate()) {
-                            return;
-                          }
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return Center(child: CircularProgressIndicator());
-                            },
-                          );
-                          await FirebaseFirestore.instance
-                              .collection('rats')
-                              .doc(nameController.text)
-                              .set({'name': nameController.text});
-                          navPop(context);
-                          navPop(context);
-                        },
-                        style: ElevatedButton.styleFrom(
-                            shape: const RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(30)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: secondaryThemeColor,
+                              fixedSize: const Size(100, 50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                             ),
-                            minimumSize: const Size(100, 50),
-                            backgroundColor: secondaryThemeColor),
-                        child: const Text('Save')),
-                  )
-                ],
+                            child: const Text('Brithday'),
+                          )
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Center(
+                      child: ElevatedButton(
+                          onPressed: () async {
+                            if (!_formKey.currentState!.validate()) {
+                              return;
+                            }
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              },
+                            );
+                            if (_pickedGender == null){
+                              showError("Gender");
+                              navPop(context);
+                              return;
+                            }
+                            if (markingValue == null){
+                              showError("Markings");
+                              navPop(context);
+                              return;
+                            }
+                            final Rat rat = Rat(name: nameController.text.trim(), 
+                            registeredName: registeredNameController.text.trim(),
+                            colours: colourController.text.trim(), 
+                            ears: earController.text.trim(), 
+                            gender: _pickedGender!, 
+                            markings: markingValue!,
+                            parents: Parents(dad: dadController.text.trim(), mom: momController.text.trim()), 
+                            coat: coatController.text.trim(),
+                            birthday: _selectedDate,
+                            );
+                            await FirebaseFirestore.instance.collection("rats").doc(nameController.text.trim()).set(rat.toDb());
+                            navPop(context);
+                            navPop(context);
+                          },
+                          style: ElevatedButton.styleFrom(
+                              shape: const RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(30)),
+                              ),
+                              minimumSize: const Size(100, 50),
+                              backgroundColor: secondaryThemeColor),
+                          child: const Text('Save')),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    )
+                  ],
+                ),
               ),
             ),
           ),
@@ -215,6 +281,18 @@ class _AddRatState extends State<AddRat> {
       ),
     );
   }
+
+  AppBar myAppBar() => AppBar(
+        title: const Text("Add Rat Info"),
+      );
+
+ showError(String errorVal){
+   scaffoldKey.currentState!.showSnackBar(SnackBar(
+    content: Text("$errorVal not set!"),
+    duration: const Duration(seconds: 5),
+    backgroundColor: primaryThemeColor,
+    ));
+ }
 }
 
 class MyInputText extends StatelessWidget {
