@@ -1,3 +1,4 @@
+// ignore: unused_import
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,12 +16,11 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   int bottomVanIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-   return Container(
+    return Container(
       decoration: const BoxDecoration(
           image: DecorationImage(image: AssetImage("asstes/images/Paws.jpg"))),
       child: StreamBuilder<QuerySnapshot>(
@@ -43,47 +43,44 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: myBottomNavBar(),
       body: rats.isEmpty
           ? const NoRatScreen()
-          : bottomVanIndex == 0?
-          Center(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: getSize()),
-                child: ListView.builder(
-                    itemCount: rats.length,
-                    itemBuilder: (BuildContext context, i) {
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: InkWell(
-                          onTap: () {
-                           navPush(context, RatInfo(info: rats[i]['name']));
-                          },
-                          child: ListTile(
-                            trailing: myIconButton(rats[i]['name']),
-                            title: Text(rats[i]['name']),
-                            shape: BeveledRectangleBorder(
-                                side: BorderSide(
-                                    width: 1, color: secondaryThemeColor),
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(15))),
-                            contentPadding: const EdgeInsets.all(10),
-                          ),
-                        ),
-                      );
-                    }),
-              ),
-            )
-            :
-            geneCal()
-            );
+          : bottomVanIndex == 0
+              ? Center(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: getSize()),
+                    child: ListView.builder(
+                        itemCount: rats.length,
+                        itemBuilder: (BuildContext context, i) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: InkWell(
+                              onTap: () {
+                                navPush(
+                                    context, RatInfo(info: rats[i]['name']));
+                              },
+                              child: ListTile(
+                                trailing: myIconButton(rats[i]['name']),
+                                title: Text(rats[i]['name']),
+                                shape: BeveledRectangleBorder(
+                                    side: BorderSide(
+                                        width: 1, color: secondaryThemeColor),
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(15))),
+                                contentPadding: const EdgeInsets.all(10),
+                              ),
+                            ),
+                          );
+                        }),
+                  ),
+                )
+              : geneCal());
 
-  Widget geneCal(){
-    return 
-
-    const Center(
+  Widget geneCal() {
+    return const Center(
       child: Text("GeneCalculator: Coming Soon!"),
     );
   }
 
-Widget myBottomNavBar() {
+  Widget myBottomNavBar() {
     return BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: bottomVanIndex,
@@ -97,13 +94,51 @@ Widget myBottomNavBar() {
               icon: Icon(Icons.line_style_outlined), label: 'Rats'),
           BottomNavigationBarItem(
               icon: Icon(Icons.calculate_outlined), label: 'Gene Calculator')
-        ]
-        );
+        ]);
   }
 
   IconButton myIconButton(name) => IconButton(
-      onPressed: () =>
-          FirebaseFirestore.instance.collection('rats').doc(name).delete(),
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text("Warning"),
+              content: SizedBox(
+                height: 100,
+                child: Column(
+                  children: [
+                    const Text("Are you sure you want to remove this rat?"),
+                    const SizedBox(height: 30),
+                    Text(
+                      name,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () => navPop(context),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () => FirebaseFirestore.instance
+                      .collection('rats')
+                      .doc(name)
+                      .delete(),
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  child: const Text("Delete"),
+                ),
+              ],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            );
+          },
+        );
+      },
       icon: Icon(Icons.delete, color: Colors.red[200]));
 
   FloatingActionButton myFloatingActionButton() {
@@ -123,7 +158,7 @@ Widget myBottomNavBar() {
 
   double getSize() {
     if (MediaQuery.of(context).size.width < 435) {
-      return MediaQuery.of(context).size.width /1.5;
+      return MediaQuery.of(context).size.width / 1.5;
     } else {
       return MediaQuery.of(context).size.width / 2;
     }
@@ -194,7 +229,7 @@ class NoRatScreen extends StatelessWidget {
       child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
         // Todo: Add Image Asset
         Image.asset(
-          "asstes/images/Rat.png", 
+          "asstes/images/Rat.png",
           height: 400,
           errorBuilder: (context, error, stackTrace) => const Icon(Icons.image),
         ),
