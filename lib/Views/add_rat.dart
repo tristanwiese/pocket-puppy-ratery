@@ -10,28 +10,47 @@ import '../Models/rat.dart';
 
 const List<Text> markings = <Text>[Text('C-Locus'), Text('H-Locus')];
 
-final List<bool> selectedMarkings = <bool>[true, false];
+List<bool> selectedMarkings = <bool>[true, false];
 
 var markingList = ['C1', 'C2'];
 
 class AddRat extends StatefulWidget {
-  const AddRat({super.key});
+  const AddRat(
+      {super.key,
+      this.name,
+      this.coat,
+      this.color,
+      this.ears,
+      this.father,
+      this.mother,
+      this.regName,
+      this.birthday,
+      this.gender,
+      this.markings});
+  final String? name;
+  final String? regName;
+  final String? color;
+  final String? ears;
+  final String? coat;
+  final String? mother;
+  final String? father;
+  final String? gender;
+  final DateTime? birthday;
+  final String? markings;
 
   @override
   State<AddRat> createState() => _AddRatState();
 }
 
 class _AddRatState extends State<AddRat> {
-
   //TextEditControllers
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController registeredNameController =
-      TextEditingController();
-  final TextEditingController colourController = TextEditingController();
-  final TextEditingController earController = TextEditingController();
-  final TextEditingController coatController = TextEditingController();
-  final TextEditingController momController = TextEditingController();
-  final TextEditingController dadController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController registeredNameController = TextEditingController();
+  TextEditingController colourController = TextEditingController();
+  TextEditingController earController = TextEditingController();
+  TextEditingController coatController = TextEditingController();
+  TextEditingController momController = TextEditingController();
+  TextEditingController dadController = TextEditingController();
 
   String? genderValue;
   Gender? _pickedGender;
@@ -42,6 +61,47 @@ class _AddRatState extends State<AddRat> {
   DateTime _selectedDate = DateTime.now();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    if (widget.name != null) {
+      editRat();
+    }
+    super.initState();
+  }
+
+  editRat() {
+    nameController = TextEditingController(text: widget.name);
+    registeredNameController = TextEditingController(text: widget.regName);
+    colourController = TextEditingController(text: widget.color);
+    earController = TextEditingController(text: widget.ears);
+    coatController = TextEditingController(text: widget.coat);
+    momController = TextEditingController(text: widget.mother);
+    dadController = TextEditingController(text: widget.father);
+    markingValue = widget.markings;
+    _pickedDate = widget.birthday;
+    _selectedDate = widget.birthday!;
+    if (widget.markings!.contains("H")) {
+      setState(() {
+        markingList = ['H1', 'H2'];
+        selectedMarkings = <bool>[false, true];
+      });
+    }else{
+      setState(() {
+        markingList = ['C1', 'C2'];
+        selectedMarkings = <bool>[true, false];
+      });
+    }
+    if (widget.gender == "male"){
+      genderValue = "Male";
+      _pickedGender = Gender.male;
+    }else{
+      genderValue = "Female";
+      _pickedGender = Gender.female;
+    }
+    log(markingValue.toString());
+    log(markingList.toString());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -181,9 +241,9 @@ class _AddRatState extends State<AddRat> {
                                 onChanged: (String? value) {
                                   setState(() {
                                     genderValue = value;
-                                    if (value! == "Male"){
+                                    if (value! == "Male") {
                                       _pickedGender = Gender.male;
-                                    }else{
+                                    } else {
                                       _pickedGender = Gender.female;
                                     }
                                   });
@@ -202,7 +262,8 @@ class _AddRatState extends State<AddRat> {
                                 firstDate: DateTime(2000),
                                 lastDate: DateTime.now(),
                               );
-                              if (_pickedDate != null && _pickedDate != _selectedDate) {
+                              if (_pickedDate != null &&
+                                  _pickedDate != _selectedDate) {
                                 setState(() {
                                   _selectedDate = _pickedDate!;
                                 });
@@ -235,27 +296,37 @@ class _AddRatState extends State<AddRat> {
                                     child: CircularProgressIndicator());
                               },
                             );
-                            if (_pickedGender == null){
+                            if (_pickedGender == null) {
                               showError("Gender");
                               navPop(context);
                               return;
                             }
-                            if (markingValue == null){
+                            if (markingValue == null) {
                               showError("Markings");
                               navPop(context);
                               return;
                             }
-                            final Rat rat = Rat(name: nameController.text.trim(), 
-                            registeredName: registeredNameController.text.trim(),
-                            colours: colourController.text.trim(), 
-                            ears: earController.text.trim(), 
-                            gender: _pickedGender!, 
-                            markings: markingValue!,
-                            parents: Parents(dad: dadController.text.trim(), mom: momController.text.trim()), 
-                            coat: coatController.text.trim(),
-                            birthday: _selectedDate,
+                            final Rat rat = Rat(
+                              name: nameController.text.trim(),
+                              registeredName:
+                                  registeredNameController.text.trim(),
+                              colours: colourController.text.trim(),
+                              ears: earController.text.trim(),
+                              gender: _pickedGender!,
+                              markings: markingValue!,
+                              parents: Parents(
+                                  dad: dadController.text.trim(),
+                                  mom: momController.text.trim()),
+                              coat: coatController.text.trim(),
+                              birthday: _selectedDate,
                             );
-                            await FirebaseFirestore.instance.collection("rats").doc(nameController.text.trim()).set(rat.toDb());
+                            if (widget.name != null){
+                              await FirebaseFirestore.instance.collection("rats").doc(widget.name).update(rat.toDb());
+                            }
+                            await FirebaseFirestore.instance
+                                .collection("rats")
+                                .doc(nameController.text.trim())
+                                .set(rat.toDb());
                             navPop(context);
                             navPop(context);
                           },
@@ -285,13 +356,13 @@ class _AddRatState extends State<AddRat> {
         title: const Text("Add Rat Info"),
       );
 
- showError(String errorVal){
-   scaffoldKey.currentState!.showSnackBar(SnackBar(
-    content: Text("$errorVal not set!"),
-    duration: const Duration(seconds: 5),
-    backgroundColor: primaryThemeColor,
+  showError(String errorVal) {
+    scaffoldKey.currentState!.showSnackBar(SnackBar(
+      content: Text("$errorVal not set!"),
+      duration: const Duration(seconds: 5),
+      backgroundColor: primaryThemeColor,
     ));
- }
+  }
 }
 
 class MyInputText extends StatelessWidget {

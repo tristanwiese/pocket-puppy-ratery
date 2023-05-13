@@ -2,7 +2,9 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
+import 'package:pocket_puppy_rattery/Views/add_rat.dart';
 
 class RatInfo extends StatefulWidget {
   const RatInfo({
@@ -35,7 +37,10 @@ class _RatInfoState extends State<RatInfo> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
-            child: Text("Catching the ${widget.info}"),
+            child: Text(
+              "Catching ${widget.info}....",
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
           );
         }
         if (!snapshot.hasData) {
@@ -45,65 +50,85 @@ class _RatInfoState extends State<RatInfo> {
           );
         }
         final info = snapshot.data!.data();
-        return 
-        Center(
-          child: Container(
-            height: 500,
-            decoration: BoxDecoration(
-              border: Border.all(),
-              borderRadius: BorderRadius.circular(20),
-              color: secondaryThemeColor
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Name: ${info!["name"]}"
+        return Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                    border: Border.all(),
+                    borderRadius: BorderRadius.circular(20),
+                    color: secondaryThemeColor),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Name: ${info!["name"]}",
+                      style: const TextStyle(fontSize: 20),
+                    ),
+                    const SizedBox(height: 10),
+                    Text("Registered Name: ${info["registeredName"]}"),
+                    const SizedBox(height: 10),
+                    Text("Color: ${info["colours"]}"),
+                    const SizedBox(height: 10),
+                    Text("Coat: ${info["coat"]}"),
+                    const SizedBox(height: 10),
+                    Text("Markings: ${info["markings"]}"),
+                    const SizedBox(height: 10),
+                    Text("Ears: ${info["ears"]}"),
+                    const SizedBox(height: 10),
+                    Text("Gender: ${info["gender"]}"),
+                    const SizedBox(height: 10),
+                    Text(
+                        "Birthday: ${info["birthday"][0]}-${info["birthday"][1]}-${info["birthday"][2]}"),
+                    const SizedBox(height: 10),
+                    Text("Mother: ${info["mother"]}"),
+                    const SizedBox(height: 10),
+                    Text("Father: ${info["father"]}"),
+                    const SizedBox(
+                      height: 20
+                    ),
+                    Text("Age: ${ageCalculator(info["birthday"][0], info["birthday"][1])}"),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: () {
+                        navPush(context, AddRat(
+                          coat: info["coat"],
+                          color: info["colours"],
+                          ears: info["ears"],
+                          father: info["father"],
+                          mother: info["mother"],
+                          name: info["name"],
+                          regName: info["registeredName"],
+                          markings: info["markings"],
+                          gender: info["gender"],
+                          birthday: DateTime(info["birthday"][0],info["birthday"][1],info["birthday"][2]),
+                        ));
+                      },
+                      style: ElevatedButton.styleFrom(
+                        fixedSize: const Size(80, 40),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15)
+                        )
+                      ),
+                      child: const Text("Edit"),
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 10),
-                Text(
-                  "Registered Name: ${info["registeredName"]}"
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  "Color: ${info["colours"]}"
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  "Coat: ${info["coat"]}"
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  "Markings: ${info["markings"]}"
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  "Ears: ${info["ears"]}"
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  "Gender: ${info["gender"]}"
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  "Birthday: ${info["birthday"][0]}-${info["birthday"][1]}-${info["birthday"][2]}"
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  "Mother: ${info["mother"]}"
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  "Father: ${info["father"]}"
-                ),
-                const SizedBox(height: 10),
-              ],
-            ),
+              ),
+              const SizedBox()
+            ],
           ),
         );
       },
     );
   }
 
-  AppBar myAppBar() => AppBar();
+  AppBar myAppBar() => AppBar(
+        title: Text("Rat: ${widget.info}"),
+      );
 }

@@ -143,7 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   FloatingActionButton myFloatingActionButton() {
     return FloatingActionButton(
-      onPressed: () => navPush(context, const AddRat()),
+      onPressed: () => navPush(context, AddRat()),
       tooltip: "Add Rat",
       backgroundColor: secondaryThemeColor,
       child: const Icon(Icons.add),
