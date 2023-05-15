@@ -1,23 +1,61 @@
-enum Gender { male, female }
+// ignore_for_file: constant_identifier_names, camel_case_types
 
-enum Ears {
-  // TODO: add ear types
-  placeholder
+import 'package:flutter/material.dart';
+
+enum Gender { Male, Female }
+
+enum Ears { Standard, Dumbo }
+
+enum H_Locus {
+  Unmarked,
+  English_Irish,
+  Irish_American,
+  Variegated,
+  Hooded,
+  Bareback,
+  Capped,
+  Essex,
+  Variegated_Essex,
+  Baldie,
+  Black_Eyed_White_Spotted,
+  Essex_Dalmation,
+  Blazed,
+  Roan_Husky,
+  Down_Under,
+}
+
+enum C_Locus {
+  French_Siamese,
+  Black_Eyed_Siamese,
+  Sable_Siamese,
+  Burmese,
+  Pink_Eyed_White
 }
 
 enum Colours {
-  // TODO: add colours
-  placeholder
-}
-
-enum Markings {
-  // TODO: add markings
-  placeholder
+  Agouti,
+  Amber,
+  Fawn,
+  Black,
+  Champagne,
+  Beige,
+  Russian_Blue,
+  Russian_Blue_Agouti,
+  Slate_Blue,
+  Slate_Blue_Agouti,
+  Russian_Silver,
+  Cinnamon,
+  Mink,
+  Mink_Pearl,
+  Cinnamon_Pearl,
+  Chocolate_Agouti,
+  Chocolate,
 }
 
 enum Coats {
-  // TODO: add coats
-  placeholder
+  Standard,
+  Harley,
+  Hairless,
 }
 
 class Rat {
@@ -35,25 +73,91 @@ class Rat {
   final String name;
   final String registeredName;
   final Gender gender;
-  final String ears;
-  final String colours;
+  final Ears ears;
+  final Colours colours;
   final String markings;
   final Parents parents;
-  final String coat;
+  final Coats coat;
   final DateTime birthday;
 
-  toDb(){
-    final Map<String,dynamic> rat = {
-      "name":name,
-      "registeredName":registeredName,
-      "gender":gender.name.toString(),
-      "ears":ears,
-      "colours":colours,
-      "markings":markings,
-      "mother":parents.mom,
-      "father":parents.dad,
-      "coat":coat,
-      "birthday":[birthday.year.toInt(),birthday.month.toInt(), birthday.day.toInt()],
+  static hLocusToList(){
+    const markingsList = H_Locus.values;
+    final List<String> markingsName = [];
+
+   for (var element in markingsList){
+      markingsName.add(element.name.toString());
+   }
+    return markingsName;
+   
+  }
+
+  static cLocusToList(){
+    const markingsList = C_Locus.values;
+    final List<String> markingsName = [];
+
+    for (var element in markingsList){
+      markingsName.add(element.name.toString());
+   }
+    return markingsName;
+  }
+
+  static coatsToList(){
+    const elementList = Coats.values;
+    final List<String> elementsName = [];
+
+    for (var element in elementList){
+      elementsName.add(element.name.toString());
+   }
+    return elementsName;
+  }
+
+  static colorsToList(){
+    const elementList = Colours.values;
+    final List<String> elementsName = [];
+
+    for (var element in elementList){
+      elementsName.add(element.name.toString());
+   }
+    return elementsName;
+  }
+
+  static genderToList(){
+    const elementList = Gender.values;
+    final List<String> elementsName = [];
+
+    for (var element in elementList){
+      elementsName.add(element.name.toString());
+   }
+    return elementsName;
+  }
+
+  static earsToList(){
+    const elementList = Ears.values;
+    final List<String> elementsName = [];
+
+    for (var element in elementList){
+      elementsName.add(element.name.toString());
+   }
+    return elementsName;
+  }
+
+
+  toDb() {
+    final Map<String, dynamic> rat = {
+      "name": name,
+      "registeredName": registeredName,
+      "gender": gender.name.toString(),
+      "ears": ears.name.toString(),
+      "colours": colours.name.toString(),
+      "markings": markings,
+      "mother": parents.mom,
+      "father": parents.dad,
+      "coat": coat.name.toString(),
+      "birthday": [
+        birthday.year.toInt(),
+        birthday.month.toInt(),
+        birthday.day.toInt()
+      ],
     };
     return rat;
   }

@@ -1,4 +1,6 @@
 // ignore: unused_import
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -124,10 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: const Text('Cancel'),
                 ),
                 ElevatedButton(
-                  onPressed: () => FirebaseFirestore.instance
-                      .collection('rats')
-                      .doc(name)
-                      .delete(),
+                  onPressed: () => deleteRat(name),
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                   child: const Text("Delete"),
                 ),
@@ -140,6 +139,16 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       },
       icon: Icon(Icons.delete, color: Colors.red[200]));
+
+  deleteRat(String name) async {
+    showDialog(
+      context: context,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+    await FirebaseFirestore.instance.collection('rats').doc(name).delete();
+    navPop(context);
+    navPop(context);
+  }
 
   FloatingActionButton myFloatingActionButton() {
     return FloatingActionButton(
