@@ -75,7 +75,7 @@ class Rat {
   final Gender gender;
   final Ears ears;
   final Colours colours;
-  final String markings;
+  final List<String> markings;
   final Parents parents;
   final Coats coat;
   final DateTime birthday;

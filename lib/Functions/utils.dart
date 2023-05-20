@@ -14,3 +14,14 @@ ageCalculator(int year, int month){
   }
   return age;
 }
+
+stringreplace(String string, String searchElement, String replacementElement) {
+  String? newString;
+  if (!string.contains(searchElement)) {
+    return string;
+  } else {
+    int index = string.indexOf(searchElement);
+    newString = string.substring(0, index) + replacementElement + string.substring(index + 1);
+    return stringreplace(newString, searchElement, replacementElement);
+  }
+}

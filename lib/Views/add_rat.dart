@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, non_constant_identifier_names
 
 import 'dart:developer';
 
@@ -59,7 +59,7 @@ class _AddRatState extends State<AddRat> {
   String? earController;
   String? coatController;
   String? genderValue;
-  String? markingValue;
+  List<String> markingValue = [];
 
   Gender? _pickedGender;
 
@@ -72,7 +72,6 @@ class _AddRatState extends State<AddRat> {
 
   @override
   void initState() {
-    print(colorsList);
     super.initState();
   }
 
@@ -131,18 +130,17 @@ class _AddRatState extends State<AddRat> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           LocusSelect(),
+                          
                         ],
                       ),
                       const SizedBox(height: 10),
-                      LocusDropDown(),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                          locusDropdownButton(),
+                      const SizedBox(height: 10),
                       BirthdaySelect(context),
                       const SizedBox(height: 10),
                       SaveButton(context),
                       const SizedBox(
-                        height: 10,
+                        height: 10
                       )
                     ],
                   ),
@@ -173,7 +171,7 @@ class _AddRatState extends State<AddRat> {
               navPop(context);
               return;
             }
-            if (markingValue == null) {
+            if (markingValue.isEmpty) {
               showError("Markings");
               navPop(context);
               return;
@@ -186,7 +184,7 @@ class _AddRatState extends State<AddRat> {
               ears: Ears.values[
                   earsList.indexWhere((element) => element == earController)],
               gender: _pickedGender!,
-              markings: markingValue!,
+              markings: markingValue,
               parents: Parents(
                   dad: dadController.text.trim(),
                   mom: momController.text.trim()),
@@ -199,6 +197,7 @@ class _AddRatState extends State<AddRat> {
                   .collection("rats")
                   .doc(widget.name)
                   .update(rat.toDb());
+              return;
             }
             await FirebaseFirestore.instance
                 .collection("rats")
@@ -290,35 +289,108 @@ class _AddRatState extends State<AddRat> {
     );
   }
 
-  Container LocusDropDown() {
-    return Container(
-      decoration: BoxDecoration(
-          border: Border.all(color: secondaryThemeColor, width: 2),
-          borderRadius: BorderRadius.circular(10)),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          isExpanded: true,
-          hint: const Center(
-              child: Text('Locus',
-                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15))),
-          value: markingValue,
-          items: markingList.map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(
-                value,
+  Widget locusDropdownButton() {
+    return ElevatedButton(
+      
+      style: ElevatedButton.styleFrom(
+        fixedSize: const Size(200, 50),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: secondaryThemeColor
+          )
+        )
+        ),
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return StatefulBuilder(
+              builder: (context, setState) => AlertDialog(
+                title: const Text("Choos Markings"),
+                content: Container(
+                  height: 400,
+                  width: MediaQuery.of(context).size.width / 1.2,
+                  child: ListView.builder(
+                    itemCount: markingList.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: EdgeInsets.all(7),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: ListTile(
+                            title: Text(markingList[index]),
+                            trailing: SizedBox(
+                              height: 10,
+                              width: 10,
+                              child: markingValue.contains(markingList[index])
+                                  ? const Icon(
+                                      Icons.check,
+                                      color: Colors.green,
+                                    )
+                                  : Container(),
+                            ),
+                            onTap: () {
+                              if (markingValue.contains(markingList[index])) {
+                                log("removed ${markingList[index]}");
+                                markingValue.remove(markingList[index]);
+                                setState(() {});
+                              } else {
+                                setState(() {
+                                  log("added ${markingList[index]}");
+                                  markingValue.add(markingList[index]);
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
             );
-          }).toList(),
-          onChanged: (String? value) {
-            setState(() {
-              markingValue = value!;
-            });
           },
-        ),
-      ),
+        );
+      },
+      child: const Text("Markings", style: TextStyle(
+        color: Colors.black87
+      ),),
     );
   }
+
+  // Container LocusDropDown() {
+  //   return Container(
+  //     decoration: BoxDecoration(
+  //         border: Border.all(color: secondaryThemeColor, width: 2),
+  //         borderRadius: BorderRadius.circular(10)),
+  //     child: DropdownButtonHideUnderline(
+  //       child: DropdownButton<String>(
+  //         isExpanded: true,
+  //         hint: const Center(
+  //             child: Text('Locus',
+  //                 style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15))),
+  //         value: markingValue,
+  //         items: markingList.map<DropdownMenuItem<String>>((String value) {
+  //           return DropdownMenuItem<String>(
+  //             value: stringreplace(value, "_", " "),
+  //             child: Text(
+  //               stringreplace(value, "_", " "),
+  //             ),
+  //           );
+  //         }).toList(),
+  //         onChanged: (String? value) {
+  //           setState(() {
+  //             markingValue = value!;
+  //           });
+  //         },
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget LocusSelect() {
     return ToggleButtons(
@@ -331,10 +403,10 @@ class _AddRatState extends State<AddRat> {
         selectedMarkings[index] = !selectedMarkings[index];
         if (index == 0) {
           markingList = cMarkingList;
-          markingValue = null;
+          markingValue.clear();
         } else {
           markingList = hMarkingsList;
-          markingValue = null;
+          markingValue.clear();
         }
         setState(() {});
       },
@@ -345,7 +417,7 @@ class _AddRatState extends State<AddRat> {
       selectedColor: Colors.white,
       fillColor: secondaryThemeColor,
       color: secondaryThemeColor,
-      constraints: BoxConstraints(minHeight: 40.0, minWidth: 100),
+      constraints: const BoxConstraints(minHeight: 40.0, minWidth: 100),
       children: toggleValues,
     );
   }
@@ -425,9 +497,9 @@ class _AddRatState extends State<AddRat> {
           value: colourController,
           items: colorsList.map<DropdownMenuItem<String>>((String value) {
             return DropdownMenuItem<String>(
-              value: value,
+              value: stringreplace(value, "_", " "),
               child: Text(
-                value,
+                stringreplace(value, "_", " "),
               ),
             );
           }).toList(),
