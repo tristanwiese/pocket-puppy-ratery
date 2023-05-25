@@ -8,9 +8,11 @@ import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import '../Functions/utils.dart';
 import '../Models/rat.dart';
 
-const List<Text> toggleValues = <Text>[Text('C-Locus'), Text('H-Locus')];
+const List<Text> toggleMarkings = <Text>[Text('C-Locus'), Text('H-Locus')];
+const List<Text> toggleGender = <Text>[Text("Male"), Text("Female")];
 
 List<bool> selectedMarkings = <bool>[true, false];
+List<bool> selectedGender = <bool>[false, false];
 
 List<String> cMarkingList = Rat.cLocusToList();
 List<String> hMarkingsList = Rat.hLocusToList();
@@ -34,14 +36,14 @@ class AddRat extends StatefulWidget {
       this.markings});
   final String? name;
   final String? regName;
-  final String? color;
+  final List? color;
   final String? ears;
   final String? coat;
   final String? mother;
   final String? father;
   final String? gender;
   final DateTime? birthday;
-  final String? markings;
+  final List? markings;
 
   @override
   State<AddRat> createState() => _AddRatState();
@@ -59,7 +61,8 @@ class _AddRatState extends State<AddRat> {
   String? earController;
   String? coatController;
   String? genderValue;
-  List<String> markingValue = [];
+  List actvieMarkingsList = [];
+  List activeColorsList = [];
 
   Gender? _pickedGender;
 
@@ -72,7 +75,34 @@ class _AddRatState extends State<AddRat> {
 
   @override
   void initState() {
+    if (widget.name != null) {
+      nameController = TextEditingController(text: widget.name);
+      momController = TextEditingController(text: widget.mother);
+      dadController = TextEditingController(text: widget.father);
+      registeredNameController = TextEditingController(text: widget.regName);
+      activeColorsList = widget.color!;
+      earController = widget.ears;
+      coatController = widget.coat;
+      actvieMarkingsList = [];
+      activeColorsList = [];
+
+      if (widget.gender == "Male"){
+        _pickedGender = Gender.Male;
+      }else{
+        _pickedGender = Gender.Female;
+      }
+    }
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    momController.dispose();
+    dadController.dispose();
+    registeredNameController.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -112,36 +142,23 @@ class _AddRatState extends State<AddRat> {
                         children: [
                           Expanded(child: CoatSelect()),
                           const SizedBox(width: 10),
-                          Expanded(child: ColorSelect()),
-                          const SizedBox(width: 10),
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
                           Expanded(child: EarSelect()),
                           const SizedBox(width: 10),
-                          Expanded(child: GenderSelect()),
                         ],
                       ),
                       const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          LocusSelect(),
-                          
-                        ],
-                      ),
+                      ColorSelect(),
                       const SizedBox(height: 10),
-                          locusDropdownButton(),
+                      LocusSelect(),
+                      const SizedBox(height: 10),
+                      locusDropdownButton(),
+                      const SizedBox(height: 10),
+                      GenderSelect(),
                       const SizedBox(height: 10),
                       BirthdaySelect(context),
                       const SizedBox(height: 10),
                       SaveButton(context),
-                      const SizedBox(
-                        height: 10
-                      )
+                      const SizedBox(height: 10)
                     ],
                   ),
                 ),
@@ -153,7 +170,7 @@ class _AddRatState extends State<AddRat> {
     );
   }
 
-  Center SaveButton(BuildContext context) {
+  Widget SaveButton(BuildContext context) {
     return Center(
       child: ElevatedButton(
           onPressed: () async {
@@ -171,7 +188,7 @@ class _AddRatState extends State<AddRat> {
               navPop(context);
               return;
             }
-            if (markingValue.isEmpty) {
+            if (actvieMarkingsList.isEmpty) {
               showError("Markings");
               navPop(context);
               return;
@@ -179,12 +196,11 @@ class _AddRatState extends State<AddRat> {
             final Rat rat = Rat(
               name: nameController.text.trim(),
               registeredName: registeredNameController.text.trim(),
-              colours: Colours.values[colorsList
-                  .indexWhere((element) => element == colourController)],
+              colours: activeColorsList,
               ears: Ears.values[
                   earsList.indexWhere((element) => element == earController)],
               gender: _pickedGender!,
-              markings: markingValue,
+              markings: actvieMarkingsList,
               parents: Parents(
                   dad: dadController.text.trim(),
                   mom: momController.text.trim()),
@@ -216,181 +232,69 @@ class _AddRatState extends State<AddRat> {
     );
   }
 
-  Container BirthdaySelect(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(left: 10, right: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          ElevatedButton(
-            onPressed: () async {
-              _pickedDate = await showDatePicker(
-                context: context,
-                initialDate: _selectedDate,
-                firstDate: DateTime(2000),
-                lastDate: DateTime.now(),
-              );
-              if (_pickedDate != null && _pickedDate != _selectedDate) {
-                setState(() {
-                  _selectedDate = _pickedDate!;
-                });
-                log(_selectedDate.toString());
-              }
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: secondaryThemeColor,
-              fixedSize: const Size(100, 50),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-            child: const Text('Brithday'),
-          )
-        ],
-      ),
+  Widget BirthdaySelect(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () async {
+        _pickedDate = await showDatePicker(
+          context: context,
+          initialDate: _selectedDate,
+          firstDate: DateTime(2000),
+          lastDate: DateTime.now(),
+        );
+        if (_pickedDate != null && _pickedDate != _selectedDate) {
+          setState(() {
+            _selectedDate = _pickedDate!;
+          });
+          log(_selectedDate.toString());
+        }
+      },
+      style: ElevatedButton.styleFrom(
+          minimumSize: const Size.fromHeight(60),
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: secondaryThemeColor))),
+      child: const Text('Brithday', style: TextStyle(color: Colors.black87)),
     );
   }
 
-  Container GenderSelect() {
-    return Container(
-      decoration: BoxDecoration(
-          border: Border.all(color: secondaryThemeColor, width: 2),
-          borderRadius: BorderRadius.circular(10)),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          isExpanded: true,
-          hint: const Center(
-              child: Text(
-            'Gender',
-            style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15),
-          )),
-          value: genderValue,
-          items: <String>['Male', 'Female']
-              .map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: Text(
-                value,
-              ),
-            );
-          }).toList(),
-          onChanged: (String? value) {
-            setState(() {
-              genderValue = value;
-              if (value! == "Male") {
-                _pickedGender = Gender.Male;
-              } else {
-                _pickedGender = Gender.Female;
-              }
-            });
-          },
-        ),
+  Widget GenderSelect() {
+    return ToggleButtons(
+      onPressed: (index) {
+        for (var i = 0; i < 2; i++) {
+          setState(() {
+            selectedGender[i] = false;
+          });
+        }
+        selectedGender[index] = !selectedGender[index];
+        _pickedGender = Gender.values[index];
+        setState(() {});
+      },
+      isSelected: selectedGender,
+      direction: Axis.horizontal,
+      borderRadius: const BorderRadius.all(Radius.circular(8)),
+      selectedBorderColor: Colors.black,
+      selectedColor: Colors.white,
+      fillColor: secondaryThemeColor,
+      color: secondaryThemeColor,
+      constraints: BoxConstraints(
+        minHeight: 40.0,
+        minWidth: (MediaQuery.of(context).size.width <= 500)
+            ? (MediaQuery.of(context).size.width / 2) - 20
+            : 240,
       ),
+      children: toggleGender,
     );
   }
 
   Widget locusDropdownButton() {
-    return ElevatedButton(
-      
-      style: ElevatedButton.styleFrom(
-        fixedSize: const Size(200, 50),
-        backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(
-            color: secondaryThemeColor
-          )
-        )
-        ),
-      onPressed: () {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return StatefulBuilder(
-              builder: (context, setState) => AlertDialog(
-                title: const Text("Choos Markings"),
-                content: Container(
-                  height: 400,
-                  width: MediaQuery.of(context).size.width / 1.2,
-                  child: ListView.builder(
-                    itemCount: markingList.length,
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: EdgeInsets.all(7),
-                        child: Container(
-                          decoration: BoxDecoration(
-                              border: Border.all(),
-                              borderRadius: BorderRadius.circular(10)),
-                          child: ListTile(
-                            title: Text(markingList[index]),
-                            trailing: SizedBox(
-                              height: 10,
-                              width: 10,
-                              child: markingValue.contains(markingList[index])
-                                  ? const Icon(
-                                      Icons.check,
-                                      color: Colors.green,
-                                    )
-                                  : Container(),
-                            ),
-                            onTap: () {
-                              if (markingValue.contains(markingList[index])) {
-                                log("removed ${markingList[index]}");
-                                markingValue.remove(markingList[index]);
-                                setState(() {});
-                              } else {
-                                setState(() {
-                                  log("added ${markingList[index]}");
-                                  markingValue.add(markingList[index]);
-                                });
-                              }
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            );
-          },
-        );
-      },
-      child: const Text("Markings", style: TextStyle(
-        color: Colors.black87
-      ),),
-    );
+    return showListButton(
+        listOf: "Markings",
+        title:
+            "Choose Markings: ${toggleMarkings[selectedMarkings.indexWhere((element) => element == true)].data}",
+        buildList: markingList,
+        activeList: actvieMarkingsList);
   }
-
-  // Container LocusDropDown() {
-  //   return Container(
-  //     decoration: BoxDecoration(
-  //         border: Border.all(color: secondaryThemeColor, width: 2),
-  //         borderRadius: BorderRadius.circular(10)),
-  //     child: DropdownButtonHideUnderline(
-  //       child: DropdownButton<String>(
-  //         isExpanded: true,
-  //         hint: const Center(
-  //             child: Text('Locus',
-  //                 style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15))),
-  //         value: markingValue,
-  //         items: markingList.map<DropdownMenuItem<String>>((String value) {
-  //           return DropdownMenuItem<String>(
-  //             value: stringreplace(value, "_", " "),
-  //             child: Text(
-  //               stringreplace(value, "_", " "),
-  //             ),
-  //           );
-  //         }).toList(),
-  //         onChanged: (String? value) {
-  //           setState(() {
-  //             markingValue = value!;
-  //           });
-  //         },
-  //       ),
-  //     ),
-  //   );
-  // }
 
   Widget LocusSelect() {
     return ToggleButtons(
@@ -403,10 +307,10 @@ class _AddRatState extends State<AddRat> {
         selectedMarkings[index] = !selectedMarkings[index];
         if (index == 0) {
           markingList = cMarkingList;
-          markingValue.clear();
+          actvieMarkingsList.clear();
         } else {
           markingList = hMarkingsList;
-          markingValue.clear();
+          actvieMarkingsList.clear();
         }
         setState(() {});
       },
@@ -417,12 +321,17 @@ class _AddRatState extends State<AddRat> {
       selectedColor: Colors.white,
       fillColor: secondaryThemeColor,
       color: secondaryThemeColor,
-      constraints: const BoxConstraints(minHeight: 40.0, minWidth: 100),
-      children: toggleValues,
+      constraints: BoxConstraints(
+        minHeight: 40.0,
+        minWidth: (MediaQuery.of(context).size.width <= 500)
+            ? (MediaQuery.of(context).size.width / 2) - 20
+            : 240,
+      ),
+      children: toggleMarkings,
     );
   }
 
-  Container CoatSelect() {
+  Widget CoatSelect() {
     return Container(
       decoration: BoxDecoration(
           border: Border.all(color: secondaryThemeColor, width: 2),
@@ -452,7 +361,7 @@ class _AddRatState extends State<AddRat> {
     );
   }
 
-  Container EarSelect() {
+  Widget EarSelect() {
     return Container(
       decoration: BoxDecoration(
           border: Border.all(color: secondaryThemeColor, width: 2),
@@ -482,40 +391,49 @@ class _AddRatState extends State<AddRat> {
     );
   }
 
-  Container ColorSelect() {
-    return Container(
-      width: 50,
-      decoration: BoxDecoration(
-          border: Border.all(color: secondaryThemeColor, width: 2),
-          borderRadius: BorderRadius.circular(10)),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          isExpanded: true,
-          hint: const Center(
-              child: Text('Colors',
-                  style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15))),
-          value: colourController,
-          items: colorsList.map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: stringreplace(value, "_", " "),
-              child: Text(
-                stringreplace(value, "_", " "),
-              ),
-            );
-          }).toList(),
-          onChanged: (String? value) {
-            setState(() {
-              colourController = value!;
-            });
-          },
-        ),
-      ),
-    );
+  Widget ColorSelect() {
+    return showListButton(
+        title: "Choose Colour",
+        listOf: "Colors",
+        buildList: colorsList,
+        activeList: activeColorsList);
+    // return Container(
+    //   width: 50,
+    //   decoration: BoxDecoration(
+    //       border: Border.all(color: secondaryThemeColor, width: 2),
+    //       borderRadius: BorderRadius.circular(10)),
+    //   child: DropdownButtonHideUnderline(
+    //     child: DropdownButton<String>(
+    //       isExpanded: true,
+    //       hint: const Center(
+    //           child: Text('Colors',
+    //               style: TextStyle(fontWeight: FontWeight.w500, fontSize: 15))),
+    //       value: colourController,
+    //       items:  colorsList.map<DropdownMenuItem<String>>((String value) {
+    //         return DropdownMenuItem<String>(
+    //           value: stringreplace(
+    //               string: value, searchElement: "_", replacementElement: " "),
+    //           child: Text(
+    //             stringreplace(
+    //                 string: value, searchElement: "_", replacementElement: " "),
+    //           ),
+    //         );
+    //       }).toList(),
+    //       onChanged: (String? value) {
+    //         setState(() {
+    //           colourController = value!;
+    //         });
+    //       },
+    //     ),
+    //   ),
+    // );
   }
 
-  AppBar myAppBar() => AppBar(
-        title: const Text("Add Rat Info"),
-      );
+  AppBar myAppBar() {
+    return AppBar(
+      title: const Text("Add Rat Info"),
+    );
+  }
 
   showError(String errorVal) {
     scaffoldKey.currentState!.showSnackBar(SnackBar(
@@ -523,6 +441,90 @@ class _AddRatState extends State<AddRat> {
       duration: const Duration(seconds: 5),
       backgroundColor: primaryThemeColor,
     ));
+  }
+
+  Widget showListButton(
+      {required String title,
+      required String listOf,
+      required List buildList,
+      required List activeList}) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+          minimumSize: const Size.fromHeight(60),
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: BorderSide(color: secondaryThemeColor))),
+      onPressed: () {
+        showList(
+          title: title,
+          buildList: buildList,
+          activeList: activeList,
+        );
+      },
+      child: Text(
+        listOf,
+        style: const TextStyle(color: Colors.black87),
+      ),
+    );
+  }
+
+  Future<dynamic> showList(
+      {required String title,
+      required List buildList,
+      required List activeList}) {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            title: Text(title),
+            content: SizedBox(
+              height: 400,
+              width: MediaQuery.of(context).size.width / 1.2,
+              child: ListView.builder(
+                itemCount: buildList.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.all(7),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(),
+                          borderRadius: BorderRadius.circular(10)),
+                      child: ListTile(
+                        title: Text(buildList[index]),
+                        trailing: SizedBox(
+                          height: 10,
+                          width: 10,
+                          child: activeList.contains(buildList[index])
+                              ? const Icon(
+                                  Icons.check,
+                                  color: Colors.green,
+                                )
+                              : Container(),
+                        ),
+                        onTap: () {
+                          if (activeList.contains(buildList[index])) {
+                            log("removed ${buildList[index]}");
+                            activeList.remove(buildList[index]);
+                            setState(() {});
+                          } else {
+                            setState(() {
+                              log("added ${buildList[index]}");
+                              activeList.add(buildList[index]);
+                            });
+                          }
+                        },
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 }
 

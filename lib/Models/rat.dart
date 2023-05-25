@@ -1,5 +1,7 @@
 // ignore_for_file: constant_identifier_names, camel_case_types
 
+import 'package:pocket_puppy_rattery/Functions/utils.dart';
+
 enum Gender { Male, Female }
 
 enum Ears { Standard, Dumbo }
@@ -72,8 +74,8 @@ class Rat {
   final String registeredName;
   final Gender gender;
   final Ears ears;
-  final Colours colours;
-  final List<String> markings;
+  final List colours;
+  final List markings;
   final Parents parents;
   final Coats coat;
   final DateTime birthday;
@@ -83,10 +85,9 @@ class Rat {
     final List<String> markingsName = [];
 
    for (var element in markingsList){
-      markingsName.add(element.name.toString());
+      markingsName.add(stringreplace(string: element.name.toString(), searchElement: "_", replacementElement: " "));
    }
-    return markingsName;
-   
+    return markingsName;   
   }
 
   static cLocusToList(){
@@ -94,7 +95,7 @@ class Rat {
     final List<String> markingsName = [];
 
     for (var element in markingsList){
-      markingsName.add(element.name.toString());
+      markingsName.add(stringreplace(string: element.name.toString(), searchElement: "_", replacementElement: " "));
    }
     return markingsName;
   }
@@ -104,7 +105,7 @@ class Rat {
     final List<String> elementsName = [];
 
     for (var element in elementList){
-      elementsName.add(element.name.toString());
+      elementsName.add(stringreplace(string: element.name.toString(), searchElement: "_", replacementElement: " "));
    }
     return elementsName;
   }
@@ -114,7 +115,7 @@ class Rat {
     final List<String> elementsName = [];
 
     for (var element in elementList){
-      elementsName.add(element.name.toString());
+      elementsName.add(stringreplace(string: element.name.toString(), searchElement: "_", replacementElement: " "));
    }
     return elementsName;
   }
@@ -124,7 +125,7 @@ class Rat {
     final List<String> elementsName = [];
 
     for (var element in elementList){
-      elementsName.add(element.name.toString());
+      elementsName.add(stringreplace(string: element.name.toString(), searchElement: "_", replacementElement: " "));
    }
     return elementsName;
   }
@@ -134,7 +135,7 @@ class Rat {
     final List<String> elementsName = [];
 
     for (var element in elementList){
-      elementsName.add(element.name.toString());
+      elementsName.add(stringreplace(string: element.name.toString(), searchElement: "_", replacementElement: " "));
    }
     return elementsName;
   }
@@ -146,7 +147,7 @@ class Rat {
       "registeredName": registeredName,
       "gender": gender.name.toString(),
       "ears": ears.name.toString(),
-      "colours": colours.name.toString(),
+      "colours": colours,
       "markings": markings,
       "mother": parents.mom,
       "father": parents.dad,
