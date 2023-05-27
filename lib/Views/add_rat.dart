@@ -11,9 +11,6 @@ import '../Models/rat.dart';
 const List<Text> toggleMarkings = <Text>[Text('C-Locus'), Text('H-Locus')];
 const List<Text> toggleGender = <Text>[Text("Male"), Text("Female")];
 
-List<bool> selectedMarkings = <bool>[true, false];
-List<bool> selectedGender = <bool>[false, false];
-
 List<String> cMarkingList = Rat.cLocusToList();
 List<String> hMarkingsList = Rat.hLocusToList();
 List<String> colorsList = Rat.colorsToList();
@@ -72,6 +69,9 @@ class _AddRatState extends State<AddRat> {
 
   DateTime? _pickedDate;
   DateTime _selectedDate = DateTime.now();
+
+  List<bool> selectedMarkings = <bool>[true, false];
+List<bool> selectedGender = <bool>[false, false];
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
