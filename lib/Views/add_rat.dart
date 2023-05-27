@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import '../Functions/utils.dart';
 import '../Models/rat.dart';
+import '../Services/constants.dart';
 
 const List<Text> toggleMarkings = <Text>[Text('C-Locus'), Text('H-Locus')];
 const List<Text> toggleGender = <Text>[Text("Male"), Text("Female")];

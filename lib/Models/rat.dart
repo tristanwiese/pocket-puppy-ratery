@@ -2,61 +2,9 @@
 
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 
-enum Gender { Male, Female }
+import '../Services/constants.dart';
 
-enum Ears { Standard, Dumbo }
 
-enum H_Locus {
-  Unmarked,
-  English_Irish,
-  Irish_American,
-  Variegated,
-  Hooded,
-  Bareback,
-  Capped,
-  Essex,
-  Variegated_Essex,
-  Baldie,
-  Black_Eyed_White_Spotted,
-  Essex_Dalmation,
-  Blazed,
-  Roan_Husky,
-  Down_Under,
-}
-
-enum C_Locus {
-  French_Siamese,
-  Black_Eyed_Siamese,
-  Sable_Siamese,
-  Burmese,
-  Pink_Eyed_White
-}
-
-enum Colours {
-  Agouti,
-  Amber,
-  Fawn,
-  Black,
-  Champagne,
-  Beige,
-  Russian_Blue,
-  Russian_Blue_Agouti,
-  Slate_Blue,
-  Slate_Blue_Agouti,
-  Russian_Silver,
-  Cinnamon,
-  Mink,
-  Mink_Pearl,
-  Cinnamon_Pearl,
-  Chocolate_Agouti,
-  Chocolate,
-}
-
-enum Coats {
-  Standard,
-  Harley,
-  Hairless,
-}
 
 class Rat {
   Rat({
