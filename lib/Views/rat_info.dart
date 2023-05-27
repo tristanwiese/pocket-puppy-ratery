@@ -61,6 +61,7 @@ class _RatInfoState extends State<RatInfo> {
                 height: 10,
               ),
               Container(
+                margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                     border: Border.all(),
