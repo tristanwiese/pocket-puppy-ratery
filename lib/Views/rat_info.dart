@@ -94,7 +94,7 @@ class _RatInfoState extends State<RatInfo> {
                     const SizedBox(height: 10),
                     Text("Father: ${info["father"]}"),
                     const SizedBox(
-                      height: 20
+                      height: 10
                     ),
                     Text("Age: ${ageCalculator(info["birthday"][0], info["birthday"][1])}"),
                     const SizedBox(height: 10),
