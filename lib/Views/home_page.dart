@@ -1,5 +1,5 @@
 // ignore: unused_import
-// ignore_for_file: use_build_context_synchronously
+// ignore_for_file: use_build_context_synchronously, unused_import
 
 import 'dart:developer';
 
@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
+import 'package:pocket_puppy_rattery/Models/rat.dart';
 import 'package:pocket_puppy_rattery/Views/add_rat.dart';
 import 'package:pocket_puppy_rattery/Views/rat_info.dart';
 
@@ -27,9 +28,9 @@ class _MyHomePageState extends State<MyHomePage> {
           image: DecorationImage(image: AssetImage("asstes/images/Paws.jpg"))),
       child: StreamBuilder<QuerySnapshot>(
           stream: FirebaseFirestore.instance.collection('rats').snapshots(),
-          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          builder: (context, snapshot) {
             if (snapshot.hasData) {
-              final rats = snapshot.data!.docs;
+              final List<QueryDocumentSnapshot<Object?>> rats = snapshot.data!.docs;
               return Center(child: myBody(rats));
             }
             return const LoadScreen();
@@ -37,7 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  myBody(rats) => Scaffold(
+  myBody(List<QueryDocumentSnapshot<Object?>> rats) => Scaffold(
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterFloat,
       appBar: myAppBar(context),
@@ -56,11 +57,12 @@ class _MyHomePageState extends State<MyHomePage> {
                             padding: const EdgeInsets.all(8.0),
                             child: InkWell(
                               onTap: () {
+                                QueryDocumentSnapshot rat = rats[i];
                                 navPush(
-                                    context, RatInfo(info: rats[i]['name']));
+                                    context, RatInfo(info: rat));
                               },
                               child: ListTile(
-                                trailing: myIconButton(rats[i]['name']),
+                                trailing: myIconButton(rat: rats[i]),
                                 title: Text(rats[i]['name']),
                                 shape: BeveledRectangleBorder(
                                     side: BorderSide(
@@ -99,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ]);
   }
 
-  IconButton myIconButton(name) => IconButton(
+  IconButton myIconButton({required QueryDocumentSnapshot rat}) => IconButton(
       onPressed: () {
         showDialog(
           context: context,
@@ -113,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     const Text("Are you sure you want to remove this rat?"),
                     const SizedBox(height: 30),
                     Text(
-                      name,
+                      rat["name"],
                       style: const TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 20),
                     ),
@@ -126,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: const Text('Cancel'),
                 ),
                 ElevatedButton(
-                  onPressed: () => deleteRat(name),
+                  onPressed: () => deleteRat(rat.id),
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                   child: const Text("Delete"),
                 ),

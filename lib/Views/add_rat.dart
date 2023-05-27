@@ -24,6 +24,7 @@ List<String> genderList = Rat.genderToList();
 class AddRat extends StatefulWidget {
   const AddRat(
       {super.key,
+      this.id,
       this.name,
       this.coat,
       this.color,
@@ -44,6 +45,7 @@ class AddRat extends StatefulWidget {
   final String? gender;
   final DateTime? birthday;
   final List? markings;
+  final String? id;
 
   @override
   State<AddRat> createState() => _AddRatState();
@@ -76,6 +78,7 @@ class _AddRatState extends State<AddRat> {
   @override
   void initState() {
     if (widget.name != null) {
+      log("fired!");
       nameController = TextEditingController(text: widget.name);
       momController = TextEditingController(text: widget.mother);
       dadController = TextEditingController(text: widget.father);
@@ -83,13 +86,20 @@ class _AddRatState extends State<AddRat> {
       activeColorsList = widget.color!;
       earController = widget.ears;
       coatController = widget.coat;
-      actvieMarkingsList = [];
-      activeColorsList = [];
+      actvieMarkingsList = widget.markings!;
+      activeColorsList = widget.color!;
+      _selectedDate = widget.birthday!;
 
-      if (widget.gender == "Male"){
+      if (widget.gender == "Male") {
         _pickedGender = Gender.Male;
-      }else{
+        selectedGender = [true, false];
+      } else {
         _pickedGender = Gender.Female;
+        selectedGender = [false, true];
+      }
+      if (getMarkingtype(widget.markings!) == "hLocus") {
+        markingList = hMarkingsList;
+        selectedMarkings = [false, true];
       }
     }
     super.initState();
@@ -103,6 +113,15 @@ class _AddRatState extends State<AddRat> {
     registeredNameController.dispose();
 
     super.dispose();
+  }
+
+  getMarkingtype(List markings) {
+    for (int i = 0; i < cMarkingList.length; i++) {
+      if (markings.contains(cMarkingList[i])) {
+        return "cLocus";
+      }
+    }
+    return "hLocus";
   }
 
   @override
@@ -193,6 +212,21 @@ class _AddRatState extends State<AddRat> {
               navPop(context);
               return;
             }
+            if (activeColorsList.isEmpty){
+              showError("Colors");
+              navPop(context);
+              return;
+            }
+            if (earController == null){
+              showError("Ears");
+              navPop(context);
+              return;
+            }
+            if (coatController == null){
+              showError("Coat");
+              navPop(context);
+              return;
+            }
             final Rat rat = Rat(
               name: nameController.text.trim(),
               registeredName: registeredNameController.text.trim(),
@@ -211,13 +245,15 @@ class _AddRatState extends State<AddRat> {
             if (widget.name != null) {
               await FirebaseFirestore.instance
                   .collection("rats")
-                  .doc(widget.name)
+                  .doc(widget.id)
                   .update(rat.toDb());
+
+              navPop(context);
               return;
             }
             await FirebaseFirestore.instance
                 .collection("rats")
-                .doc(nameController.text.trim())
+                .doc()
                 .set(rat.toDb());
             navPop(context);
             navPop(context);
@@ -346,8 +382,10 @@ class _AddRatState extends State<AddRat> {
           items: coatsList.map<DropdownMenuItem<String>>((String value) {
             return DropdownMenuItem<String>(
               value: value,
-              child: Text(
-                value,
+              child: Center(
+                child: Text(
+                  value,
+                ),
               ),
             );
           }).toList(),
@@ -376,8 +414,10 @@ class _AddRatState extends State<AddRat> {
           items: earsList.map<DropdownMenuItem<String>>((String value) {
             return DropdownMenuItem<String>(
               value: value,
-              child: Text(
-                value,
+              child: Center(
+                child: Text(
+                  value,
+                ),
               ),
             );
           }).toList(),

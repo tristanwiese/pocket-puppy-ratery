@@ -1,5 +1,7 @@
 // ignore_for_file: no_logic_in_create_state
 
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
@@ -12,7 +14,7 @@ class RatInfo extends StatefulWidget {
     required this.info,
   });
 
-  final dynamic info;
+  final QueryDocumentSnapshot info;
 
   @override
   State<RatInfo> createState() => _RatInfoState(info: info);
@@ -32,13 +34,13 @@ class _RatInfoState extends State<RatInfo> {
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
       stream: FirebaseFirestore.instance
           .collection("rats")
-          .doc(widget.info)
+          .doc(widget.info.id)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(
             child: Text(
-              "Catching ${widget.info}....",
+              "Catching ${widget.info["name"]}....",
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
             ),
           );
@@ -46,7 +48,7 @@ class _RatInfoState extends State<RatInfo> {
         if (!snapshot.hasData) {
           return Center(
             child: Text(
-                'Sorry, something went wrong while fetching ${widget.info}!'),
+                'Sorry, something went wrong while fetching ${widget.info["name"]}!'),
           );
         }
         final info = snapshot.data!.data();
@@ -67,7 +69,7 @@ class _RatInfoState extends State<RatInfo> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Name: ${info!["name"]}",
+                      "Name: ${info!["name"] ?? "name" }",
                       style: const TextStyle(fontSize: 20),
                     ),
                     const SizedBox(height: 10),
@@ -107,6 +109,7 @@ class _RatInfoState extends State<RatInfo> {
                           markings: info["markings"],
                           gender: info["gender"],
                           birthday: DateTime(info["birthday"][0],info["birthday"][1],info["birthday"][2]),
+                          id: widget.info.id,
                         ));
                       },
                       style: ElevatedButton.styleFrom(
@@ -129,6 +132,6 @@ class _RatInfoState extends State<RatInfo> {
   }
 
   AppBar myAppBar() => AppBar(
-        title: Text("Rat: ${widget.info}"),
+        title: Text("Rat: ${widget.info["name"]}"),
       );
 }
