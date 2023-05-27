@@ -15,13 +15,17 @@ ageCalculator(int year, int month){
   return age;
 }
 
-stringreplace({required String string, required String searchElement, required String replacementElement}) {
+stringreplace({required String string, required List<String> searchElement, required String replacementElement, int currentIndex = 0}) {
   String? newString;
-  if (!string.contains(searchElement)) {
-    return string;
+  for (var i = 0; i < searchElement.length; i++){
+    if (!string.contains(searchElement[i])) {
+      if (i == searchElement.length - 1){
+        return string;
+      }
   } else {
-    int index = string.indexOf(searchElement);
+    int index = string.indexOf(searchElement[i]);
     newString = string.substring(0, index) + replacementElement + string.substring(index + 1);
-    return stringreplace(string: newString, searchElement: searchElement, replacementElement: replacementElement);
+    return stringreplace(string: newString, searchElement: searchElement, replacementElement: replacementElement, currentIndex: 1);
+  }
   }
 }

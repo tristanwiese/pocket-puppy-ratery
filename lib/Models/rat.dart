@@ -85,7 +85,7 @@ class Rat {
     final List<String> markingsName = [];
 
    for (var element in markingsList){
-      markingsName.add(stringreplace(string: element.name.toString(), searchElement: "_", replacementElement: " "));
+      markingsName.add(stringreplace(string: element.name.toString(), searchElement: ["_"], replacementElement: " "));
    }
     return markingsName;   
   }
@@ -95,7 +95,7 @@ class Rat {
     final List<String> markingsName = [];
 
     for (var element in markingsList){
-      markingsName.add(stringreplace(string: element.name.toString(), searchElement: "_", replacementElement: " "));
+      markingsName.add(stringreplace(string: element.name.toString(), searchElement: ["_"], replacementElement: " "));
    }
     return markingsName;
   }
@@ -105,7 +105,7 @@ class Rat {
     final List<String> elementsName = [];
 
     for (var element in elementList){
-      elementsName.add(stringreplace(string: element.name.toString(), searchElement: "_", replacementElement: " "));
+      elementsName.add(stringreplace(string: element.name.toString(), searchElement: ["_"], replacementElement: " "));
    }
     return elementsName;
   }
@@ -115,7 +115,7 @@ class Rat {
     final List<String> elementsName = [];
 
     for (var element in elementList){
-      elementsName.add(stringreplace(string: element.name.toString(), searchElement: "_", replacementElement: " "));
+      elementsName.add(stringreplace(string: element.name.toString(), searchElement: ["_"], replacementElement: " "));
    }
     return elementsName;
   }
@@ -125,7 +125,7 @@ class Rat {
     final List<String> elementsName = [];
 
     for (var element in elementList){
-      elementsName.add(stringreplace(string: element.name.toString(), searchElement: "_", replacementElement: " "));
+      elementsName.add(stringreplace(string: element.name.toString(), searchElement: ["_"], replacementElement: " "));
    }
     return elementsName;
   }
@@ -135,7 +135,7 @@ class Rat {
     final List<String> elementsName = [];
 
     for (var element in elementList){
-      elementsName.add(stringreplace(string: element.name.toString(), searchElement: "_", replacementElement: " "));
+      elementsName.add(stringreplace(string: element.name.toString(), searchElement: ["_"], replacementElement: " "));
    }
     return elementsName;
   }

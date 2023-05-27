@@ -1,5 +1,6 @@
 // ignore_for_file: no_logic_in_create_state
 
+// ignore: unused_import
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -56,7 +57,7 @@ class _RatInfoState extends State<RatInfo> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Container(
@@ -75,18 +76,18 @@ class _RatInfoState extends State<RatInfo> {
                     const SizedBox(height: 10),
                     Text("Registered Name: ${info["registeredName"]}"),
                     const SizedBox(height: 10),
-                    Text("Color: ${info["colours"]}"),
+                    Text("Color: ${stringreplace(string: info["colours"].toString(), searchElement: ["[", "]"], replacementElement: "")}"),
                     const SizedBox(height: 10),
                     Text("Coat: ${info["coat"]}"),
                     const SizedBox(height: 10),
-                    Text("Markings: ${info["markings"]}"),
+                    Text("Markings: ${stringreplace(string: info["markings"].toString(), searchElement: ["[", "]"], replacementElement: "")}"),
                     const SizedBox(height: 10),
                     Text("Ears: ${info["ears"]}"),
                     const SizedBox(height: 10),
                     Text("Gender: ${info["gender"]}"),
                     const SizedBox(height: 10),
                     Text(
-                        "Birthday: ${info["birthday"][0]}-${info["birthday"][1]}-${info["birthday"][2]}"),
+                        "Birthday: ${info["birthday"][0]}/${info["birthday"][1]}/${info["birthday"][2]}"),
                     const SizedBox(height: 10),
                     Text("Mother: ${info["mother"]}"),
                     const SizedBox(height: 10),
