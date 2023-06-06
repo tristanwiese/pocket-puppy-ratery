@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../Models/gene.dart';
 
 var primaryThemeColor = const Color.fromARGB(255, 120, 224, 199);
 
@@ -29,8 +28,4 @@ stringreplace({required String string, required List<String> searchElement, requ
     return stringreplace(string: newString, searchElement: searchElement, replacementElement: replacementElement, currentIndex: 1);
   }
   }
-}
-
-geneCalculator({required Gene gene1, required Gene gene2}){
-  gene1;
 }
