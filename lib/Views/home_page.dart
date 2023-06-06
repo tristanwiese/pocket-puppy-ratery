@@ -18,7 +18,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int bottomVanIndex = 0;
+  int bottomVanIndex = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -78,9 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
               : geneCal());
 
   Widget geneCal() {
-    return const Center(
-      child: Text("GeneCalculator: Coming Soon!"),
-    );
+    return Center(child: Text("Hello"));
   }
 
   Widget myBottomNavBar() {

@@ -10,11 +10,10 @@ final GlobalKey<ScaffoldMessengerState> scaffoldKey = GlobalKey<ScaffoldMessenge
 
 
 ageCalculator(int year, int month){
-  int age = DateTime.now().year - year;
-  if (DateTime.now().month < month){
-    age = age - 1;
-  }
-  return age;
+  int years = DateTime.now().year - year;
+  int months = DateTime.now().month - month;
+
+  return (years * 12) + months;
 }
 
 stringreplace({required String string, required List<String> searchElement, required String replacementElement, int currentIndex = 0}) {
