@@ -100,7 +100,9 @@ class _RatInfoState extends State<RatInfo> {
                         "Markings: ${stringreplace(string: info["markings"].toString(), searchElement: [
                               "[",
                               "]"
-                            ], replacementElement: "")}"),
+                            ], replacementElement: "")}",
+                            textAlign: TextAlign.center,
+                            ),
                     const SizedBox(height: 10),
                     Text("Ears: ${info["ears"]}"),
                     const SizedBox(height: 10),
@@ -171,7 +173,7 @@ class _RatInfoState extends State<RatInfo> {
                                   age = "${ageCalculatorWeek(birthdate)} weeks";
                                   break;
                                 case "Months":
-                                  age = "${ageCalculatorMoth(birthdate)} month";
+                                  age = "${ageCalculatorMoth(birthdate)} months";
                                   break;
                                 case "Years":
                                   age = "${ageCalculatorYear(birthdate)} years";

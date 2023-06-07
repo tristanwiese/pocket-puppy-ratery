@@ -21,7 +21,7 @@ defaultAgeCalculator(DateTime birthdate){
       return("${ageCalculatorDay(birthdate)} days");
     } else {
       if (ageCalculatorDay(birthdate) == 0){
-        return("${ageCalculatorMoth(birthdate)} months.");
+        return("${ageCalculatorMoth(birthdate)} months");
       } else{
         return("${ageCalculatorMoth(birthdate)} months, ${ageCalculatorDay(birthdate)} days");
       }
