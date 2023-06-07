@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 class Gene {
   Gene({required this.alleleA, required this.alleleB});
 
@@ -44,7 +46,6 @@ List<String> matchRats({required RatGenes rat1, required RatGenes rat2}) {
       }
     }
   }
-
   return pairs;
 }
 

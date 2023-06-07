@@ -20,6 +20,14 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int bottomVanIndex = 1;
+  List<String>? result;
+  Map<String, int>? resultPercentage;
+  String geneCalChosenRat1Name = "Rat 1";
+  String geneCalChosenRat2Name = "Rat 2";
+  List<Map<String, dynamic>> chosenRats = [
+    {"Rat": null, "Position": ""},
+    {"Rat": null, "Position": ""}
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -79,80 +87,81 @@ class _MyHomePageState extends State<MyHomePage> {
               : geneCal(rats));
 
   Widget geneCal(List<QueryDocumentSnapshot<Object?>> rats) {
-    String rat1Name = "Rat 1";
-    String rat2Name = "Rat 2";
-
     //test rat list with implementing genes
-    List ratsWithGenes =[
-      RatGenes(genes: Gene(
-        alleleA: "L", 
-        alleleB: "l"), 
-        name: "Alice"),
-      RatGenes(
-        genes: Gene(
-          alleleA: "L", 
-          alleleB: "L"), 
-        name: "Charlie"),
-      RatGenes(
-          genes: Gene(
-            alleleA: "l", 
-            alleleB: "l"), 
-          name: "Bob"),
-      RatGenes(
-        genes: Gene(
-          alleleA: "L",
-          alleleB: "-"
-        ), 
-        name: "Andrew"),
+    List ratsWithGenes = [
+      RatGenes(genes: Gene(alleleA: "L", alleleB: "l"), name: "Alice"),
+      RatGenes(genes: Gene(alleleA: "L", alleleB: "L"), name: "Charlie"),
+      RatGenes(genes: Gene(alleleA: "l", alleleB: "l"), name: "Bob"),
+      RatGenes(genes: Gene(alleleA: "L", alleleB: "-"), name: "Andrew"),
     ];
-
-    List<Map<String, dynamic>> chosenRats = [{"Rat":null, "Position":""}, {"Rat":null, "Position":""}];
-
-    String? result;
-
-    log("$chosenRats");
-
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text("Select 2 Rats to see what the possible outcomes of their babies", 
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontWeight: FontWeight.bold
+          const Text(
+            "Select 2 Rats to see what the possible outcomes of their babies",
+            textAlign: TextAlign.center,
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          ),
-          const Text("//TEST DATA//", style: TextStyle(fontStyle: FontStyle.italic),),
-          const SizedBox(height: 10),
-          ElevatedButton(
-            onPressed: () {
-              availableRatList(
-                title: "Choose Rat 1",
-                activeList: chosenRats,
-                buildList: ratsWithGenes,
-                activeListPosition: 0
-              );
-            },
-            child: Text(rat1Name),
+          const Text(
+            "//TEST DATA//",
+            style: TextStyle(fontStyle: FontStyle.italic),
           ),
           const SizedBox(height: 10),
           ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                fixedSize: const Size(100, 40),
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20)))),
             onPressed: () {
               availableRatList(
-                title: "Choose Rat 2",
-                activeList: chosenRats,
-                buildList: ratsWithGenes,
-                activeListPosition: 1
-              );
+                  title: "Choose Rat 1",
+                  buildList: ratsWithGenes,
+                  activeListPosition: 0);
             },
-            child: Text(rat2Name),
+            child: Text(geneCalChosenRat1Name),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+                fixedSize: const Size(100, 40),
+                shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(20)))),
+            onPressed: () {
+              availableRatList(
+                  title: "Choose Rat 2",
+                  buildList: ratsWithGenes,
+                  activeListPosition: 1);
+            },
+            child: Text(geneCalChosenRat2Name),
           ),
           const SizedBox(height: 20),
-          ElevatedButton(onPressed: () {
-            log("${chosenRats[0]["Rat"].name} ${chosenRats[1]["Rat"].name}");
-          }, child: const Text("Match")),
+          ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  fixedSize: const Size(100, 40),
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(20)))),
+              onPressed: () {
+                for (Map map in chosenRats) {
+                  if (map["Rat"] == null) {
+                    scaffoldKey.currentState!.showSnackBar(SnackBar(
+                      content: const Text("Choose 2 rats to match!"),
+                      duration: const Duration(seconds: 4),
+                      backgroundColor: primaryThemeColor,
+                    ));
+                    return;
+                  }
+                }
+                setState(() {
+                  result = matchRats(
+                      rat1: chosenRats[0]["Rat"], rat2: chosenRats[1]["Rat"]);
+                  resultPercentage = getPercentage(pairResults: result!);
+                });
+              },
+              child: const Text("Match")),
           const SizedBox(height: 20),
-          Text("Outcome: ${result??""}")
+          Text("Outcome: ${result ?? ""}"),
+          Text("Percentage: ${resultPercentage ?? ""}")
         ],
       ),
     );
@@ -248,19 +257,32 @@ class _MyHomePageState extends State<MyHomePage> {
       return MediaQuery.of(context).size.width / 2;
     }
   }
-  
+
   availableRatList({
     required String title,
-      required List buildList,
-      required List activeList,
-      required int activeListPosition,
-      }) {
-     return showDialog(
+    required List buildList,
+    required int activeListPosition,
+  }) {
+    return showDialog(
       context: context,
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) => AlertDialog(
             title: Text(title),
+            actions: [
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    navPop(context);
+                  },
+                  style: ElevatedButton.styleFrom(
+                      fixedSize: const Size(100, 40),
+                      shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(20)))),
+                  child: const Text("Done"),
+                ),
+              )
+            ],
             content: SizedBox(
               height: 400,
               width: MediaQuery.of(context).size.width / 1.2,
@@ -269,10 +291,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 itemBuilder: (context, index) {
                   bool isActive = false;
                   String text = '';
-                  for (Map map in activeList){
-                    if (map["Rat"] == buildList[index]){
-                      isActive = true;
-                      text = map["Position"];
+                  for (Map map in chosenRats) {
+                    if (map["Rat"] != null) {
+                      if (map["Rat"].name == buildList[index].name) {
+                        isActive = true;
+                        text = map["Position"];
+                      }
                     }
                   }
                   return Padding(
@@ -282,39 +306,41 @@ class _MyHomePageState extends State<MyHomePage> {
                           border: Border.all(),
                           borderRadius: BorderRadius.circular(10)),
                       child: ListTile(
-                        title: Center(child: Text("${buildList[index].name}:  ${buildList[index].geneList()}")),
-                        trailing: SizedBox(
-                          
-                          height: 10,
-                          width: 50,
-                          child: isActive
-                              ? Row(
-                                children: [
-                                  const Icon(
-                                      Icons.check,
-                                      color: Colors.green,
-                                    ),
-                                    Text(
-                                      text,
-                                      style: const TextStyle(
-                                        fontSize: 10
+                          title: Center(
+                              child: Text(
+                                  "${buildList[index].name}:  ${buildList[index].geneList()}")),
+                          trailing: SizedBox(
+                            height: 10,
+                            width: 50,
+                            child: isActive
+                                ? Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.check,
+                                        color: Colors.green,
                                       ),
-                                    )
-                                ],
-                              )
-                              : Container(),
-                        ),
-                        onTap: (){
-                          for (Map map in activeList){
-                            if (map["Rat"] == buildList[index]){
-                              return;
+                                      Text(
+                                        text,
+                                        style: const TextStyle(fontSize: 10),
+                                      )
+                                    ],
+                                  )
+                                : Container(),
+                          ),
+                          onTap: () {
+                            for (Map map in chosenRats) {
+                              if (map["Rat"] == buildList[index]) {
+                                return;
+                              }
                             }
-                          }
-                          activeList[activeListPosition]["Rat"] = buildList[index];
-                          activeList[activeListPosition]["Position"] = (activeListPosition == 0) ? "Rat 1" : "Rat 2";
-                          setState(() {});
-                        }
-                      ),
+                            changeRatName(
+                                buildList[index].name, activeListPosition);
+                            chosenRats[activeListPosition]["Rat"] =
+                                buildList[index];
+                            chosenRats[activeListPosition]["Position"] =
+                                (activeListPosition == 0) ? "Rat 1" : "Rat 2";
+                            setState(() {});
+                          }),
                     ),
                   );
                 },
@@ -324,6 +350,13 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       },
     );
+  }
+
+  void changeRatName(name, int activeListPosition) {
+    (activeListPosition == 0)
+        ? geneCalChosenRat1Name = name
+        : geneCalChosenRat2Name = name;
+    setState(() {});
   }
 }
 
