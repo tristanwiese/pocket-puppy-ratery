@@ -29,6 +29,8 @@ class _RatInfoState extends State<RatInfo> {
   // Age to be displayed, dynamically calculated by ageCalculator
   String age = '';
 
+  List<String> ageView = ["Years", "Months", "Weeks", "Days", "Default"];
+  String? _dropDownValue;
 
   @override
   Widget build(BuildContext context) {
@@ -57,8 +59,11 @@ class _RatInfoState extends State<RatInfo> {
           );
         }
         final info = snapshot.data!.data();
-        DateTime birthdate = DateTime(info!["birthday"][0], info["birthday"][1], info["birthday"][2]);
-        age = defaultAgeCalculator(birthdate);
+        DateTime birthdate = DateTime(
+            info!["birthday"][0], info["birthday"][1], info["birthday"][2]);
+        if (_dropDownValue == null) {
+          age = defaultAgeCalculator(birthdate);
+        }
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -77,17 +82,25 @@ class _RatInfoState extends State<RatInfo> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Name: ${info["name"] ?? "name" }",
+                      "Name: ${info["name"] ?? "name"}",
                       style: const TextStyle(fontSize: 20),
                     ),
                     const SizedBox(height: 10),
                     Text("Registered Name: ${info["registeredName"]}"),
                     const SizedBox(height: 10),
-                    Text("Color: ${stringreplace(string: info["colours"].toString(), searchElement: ["[", "]"], replacementElement: "")}"),
+                    Text(
+                        "Color: ${stringreplace(string: info["colours"].toString(), searchElement: [
+                              "[",
+                              "]"
+                            ], replacementElement: "")}"),
                     const SizedBox(height: 10),
                     Text("Coat: ${info["coat"]}"),
                     const SizedBox(height: 10),
-                    Text("Markings: ${stringreplace(string: info["markings"].toString(), searchElement: ["[", "]"], replacementElement: "")}"),
+                    Text(
+                        "Markings: ${stringreplace(string: info["markings"].toString(), searchElement: [
+                              "[",
+                              "]"
+                            ], replacementElement: "")}"),
                     const SizedBox(height: 10),
                     Text("Ears: ${info["ears"]}"),
                     const SizedBox(height: 10),
@@ -99,34 +112,80 @@ class _RatInfoState extends State<RatInfo> {
                     Text("Mother: ${info["mother"]}"),
                     const SizedBox(height: 10),
                     Text("Father: ${info["father"]}"),
-                    const SizedBox(
-                      height: 10
-                    ),
-                    Text(age),
                     const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: () {
-                        navPush(context, AddRat(
-                          coat: info["coat"],
-                          color: info["colours"],
-                          ears: info["ears"],
-                          father: info["father"],
-                          mother: info["mother"],
-                          name: info["name"],
-                          regName: info["registeredName"],
-                          markings: info["markings"],
-                          gender: info["gender"],
-                          birthday: DateTime(info["birthday"][0],info["birthday"][1],info["birthday"][2]),
-                          id: widget.info.id,
-                        ));
-                      },
-                      style: ElevatedButton.styleFrom(
-                        fixedSize: const Size(80, 40),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15)
+                    Text("Age: $age"),
+                    const SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            navPush(
+                                context,
+                                AddRat(
+                                  coat: info["coat"],
+                                  color: info["colours"],
+                                  ears: info["ears"],
+                                  father: info["father"],
+                                  mother: info["mother"],
+                                  name: info["name"],
+                                  regName: info["registeredName"],
+                                  markings: info["markings"],
+                                  gender: info["gender"],
+                                  birthday: DateTime(info["birthday"][0],
+                                      info["birthday"][1], info["birthday"][2]),
+                                  id: widget.info.id,
+                                ));
+                          },
+                          style: ElevatedButton.styleFrom(
+                              fixedSize: const Size(80, 40),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(15))),
+                          child: const Text("Edit"),
+                        ),
+                        const SizedBox(width: 10),
+                        Container(
+                          height: 40,
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            border: Border.all(),
+                            borderRadius: BorderRadius.circular(15)
+                          ),
+                          child: DropdownButtonHideUnderline(
+                              child: DropdownButton<String>(
+                            hint: const Text("View Age"),
+                            items: ageView
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                  value: value, child: Text(value));
+                            }).toList(),
+                            value: _dropDownValue,
+                            onChanged: (value) {
+                              log(value!);
+                              _dropDownValue = value;
+                              switch (value) {
+                                case "Days":
+                                  age = "${ageCalculatorDay(birthdate)} days";
+                                  break;
+                                case "Weeks":
+                                  age = "${ageCalculatorWeek(birthdate)} weeks";
+                                  break;
+                                case "Months":
+                                  age = "${ageCalculatorMoth(birthdate)} month";
+                                  break;
+                                case "Years":
+                                  age = "${ageCalculatorYear(birthdate)} years";
+                                  break;
+                                case "Default":
+                                  age = "${defaultAgeCalculator(birthdate)}";
+                              }
+                              setState(() {
+                                log(age);
+                              });
+                            },
+                          )),
                         )
-                      ),
-                      child: const Text("Edit"),
+                      ],
                     ),
                   ],
                 ),

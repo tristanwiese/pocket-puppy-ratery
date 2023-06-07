@@ -18,12 +18,12 @@ defaultAgeCalculator(DateTime birthdate){
   }
   if (ageCalculatorYear(birthdate) == 0) {
     if (ageCalculatorMoth(birthdate) == 0) {
-      return("${ageCalculatorDay(birthdate)} days.");
+      return("${ageCalculatorDay(birthdate)} days");
     } else {
       if (ageCalculatorDay(birthdate) == 0){
         return("${ageCalculatorMoth(birthdate)} months.");
       } else{
-        return("${ageCalculatorMoth(birthdate)} months, ${ageCalculatorDay(birthdate)} days.");
+        return("${ageCalculatorMoth(birthdate)} months, ${ageCalculatorDay(birthdate)} days");
       }
     }
   } else {

@@ -369,6 +369,7 @@ List<bool> selectedGender = <bool>[false, false];
   }
 
   Widget CoatSelect() {
+    coatsList.sort();
     return Container(
       decoration: BoxDecoration(
           border: Border.all(color: secondaryThemeColor, width: 2),
@@ -401,6 +402,7 @@ List<bool> selectedGender = <bool>[false, false];
   }
 
   Widget EarSelect() {
+    earsList.sort();
     return Container(
       decoration: BoxDecoration(
           border: Border.all(color: secondaryThemeColor, width: 2),
@@ -497,6 +499,7 @@ List<bool> selectedGender = <bool>[false, false];
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: secondaryThemeColor))),
       onPressed: () {
+        buildList.sort();
         showList(
           title: title,
           buildList: buildList,
