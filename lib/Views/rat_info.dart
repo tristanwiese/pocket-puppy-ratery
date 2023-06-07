@@ -26,6 +26,10 @@ class _RatInfoState extends State<RatInfo> {
 
   final dynamic info;
 
+  // Age to be displayed, dynamically calculated by ageCalculator
+  String age = '';
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(appBar: myAppBar(), body: myBody());
@@ -53,6 +57,8 @@ class _RatInfoState extends State<RatInfo> {
           );
         }
         final info = snapshot.data!.data();
+        DateTime birthdate = DateTime(info!["birthday"][0], info["birthday"][1], info["birthday"][2]);
+        age = defaultAgeCalculator(birthdate);
         return Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -96,7 +102,7 @@ class _RatInfoState extends State<RatInfo> {
                     const SizedBox(
                       height: 10
                     ),
-                    Text("Age: ${ageCalculator(info["birthday"][0], info["birthday"][1])} months"),
+                    Text(age),
                     const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: () {

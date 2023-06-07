@@ -148,7 +148,7 @@ List<bool> selectedGender = <bool>[false, false];
                       MyInputText(
                           controller: registeredNameController,
                           hintText: 'Registered Name',
-                          validatorMessage: 'Regestered Name Required'),
+                          validatorMessage: 'Registered Name Required'),
                       MyInputText(
                           controller: momController,
                           hintText: 'Parent: Mother',

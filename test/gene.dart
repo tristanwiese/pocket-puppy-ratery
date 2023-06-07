@@ -1,6 +1,4 @@
-// ignore_for_file: avoid_print
-
-import 'dart:ffi';
+// ignore_for_file: avoid_print, constant_identifier_names
 
 import 'package:age_calculator/age_calculator.dart';
 
@@ -43,34 +41,74 @@ void main() {
   final rat3 =
       RatGenes(genes: Gene(alleleA: "B", alleleB: "B"), name: "Charlie");
 
-  print(ageCalculator(2023, 4, 24, TimeTypes.Day));
+  DateTime birthdate = DateTime(2023, 6, 8);
+
+  defaultAgeCalculator(birthdate);
+  
 }
 
-int ageCalculator(int year, int month, int day, TimeTypes returnType) {
+defaultAgeCalculator(DateTime birthdate){
+  if (ageCalculatorYear(birthdate) < 0){
+    print("Date incompatable");
+    return;
+  }
+  if (ageCalculatorYear(birthdate) == 0) {
+    if (ageCalculatorMoth(birthdate) == 0) {
+      print("${ageCalculatorDay(birthdate)} days.");
+    } else {
+      if (ageCalculatorDay(birthdate) == 0){
+        print("${ageCalculatorMoth(birthdate)} months.");
+      } else{
+        print("${ageCalculatorMoth(birthdate)} months, ${ageCalculatorDay(birthdate)} days.");
+      }
+    }
+  } else {
+    if (AgeCalculator.age(birthdate).months == 0){
+      print("${ageCalculatorYear(birthdate)} years");
+    } else{
+      print("${ageCalculatorYear(birthdate)} years, ${AgeCalculator.age(birthdate).months} months");
+    }
+  }
+}
 
-  DateTime birthdate = DateTime(year, month, day);
+int ageCalculatorDay(DateTime birthdate) {
   int yearsOld = AgeCalculator.age(birthdate).years;
   int monthsOld = AgeCalculator.age(birthdate).months;
   int daysOld = AgeCalculator.age(birthdate).days;
 
-  print(daysOld);
- 
-  switch(returnType){
-    case TimeTypes.Day: return daysOld;
-    case TimeTypes.Month: if (yearsOld > 0){
-      return (yearsOld * 12) + monthsOld;
-    } else{
-      return monthsOld;
-    }
-    case TimeTypes.Week: 
-    double months = monthsOld * 4.345;
-    double years = yearsOld * 52.1429;
-    double days = daysOld / 7;
-    double weeksOld = days + months + years;
-    print(weeksOld);
-    return weeksOld.floor();
-    case TimeTypes.Year: return yearsOld;
+  return daysOld;
+}
+
+int ageCalculatorWeek(DateTime birthdate) {
+  int yearsOld = AgeCalculator.age(birthdate).years;
+  int monthsOld = AgeCalculator.age(birthdate).months;
+  int daysOld = AgeCalculator.age(birthdate).days;
+
+  double months = monthsOld * 4.345;
+  double years = yearsOld * 52.1429;
+  double days = daysOld / 7;
+  double weeksOld = days + months + years;
+  print(weeksOld);
+  return weeksOld.floor();
+}
+
+int ageCalculatorMoth(DateTime birthdate) {
+  int yearsOld = AgeCalculator.age(birthdate).years;
+  int monthsOld = AgeCalculator.age(birthdate).months;
+  int daysOld = AgeCalculator.age(birthdate).days;
+
+  if (yearsOld > 0) {
+    return (yearsOld * 12) + monthsOld;
   }
+  return monthsOld;
+}
+
+int ageCalculatorYear(DateTime birthdate) {
+  int yearsOld = AgeCalculator.age(birthdate).years;
+  int monthsOld = AgeCalculator.age(birthdate).months;
+  int daysOld = AgeCalculator.age(birthdate).days;
+
+  return yearsOld;
 }
 
 List<String> matchRats({required RatGenes rat1, required RatGenes rat2}) {
