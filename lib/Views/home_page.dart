@@ -19,7 +19,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int bottomVanIndex = 1;
+  int bottomVanIndex = 0;
   List<String>? result;
   Map<String, int>? resultPercentage;
   String geneCalChosenRat1Name = "Rat 1";
