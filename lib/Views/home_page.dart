@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
+import 'package:pocket_puppy_rattery/Models/genes.dart';
 import 'package:pocket_puppy_rattery/Models/rat.dart';
 import 'package:pocket_puppy_rattery/Views/add_rat.dart';
 import 'package:pocket_puppy_rattery/Views/rat_info.dart';
@@ -29,7 +30,8 @@ class _MyHomePageState extends State<MyHomePage> {
           stream: FirebaseFirestore.instance.collection('rats').snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              final List<QueryDocumentSnapshot<Object?>> rats = snapshot.data!.docs;
+              final List<QueryDocumentSnapshot<Object?>> rats =
+                  snapshot.data!.docs;
               return Center(child: myBody(rats));
             }
             return const LoadScreen();
@@ -57,8 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             child: InkWell(
                               onTap: () {
                                 QueryDocumentSnapshot rat = rats[i];
-                                navPush(
-                                    context, RatInfo(info: rat));
+                                navPush(context, RatInfo(info: rat));
                               },
                               child: ListTile(
                                 trailing: myIconButton(rat: rats[i]),
@@ -75,10 +76,86 @@ class _MyHomePageState extends State<MyHomePage> {
                         }),
                   ),
                 )
-              : geneCal());
+              : geneCal(rats));
 
-  Widget geneCal() {
-    return Center(child: Text("Hello"));
+  Widget geneCal(List<QueryDocumentSnapshot<Object?>> rats) {
+    String rat1Name = "Rat 1";
+    String rat2Name = "Rat 2";
+
+    //test rat list with implementing genes
+    List ratsWithGenes =[
+      RatGenes(genes: Gene(
+        alleleA: "L", 
+        alleleB: "l"), 
+        name: "Alice"),
+      RatGenes(
+        genes: Gene(
+          alleleA: "L", 
+          alleleB: "L"), 
+        name: "Charlie"),
+      RatGenes(
+          genes: Gene(
+            alleleA: "l", 
+            alleleB: "l"), 
+          name: "Bob"),
+      RatGenes(
+        genes: Gene(
+          alleleA: "L",
+          alleleB: "-"
+        ), 
+        name: "Andrew"),
+    ];
+
+    List<Map<String, dynamic>> chosenRats = [{"Rat":null, "Position":""}, {"Rat":null, "Position":""}];
+
+    String? result;
+
+    log("$chosenRats");
+
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Text("Select 2 Rats to see what the possible outcomes of their babies", 
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontWeight: FontWeight.bold
+          ),
+          ),
+          const Text("//TEST DATA//", style: TextStyle(fontStyle: FontStyle.italic),),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () {
+              availableRatList(
+                title: "Choose Rat 1",
+                activeList: chosenRats,
+                buildList: ratsWithGenes,
+                activeListPosition: 0
+              );
+            },
+            child: Text(rat1Name),
+          ),
+          const SizedBox(height: 10),
+          ElevatedButton(
+            onPressed: () {
+              availableRatList(
+                title: "Choose Rat 2",
+                activeList: chosenRats,
+                buildList: ratsWithGenes,
+                activeListPosition: 1
+              );
+            },
+            child: Text(rat2Name),
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(onPressed: () {
+            log("${chosenRats[0]["Rat"].name} ${chosenRats[1]["Rat"].name}");
+          }, child: const Text("Match")),
+          const SizedBox(height: 20),
+          Text("Outcome: ${result??""}")
+        ],
+      ),
+    );
   }
 
   Widget myBottomNavBar() {
@@ -151,7 +228,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   FloatingActionButton myFloatingActionButton() {
     return FloatingActionButton(
-      onPressed: () => navPush(context, AddRat()),
+      onPressed: () => navPush(context, const AddRat()),
       tooltip: "Add Rat",
       backgroundColor: secondaryThemeColor,
       child: const Icon(Icons.add),
@@ -170,6 +247,83 @@ class _MyHomePageState extends State<MyHomePage> {
     } else {
       return MediaQuery.of(context).size.width / 2;
     }
+  }
+  
+  availableRatList({
+    required String title,
+      required List buildList,
+      required List activeList,
+      required int activeListPosition,
+      }) {
+     return showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            title: Text(title),
+            content: SizedBox(
+              height: 400,
+              width: MediaQuery.of(context).size.width / 1.2,
+              child: ListView.builder(
+                itemCount: buildList.length,
+                itemBuilder: (context, index) {
+                  bool isActive = false;
+                  String text = '';
+                  for (Map map in activeList){
+                    if (map["Rat"] == buildList[index]){
+                      isActive = true;
+                      text = map["Position"];
+                    }
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.all(7),
+                    child: Container(
+                      decoration: BoxDecoration(
+                          border: Border.all(),
+                          borderRadius: BorderRadius.circular(10)),
+                      child: ListTile(
+                        title: Center(child: Text("${buildList[index].name}:  ${buildList[index].geneList()}")),
+                        trailing: SizedBox(
+                          
+                          height: 10,
+                          width: 50,
+                          child: isActive
+                              ? Row(
+                                children: [
+                                  const Icon(
+                                      Icons.check,
+                                      color: Colors.green,
+                                    ),
+                                    Text(
+                                      text,
+                                      style: const TextStyle(
+                                        fontSize: 10
+                                      ),
+                                    )
+                                ],
+                              )
+                              : Container(),
+                        ),
+                        onTap: (){
+                          for (Map map in activeList){
+                            if (map["Rat"] == buildList[index]){
+                              return;
+                            }
+                          }
+                          activeList[activeListPosition]["Rat"] = buildList[index];
+                          activeList[activeListPosition]["Position"] = (activeListPosition == 0) ? "Rat 1" : "Rat 2";
+                          setState(() {});
+                        }
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 }
 

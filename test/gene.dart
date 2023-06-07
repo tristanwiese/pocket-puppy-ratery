@@ -35,15 +35,12 @@ enum TimeTypes {
 }
 
 void main() {
-  final rat1 = RatGenes(genes: Gene(alleleA: "L", alleleB: "-"), name: "Alice");
-  final rat2 = RatGenes(genes: Gene(alleleA: "l", alleleB: "l"), name: "Bob");
+  final Alice = RatGenes(genes: Gene(alleleA: "L", alleleB: "l"), name: "Alice");
+  final Bob = RatGenes(genes: Gene(alleleA: "L", alleleB: "L"), name: "Bob");
+  final Andrew = RatGenes(genes: Gene(alleleA: "L", alleleB: "-"), name: "Andrew");
+  final Charlie = RatGenes(genes: Gene(alleleA: "l", alleleB: "l"), name: "Charlie");
 
-  final rat3 =
-      RatGenes(genes: Gene(alleleA: "B", alleleB: "B"), name: "Charlie");
-
-  DateTime birthdate = DateTime(2023, 6, 8);
-
-  defaultAgeCalculator(birthdate);
+  print(matchRats(rat1: Alice, rat2: Bob));
   
 }
 

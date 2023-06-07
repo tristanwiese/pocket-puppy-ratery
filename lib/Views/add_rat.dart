@@ -546,12 +546,10 @@ List<bool> selectedGender = <bool>[false, false];
                         ),
                         onTap: () {
                           if (activeList.contains(buildList[index])) {
-                            log("removed ${buildList[index]}");
                             activeList.remove(buildList[index]);
                             setState(() {});
                           } else {
                             setState(() {
-                              log("added ${buildList[index]}");
                               activeList.add(buildList[index]);
                             });
                           }

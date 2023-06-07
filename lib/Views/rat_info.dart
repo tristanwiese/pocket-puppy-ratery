@@ -77,7 +77,7 @@ class _RatInfoState extends State<RatInfo> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Name: ${info!["name"] ?? "name" }",
+                      "Name: ${info["name"] ?? "name" }",
                       style: const TextStyle(fontSize: 20),
                     ),
                     const SizedBox(height: 10),
