@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print, constant_identifier_names
 
+// ignore: unused_import
 import 'dart:developer';
 
 import 'package:age_calculator/age_calculator.dart';
@@ -10,10 +11,6 @@ class Gene {
   final String alleleA;
   final String alleleB;
 }
-
-enum Dominant { B }
-
-enum Recesive { b }
 
 class RatGenes {
   RatGenes({
@@ -88,8 +85,6 @@ defaultAgeCalculator(DateTime birthdate){
 }
 
 int ageCalculatorDay(DateTime birthdate) {
-  int yearsOld = AgeCalculator.age(birthdate).years;
-  int monthsOld = AgeCalculator.age(birthdate).months;
   int daysOld = AgeCalculator.age(birthdate).days;
 
   return daysOld;
@@ -111,7 +106,6 @@ int ageCalculatorWeek(DateTime birthdate) {
 int ageCalculatorMoth(DateTime birthdate) {
   int yearsOld = AgeCalculator.age(birthdate).years;
   int monthsOld = AgeCalculator.age(birthdate).months;
-  int daysOld = AgeCalculator.age(birthdate).days;
 
   if (yearsOld > 0) {
     return (yearsOld * 12) + monthsOld;
@@ -121,8 +115,6 @@ int ageCalculatorMoth(DateTime birthdate) {
 
 int ageCalculatorYear(DateTime birthdate) {
   int yearsOld = AgeCalculator.age(birthdate).years;
-  int monthsOld = AgeCalculator.age(birthdate).months;
-  int daysOld = AgeCalculator.age(birthdate).days;
 
   return yearsOld;
 }
@@ -149,8 +141,7 @@ getPercentage({required List<String> pairResults}) {
   var seen = <String>{};
   Map<String, int> percentages = {};
   int counter = 0;
-  List<String> uniquelist =
-      pairResults.where((country) => seen.add(country)).toList();
+  pairResults.where((country) => seen.add(country)).toList();
 
   for (String uniqueGene in seen) {
     counter = 0;

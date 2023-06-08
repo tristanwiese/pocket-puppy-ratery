@@ -72,7 +72,7 @@ class _AddRatState extends State<AddRat> {
   DateTime _selectedDate = DateTime.now();
 
   List<bool> selectedMarkings = <bool>[true, false];
-List<bool> selectedGender = <bool>[false, false];
+  List<bool> selectedGender = <bool>[false, false];
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -213,17 +213,17 @@ List<bool> selectedGender = <bool>[false, false];
               navPop(context);
               return;
             }
-            if (activeColorsList.isEmpty){
+            if (activeColorsList.isEmpty) {
               showError("Colors");
               navPop(context);
               return;
             }
-            if (earController == null){
+            if (earController == null) {
               showError("Ears");
               navPop(context);
               return;
             }
-            if (coatController == null){
+            if (coatController == null) {
               showError("Coat");
               navPop(context);
               return;
@@ -523,6 +523,14 @@ List<bool> selectedGender = <bool>[false, false];
         return StatefulBuilder(
           builder: (context, setState) => AlertDialog(
             title: Text(title),
+            actions: [
+              Center(
+                child: ElevatedButton(
+                    style: myDoneButtonStyle,
+                    onPressed: () => navPop(context),
+                    child: const Text("Done")),
+              )
+            ],
             content: SizedBox(
               height: 400,
               width: MediaQuery.of(context).size.width / 1.2,

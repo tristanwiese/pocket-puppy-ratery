@@ -4,6 +4,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_launcher_icons/main.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Models/genes.dart';
@@ -19,6 +20,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final GlobalKey<ScaffoldState> _key = GlobalKey();
+
+  late List<QueryDocumentSnapshot<Object?>> rats;
+
   int bottomVanIndex = 0;
   List<String>? result;
   Map<String, int>? resultPercentage;
@@ -29,6 +34,12 @@ class _MyHomePageState extends State<MyHomePage> {
     {"Rat": null, "Position": ""}
   ];
 
+  List<String> filters = ["Gender"];
+  List<QueryDocumentSnapshot> filteredRats = [];
+  String activeFilters = "";
+
+  mySetState() => setState(() {});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -38,50 +49,115 @@ class _MyHomePageState extends State<MyHomePage> {
           stream: FirebaseFirestore.instance.collection('rats').snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              final List<QueryDocumentSnapshot<Object?>> rats =
-                  snapshot.data!.docs;
-              return Center(child: myBody(rats));
+              rats = snapshot.data!.docs;
+              return myBody(rats);
             }
+
             return const LoadScreen();
           }),
     );
   }
 
   myBody(List<QueryDocumentSnapshot<Object?>> rats) => Scaffold(
+      key: _key,
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterFloat,
       appBar: myAppBar(context),
-      floatingActionButton: myFloatingActionButton(),
+      endDrawer: SafeArea(
+        child: myDrawer(),
+      ),
+      floatingActionButton: null, //myFloatingActionButton(),
       bottomNavigationBar: myBottomNavBar(),
       body: rats.isEmpty
           ? const NoRatScreen()
           : bottomVanIndex == 0
               ? Center(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: getSize()),
-                    child: ListView.builder(
-                        itemCount: rats.length,
-                        itemBuilder: (BuildContext context, i) {
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: InkWell(
-                              onTap: () {
-                                QueryDocumentSnapshot rat = rats[i];
-                                navPush(context, RatInfo(info: rat));
-                              },
-                              child: ListTile(
-                                trailing: myIconButton(rat: rats[i]),
-                                title: Text(rats[i]['name']),
-                                shape: BeveledRectangleBorder(
-                                    side: BorderSide(
-                                        width: 1, color: secondaryThemeColor),
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(15))),
-                                contentPadding: const EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: getSize()),
+                          child: ListView.builder(
+                              itemCount: activeFilters.isEmpty ? rats.length : filteredRats.length,
+                              itemBuilder: (BuildContext context, i) {
+                                final buildItem = activeFilters.isEmpty ? rats : filteredRats;
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: InkWell(
+                                    onTap: () {
+                                      QueryDocumentSnapshot rat = activeFilters.isEmpty ? rats[i] : filteredRats[i];
+                                      navPush(context, RatInfo(info: rat));
+                                    },
+                                    child: ListTile(
+                                      trailing: myIconButton(rat: buildItem[i]),
+                                      title: Text(buildItem[i]['name']),
+                                      shape: BeveledRectangleBorder(
+                                          side: BorderSide(
+                                              width: 1,
+                                              color: secondaryThemeColor),
+                                          borderRadius: const BorderRadius.all(
+                                              Radius.circular(15))),
+                                      contentPadding: const EdgeInsets.all(10),
+                                    ),
+                                  ),
+                                );
+                              }),
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Container(
+                            height: 35,
+                            margin: const EdgeInsets.only(bottom: 10),
+                            child: Directionality(
+                              textDirection: TextDirection.rtl,
+                              child: ElevatedButton.icon(
+                                label: const Text("Add Rat",
+                                    style: TextStyle(color: Colors.black87)),
+                                icon: Icon(
+                                  Icons.add,
+                                  color: secondaryThemeColor,
+                                ),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.white,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10),
+                                    side:
+                                        BorderSide(color: secondaryThemeColor),
+                                  ),
+                                ),
+                                onPressed: () =>
+                                    navPush(context, const AddRat()),
                               ),
                             ),
-                          );
-                        }),
+                          ),
+                          Container(
+                              height: 35,
+                              margin: const EdgeInsets.only(bottom: 10),
+                              child: Directionality(
+                                textDirection: TextDirection.rtl,
+                                child: ElevatedButton.icon(
+                                    label: const Text("Filter",
+                                        style:
+                                            TextStyle(color: Colors.black87)),
+                                    icon: Icon(Icons.filter_list,
+                                        color: secondaryThemeColor),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                        side: BorderSide(
+                                            color: secondaryThemeColor),
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      _key.currentState!.openEndDrawer();
+                                    }),
+                              )),
+                        ],
+                      )
+                    ],
                   ),
                 )
               : geneCal(rats));
@@ -246,6 +322,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   AppBar myAppBar(BuildContext context) {
     return AppBar(
+      actions: <Widget>[Container()],
       title: const Center(child: Text('Your Rats')),
     );
   }
@@ -275,10 +352,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   onPressed: () {
                     navPop(context);
                   },
-                  style: ElevatedButton.styleFrom(
-                      fixedSize: const Size(100, 40),
-                      shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(20)))),
+                  style: myDoneButtonStyle,
                   child: const Text("Done"),
                 ),
               )
@@ -357,6 +431,71 @@ class _MyHomePageState extends State<MyHomePage> {
         ? geneCalChosenRat1Name = name
         : geneCalChosenRat2Name = name;
     setState(() {});
+  }
+
+  filterRats({required String filter}) {
+
+    filteredRats = rats.where((rat) => rat["gender"] == filter).toList();
+
+  }
+
+  myDrawer() {
+
+    return Drawer(
+      width: 200,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            const Text("Gender"),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    if (activeFilters == "Female") {
+                      activeFilters = "";
+                      setState(() {
+                        activeFilters = "";
+                      });
+                      return;
+                    }
+                    activeFilters = "Female";
+                    filterRats(filter: "Female");
+                    setState(() {});
+                  },
+                  style: (activeFilters != "Female") ? MyElevatedButtonStyle.buttonStyle : MyElevatedButtonStyle.activeButtonStyle,
+                  child: const Text(
+                    "Female",
+                    style: MyElevatedButtonStyle.textStyle,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    if (activeFilters == "Male") {
+                      setState(() {
+                        activeFilters = "";
+                      });
+                      return;
+                    }
+                    activeFilters = "Male";
+                    filterRats(filter: "Male");
+                    setState(() {});
+                  },
+                  style: (activeFilters != "Male") ? MyElevatedButtonStyle.buttonStyle : MyElevatedButtonStyle.activeButtonStyle,
+                  child: const Text(
+                    "Male",
+                    style: MyElevatedButtonStyle.textStyle,
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
 
