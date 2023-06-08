@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print, constant_identifier_names
 
+import 'dart:developer';
+
 import 'package:age_calculator/age_calculator.dart';
 
 class Gene {
@@ -34,14 +36,31 @@ enum TimeTypes {
   Year,
 }
 
-void main() {
-  final Alice = RatGenes(genes: Gene(alleleA: "L", alleleB: "l"), name: "Alice");
-  final Bob = RatGenes(genes: Gene(alleleA: "L", alleleB: "L"), name: "Bob");
-  final Andrew = RatGenes(genes: Gene(alleleA: "L", alleleB: "-"), name: "Andrew");
-  final Charlie = RatGenes(genes: Gene(alleleA: "l", alleleB: "l"), name: "Charlie");
+enum Campies{
+  Tristan,
+  Carla,
+  Andrika,
+  VanZyl,
+  Tinus,
+  Kyle,
+  Yonecia,
+}
 
-  print(matchRats(rat1: Alice, rat2: Bob));
+void main() {
+
+  DateDuration birthdate = AgeCalculator.age(DateTime(2016,06,16));
   
+  int ageInMonths = birthdate.months;
+  int ageInYears = birthdate.years;
+  int ageInDays = birthdate.days;
+
+
+  double monthsToDays = ageInMonths*30.4167 + (ageInMonths/2);
+  double yearsToDays = ageInYears*365.2425;
+  int ageInDaysOnly = (monthsToDays.floor() + yearsToDays.floor() + ageInDays).floor();
+
+  print(ageInDaysOnly);
+
 }
 
 defaultAgeCalculator(DateTime birthdate){

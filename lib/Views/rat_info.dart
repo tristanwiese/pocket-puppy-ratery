@@ -89,7 +89,7 @@ class _RatInfoState extends State<RatInfo> {
                     Text("Registered Name: ${info["registeredName"]}"),
                     const SizedBox(height: 10),
                     Text(
-                        "Color: ${stringreplace(string: info["colours"].toString(), searchElement: [
+                        "Color: ${stringReplace(string: info["colours"].toString(), searchElement: [
                               "[",
                               "]"
                             ], replacementElement: "")}"),
@@ -97,7 +97,7 @@ class _RatInfoState extends State<RatInfo> {
                     Text("Coat: ${info["coat"]}"),
                     const SizedBox(height: 10),
                     Text(
-                        "Markings: ${stringreplace(string: info["markings"].toString(), searchElement: [
+                        "Markings: ${stringReplace(string: info["markings"].toString(), searchElement: [
                               "[",
                               "]"
                             ], replacementElement: "")}",
@@ -116,6 +116,15 @@ class _RatInfoState extends State<RatInfo> {
                     Text("Father: ${info["father"]}"),
                     const SizedBox(height: 10),
                     Text("Age: $age"),
+                    (_dropDownValue == "Days") ? 
+                    const Text("This number in a rough estimate and does not consider leap years or other factors that could effect the result!",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                      fontSize: 10,
+                    ),
+                    ) :
+                    Container(),
                     const SizedBox(height: 10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -173,7 +182,7 @@ class _RatInfoState extends State<RatInfo> {
                                   age = "${ageCalculatorWeek(birthdate)} weeks";
                                   break;
                                 case "Months":
-                                  age = "${ageCalculatorMoth(birthdate)} months";
+                                  age = "${ageCalculatorMonth(birthdate)} months";
                                   break;
                                 case "Years":
                                   age = "${ageCalculatorYear(birthdate)} years";

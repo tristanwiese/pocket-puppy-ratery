@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 class Gene {
   Gene({required this.alleleA, required this.alleleB});
 
@@ -25,13 +23,6 @@ class RatGenes {
   }
 }
 
-enum TimeTypes {
-  Day,
-  Week,
-  Month,
-  Year,
-}
-
 List<String> matchRats({required RatGenes rat1, required RatGenes rat2}) {
   List<String> pairs = [];
 
@@ -53,8 +44,7 @@ getPercentage({required List<String> pairResults}) {
   var seen = <String>{};
   Map<String, int> percentages = {};
   int counter = 0;
-  List<String> uniquelist =
-      pairResults.where((country) => seen.add(country)).toList();
+  pairResults.where((country) => seen.add(country)).toList();
 
   for (String uniqueGene in seen) {
     counter = 0;
