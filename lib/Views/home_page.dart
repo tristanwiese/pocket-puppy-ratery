@@ -2,6 +2,7 @@
 
 import 'dart:developer';
 
+import 'package:age_calculator/age_calculator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_launcher_icons/main.dart';
@@ -78,17 +79,28 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: ConstrainedBox(
                           constraints: BoxConstraints(maxWidth: getSize()),
                           child: ListView.builder(
-                              itemCount: activeFilters.isEmpty ? rats.length : filteredRats.length,
+                              itemCount: activeFilters.isEmpty
+                                  ? rats.length
+                                  : filteredRats.length,
                               itemBuilder: (BuildContext context, i) {
-                                final buildItem = activeFilters.isEmpty ? rats : filteredRats;
+                                final buildItem =
+                                    activeFilters.isEmpty ? rats : filteredRats;
+                                DateTime birthdate = DateTime(
+                                    buildItem[i]["birthday"][0],
+                                    buildItem[i]["birthday"][1],
+                                    buildItem[i]["birthday"][2]);
                                 return Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: InkWell(
                                     onTap: () {
-                                      QueryDocumentSnapshot rat = activeFilters.isEmpty ? rats[i] : filteredRats[i];
+                                      QueryDocumentSnapshot rat =
+                                          activeFilters.isEmpty
+                                              ? rats[i]
+                                              : filteredRats[i];
                                       navPush(context, RatInfo(info: rat));
                                     },
                                     child: ListTile(
+                                      tileColor: (AgeCalculator.age(birthdate).years >= 3) ? primaryThemeColor : null,
                                       trailing: myIconButton(rat: buildItem[i]),
                                       title: Text(buildItem[i]['name']),
                                       shape: BeveledRectangleBorder(
@@ -434,13 +446,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   filterRats({required String filter}) {
-
     filteredRats = rats.where((rat) => rat["gender"] == filter).toList();
-
   }
 
   myDrawer() {
-
     return Drawer(
       width: 200,
       child: Padding(
@@ -465,7 +474,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     filterRats(filter: "Female");
                     setState(() {});
                   },
-                  style: (activeFilters != "Female") ? MyElevatedButtonStyle.buttonStyle : MyElevatedButtonStyle.activeButtonStyle,
+                  style: (activeFilters != "Female")
+                      ? MyElevatedButtonStyle.buttonStyle
+                      : MyElevatedButtonStyle.activeButtonStyle,
                   child: const Text(
                     "Female",
                     style: MyElevatedButtonStyle.textStyle,
@@ -484,7 +495,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     filterRats(filter: "Male");
                     setState(() {});
                   },
-                  style: (activeFilters != "Male") ? MyElevatedButtonStyle.buttonStyle : MyElevatedButtonStyle.activeButtonStyle,
+                  style: (activeFilters != "Male")
+                      ? MyElevatedButtonStyle.buttonStyle
+                      : MyElevatedButtonStyle.activeButtonStyle,
                   child: const Text(
                     "Male",
                     style: MyElevatedButtonStyle.textStyle,
