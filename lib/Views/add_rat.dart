@@ -526,7 +526,7 @@ class _AddRatState extends State<AddRat> {
             actions: [
               Center(
                 child: ElevatedButton(
-                    style: myDoneButtonStyle,
+                    style: MyElevatedButtonStyle.doneButtonStyle,
                     onPressed: () => navPop(context),
                     child: const Text("Done")),
               )

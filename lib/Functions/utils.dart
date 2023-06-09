@@ -5,10 +5,7 @@ var primaryThemeColor = const Color.fromARGB(255, 120, 224, 199);
 
 var secondaryThemeColor = const Color.fromARGB(255, 181, 144, 185);
 
-final myDoneButtonStyle = ElevatedButton.styleFrom(
-    fixedSize: const Size(100, 40),
-    shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(20))));
+
 
 class MyElevatedButtonStyle {
 
@@ -27,6 +24,10 @@ class MyElevatedButtonStyle {
       side: BorderSide(color: secondaryThemeColor),
     ),
   );
+  static final doneButtonStyle = ElevatedButton.styleFrom(
+    fixedSize: const Size(100, 40),
+    shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(20))));
 
   static const textStyle = TextStyle(color: Colors.black87);
 }

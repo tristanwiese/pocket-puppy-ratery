@@ -1,3 +1,16 @@
-Pocket Puppy Rattery is an app used to keep track of pet rats and add, view and edit their details
+# pocket_puppy_rattery
 
-It is still very early in the development stage and a lot more features are still coming!
+A new Flutter project.
+
+## Getting Started
+
+This project is a starting point for a Flutter application.
+
+A few resources to get you started if this is your first Flutter project:
+
+- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.

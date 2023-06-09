@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>1034726063302-ibk8vprnd34vtj4jigpspip5g058nutm.apps.googleusercontent.com</string>
+	<string>412377351142-svcsa60q54t0649ls9hncchmibkoejp6.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.1034726063302-ibk8vprnd34vtj4jigpspip5g058nutm</string>
+	<string>com.googleusercontent.apps.412377351142-svcsa60q54t0649ls9hncchmibkoejp6</string>
 	<key>API_KEY</key>
-	<string>AIzaSyALIUj5fj9O_b-BEVOH9biDxekVpkmMgTc</string>
+	<string>AIzaSyDj-aRUYJSmWUcdpNaRUMUkPTay-kVuNu0</string>
 	<key>GCM_SENDER_ID</key>
-	<string>1034726063302</string>
+	<string>412377351142</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.example.pocketPuppyRattery</string>
 	<key>PROJECT_ID</key>
-	<string>fir-bff42</string>
+	<string>pocket-puppy-rattery-c3f07</string>
 	<key>STORAGE_BUCKET</key>
-	<string>fir-bff42.appspot.com</string>
+	<string>pocket-puppy-rattery-c3f07.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1034726063302:ios:f5c009412147f755e26bc7</string>
+	<string>1:412377351142:ios:60ad3e539ea34b0eafcc27</string>
 </dict>
 </plist>

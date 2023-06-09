@@ -93,12 +93,12 @@ class _MyHomePageState extends State<MyHomePage> {
       ));
 
   Widget ratPage() {
-    return rats.isEmpty
-        ? const NoRatScreen()
-        : Center(
-            child: Column(
-              children: [
-                Expanded(
+    return Center(
+      child: Column(
+        children: [
+          rats.isEmpty
+              ? const Expanded(child: NoRatScreen())
+              : Expanded(
                   child: ConstrainedBox(
                     constraints: BoxConstraints(maxWidth: getSize()),
                     child: ListView.builder(
@@ -112,9 +112,26 @@ class _MyHomePageState extends State<MyHomePage> {
                               buildItem[i]["birthday"][0],
                               buildItem[i]["birthday"][1],
                               buildItem[i]["birthday"][2]);
+                          Color? colorCode;
+                          switch (buildItem[i]["colorCode"]) {
+                            case "green":
+                              colorCode = Colors.green;
+                            case "blue":
+                              colorCode = Colors.blue;
+                            case "red":
+                              colorCode = Colors.red;
+                          }
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: InkWell(
+                              onLongPress: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    return colorCodePicker(i);
+                                  },
+                                );
+                              },
                               onTap: () {
                                 QueryDocumentSnapshot rat =
                                     activeFilters.isEmpty
@@ -134,7 +151,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                     ? primaryThemeColor
                                     : null,
                                 child: ListTile(
-                                  leading: Icon(Icons.image),
+                                  leading: Icon(
+                                    Icons.square,
+                                    color: colorCode,
+                                  ),
                                   trailing: myIconButton(rat: buildItem[i]),
                                   title: Text(buildItem[i]['name']),
                                   subtitle: Text(buildItem[i]['gender']),
@@ -146,58 +166,158 @@ class _MyHomePageState extends State<MyHomePage> {
                         }),
                   ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Container(
-                      height: 35,
-                      margin: const EdgeInsets.only(bottom: 10),
-                      child: Directionality(
-                        textDirection: TextDirection.rtl,
-                        child: ElevatedButton.icon(
-                          label: const Text("Add Rat",
-                              style: TextStyle(color: Colors.black87)),
-                          icon: Icon(
-                            Icons.add,
-                            color: secondaryThemeColor,
-                          ),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              side: BorderSide(color: secondaryThemeColor),
-                            ),
-                          ),
-                          onPressed: () => navPush(context, const AddRat()),
-                        ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [ 
+              Container(
+                height: 35,
+                margin: const EdgeInsets.only(bottom: 10),
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: ElevatedButton.icon(
+                    label: const Text("Add Rat",
+                        style: TextStyle(color: Colors.black87)),
+                    icon: Icon(
+                      Icons.add,
+                      color: secondaryThemeColor,
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        side: BorderSide(color: secondaryThemeColor),
                       ),
                     ),
-                    Container(
-                        height: 35,
-                        margin: const EdgeInsets.only(bottom: 10),
-                        child: Directionality(
-                          textDirection: TextDirection.rtl,
-                          child: ElevatedButton.icon(
-                              label: const Text("Filter",
-                                  style: TextStyle(color: Colors.black87)),
-                              icon: Icon(Icons.filter_list,
-                                  color: secondaryThemeColor),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  side: BorderSide(color: secondaryThemeColor),
-                                ),
-                              ),
-                              onPressed: () {
-                                _key.currentState!.openEndDrawer();
-                              }),
-                        )),
-                  ],
-                )
-              ],
+                    onPressed: () => navPush(context, const AddRat()),
+                  ),
+                ),
+              ),
+              Container(
+                  height: 35,
+                  margin: const EdgeInsets.only(bottom: 10),
+                  child: Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: ElevatedButton.icon(
+                        label: const Text("Filter",
+                            style: TextStyle(color: Colors.black87)),
+                        icon:
+                            Icon(Icons.filter_list, color: secondaryThemeColor),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: BorderSide(color: secondaryThemeColor),
+                          ),
+                        ),
+                        onPressed: () {
+                          _key.currentState!.openEndDrawer();
+                        }),
+                  )),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  AlertDialog colorCodePicker(int i) {
+    return AlertDialog(
+      title: const Text("Organise"),
+      actions: [
+        Center(
+          child: ElevatedButton(
+              style: MyElevatedButtonStyle.doneButtonStyle,
+              onPressed: () => navPop(context),
+              child: const Text("Done")),
+        )
+      ],
+      content: Column(
+        children: [
+          ListTile(
+            title: const Text("Red"),
+            leading: const Icon(
+              Icons.square,
+              color: Colors.red,
             ),
-          );
+            onTap: () {
+              QueryDocumentSnapshot rat =
+                  activeFilters.isEmpty ? rats[i] : filteredRats[i];
+              FirebaseFirestore.instance
+                  .collection("rats")
+                  .doc(rat.id)
+                  .update({"colorCode": "red"});
+              setState(() {});
+              navPop(context);
+            },
+            shape: RoundedRectangleBorder(
+                side: const BorderSide(),
+                borderRadius: BorderRadius.circular(10)),
+          ),
+          const SizedBox(height: 10),
+          ListTile(
+            title: const Text("Blue"),
+            leading: const Icon(
+              Icons.square,
+              color: Colors.blue,
+            ),
+            onTap: () {
+              QueryDocumentSnapshot rat =
+                  activeFilters.isEmpty ? rats[i] : filteredRats[i];
+              FirebaseFirestore.instance
+                  .collection("rats")
+                  .doc(rat.id)
+                  .update({"colorCode": "blue"});
+              setState(() {});
+              navPop(context);
+            },
+            shape: RoundedRectangleBorder(
+                side: const BorderSide(),
+                borderRadius: BorderRadius.circular(10)),
+          ),
+          const SizedBox(height: 10),
+          ListTile(
+            title: const Text("Green"),
+            leading: const Icon(
+              Icons.square,
+              color: Colors.green,
+            ),
+            onTap: () {
+              QueryDocumentSnapshot rat =
+                  activeFilters.isEmpty ? rats[i] : filteredRats[i];
+              FirebaseFirestore.instance
+                  .collection("rats")
+                  .doc(rat.id)
+                  .update({"colorCode": "green"});
+              setState(() {});
+              navPop(context);
+            },
+            shape: RoundedRectangleBorder(
+                side: const BorderSide(),
+                borderRadius: BorderRadius.circular(10)),
+          ),
+          const SizedBox(height: 10),
+          ListTile(
+            title: const Text("None"),
+            leading: const Icon(
+              Icons.square,
+            ),
+            onTap: () {
+              QueryDocumentSnapshot rat =
+                  activeFilters.isEmpty ? rats[i] : filteredRats[i];
+              FirebaseFirestore.instance
+                  .collection("rats")
+                  .doc(rat.id)
+                  .update({"colorCode": "none"});
+              setState(() {});
+              navPop(context);
+            },
+            shape: RoundedRectangleBorder(
+                side: const BorderSide(),
+                borderRadius: BorderRadius.circular(10)),
+          )
+        ],
+      ),
+    );
   }
 
   Widget geneCal(List<QueryDocumentSnapshot<Object?>> rats) {
@@ -222,59 +342,90 @@ class _MyHomePageState extends State<MyHomePage> {
             style: TextStyle(fontStyle: FontStyle.italic),
           ),
           const SizedBox(height: 10),
-          SizedBox(
-            height: 35,
-            width: 80,
-            child: ElevatedButton(
-              style: MyElevatedButtonStyle.buttonStyle,
-              onPressed: () {
-                availableRatList(
-                    title: "Choose Rat 1",
-                    buildList: ratsWithGenes,
-                    activeListPosition: 0);
-              },
-              child: Text(geneCalChosenRat1Name, style: MyElevatedButtonStyle.textStyle,),
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 10),
+                  height: 40,
+                  child: ElevatedButton(
+                    style: MyElevatedButtonStyle.buttonStyle,
+                    onPressed: () {
+                      availableRatList(
+                          title: "Choose Rat 1",
+                          buildList: ratsWithGenes,
+                          activeListPosition: 0);
+                    },
+                    child: Text(
+                      geneCalChosenRat1Name,
+                      style: MyElevatedButtonStyle.textStyle,
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 10),
-          SizedBox(
-            height: 35,
-            width: 80,
-            child: ElevatedButton(
-              style: MyElevatedButtonStyle.buttonStyle,
-              onPressed: () {
-                availableRatList(
-                    title: "Choose Rat 2",
-                    buildList: ratsWithGenes,
-                    activeListPosition: 1);
-              },
-              child: Text(geneCalChosenRat2Name,style: MyElevatedButtonStyle.textStyle,),
-            ),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 10),
+                  child: SizedBox(
+                    height: 40,
+                    child: ElevatedButton(
+                      style: MyElevatedButtonStyle.buttonStyle,
+                      onPressed: () {
+                        availableRatList(
+                            title: "Choose Rat 2",
+                            buildList: ratsWithGenes,
+                            activeListPosition: 1);
+                      },
+                      child: Text(
+                        geneCalChosenRat2Name,
+                        style: MyElevatedButtonStyle.textStyle,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 20),
-          SizedBox(
-            height: 35,
-            width: 80,
-            child: ElevatedButton(
-                style: MyElevatedButtonStyle.buttonStyle,
-                onPressed: () {
-                  for (Map map in chosenRats) {
-                    if (map["Rat"] == null) {
-                      scaffoldKey.currentState!.showSnackBar(SnackBar(
-                        content: const Text("Choose 2 rats to match!"),
-                        duration: const Duration(seconds: 4),
-                        backgroundColor: primaryThemeColor,
-                      ));
-                      return;
-                    }
-                  }
-                  setState(() {
-                    result = matchRats(
-                        rat1: chosenRats[0]["Rat"], rat2: chosenRats[1]["Rat"]);
-                    resultPercentage = getPercentage(pairResults: result!);
-                  });
-                },
-                child: const Text("Match", style: MyElevatedButtonStyle.textStyle,)),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 10),
+                  height: 40,
+                  child: ElevatedButton(
+                      style: MyElevatedButtonStyle.buttonStyle,
+                      onPressed: () {
+                        for (Map map in chosenRats) {
+                          if (map["Rat"] == null) {
+                            scaffoldKey.currentState!.showSnackBar(SnackBar(
+                              content: const Text("Choose 2 rats to match!"),
+                              duration: const Duration(seconds: 4),
+                              backgroundColor: primaryThemeColor,
+                            ));
+                            return;
+                          }
+                        }
+                        setState(() {
+                          result = matchRats(
+                              rat1: chosenRats[0]["Rat"],
+                              rat2: chosenRats[1]["Rat"]);
+                          resultPercentage =
+                              getPercentage(pairResults: result!);
+                        });
+                      },
+                      child: const Text(
+                        "Match",
+                        style: MyElevatedButtonStyle.textStyle,
+                      )),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 20),
           Text("Outcome: ${result ?? ""}"),
@@ -286,9 +437,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget breedTracker() {
     return const Center(
-      child: 
-      
-      Column(
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [Text("Breed Tracker")],
       ),
@@ -360,33 +509,38 @@ class _MyHomePageState extends State<MyHomePage> {
 
   AppBar myAppBar(BuildContext context) {
     AppBar appBar = AppBar();
-     
-     switch (bottomVanIndex) {
-       case 0 : appBar = ratScreenAppBar();
-       break;
-       case 1 : appBar = geneCalAppBar();
-       break;
-       case 2 : appBar = breedTrackerAppBar();
-       break;
-     }
-     return appBar;
+
+    switch (bottomVanIndex) {
+      case 0:
+        appBar = ratScreenAppBar();
+        break;
+      case 1:
+        appBar = geneCalAppBar();
+        break;
+      case 2:
+        appBar = breedTrackerAppBar();
+        break;
+    }
+    return appBar;
   }
-  
-  ratScreenAppBar(){
+
+  ratScreenAppBar() {
     return AppBar(
       actions: [Container()],
-      title: Center(child: Text((rats.isEmpty) ? "Your Rats" : "Your Rats: ${rats.length}")),
+      title: Center(
+          child:
+              Text((rats.isEmpty) ? "Your Rats" : "Your Rats: ${rats.length}")),
     );
   }
-  
-  breedTrackerAppBar(){
+
+  breedTrackerAppBar() {
     return AppBar(
       actions: [Container()],
       title: const Center(child: Text("Breed Tracker")),
     );
   }
-  
-  geneCalAppBar(){
+
+  geneCalAppBar() {
     return AppBar(
       actions: [Container()],
       title: const Center(child: Text("Gene Calculator")),
@@ -481,7 +635,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   onPressed: () {
                     navPop(context);
                   },
-                  style: myDoneButtonStyle,
+                  style: MyElevatedButtonStyle.doneButtonStyle,
                   child: const Text("Done"),
                 ),
               )
@@ -622,7 +776,7 @@ class _LoadScreenState extends State<LoadScreen>
         children: [
           RotationTransition(
               turns: Tween(begin: 0.0, end: 1.0).animate(_controller),
-              child: Image.asset('asstes/images/image.png', height: 500)),
+              child: Image.asset('asstes/images/Image.png', height: 500)),
           const SizedBox(height: 10),
           const Text(
             'Getting the Ratties out of their cages!',

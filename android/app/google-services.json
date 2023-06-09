@@ -1,77 +1,34 @@
 {
   "project_info": {
-    "project_number": "1034726063302",
-    "project_id": "fir-bff42",
-    "storage_bucket": "fir-bff42.appspot.com"
+    "project_number": "412377351142",
+    "project_id": "pocket-puppy-rattery-c3f07",
+    "storage_bucket": "pocket-puppy-rattery-c3f07.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1034726063302:android:e385f8b0dc84437de26bc7",
-        "android_client_info": {
-          "package_name": "com.example.my_sa_docs"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "1034726063302-vnt6kudnk9onl0irmvlu7l55rufc5f78.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyARmYsEJg0xAgaqtNZaGW4732cLcLRVxF8"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1034726063302-jviv9bpm00cccvls98jhd01ufjn2qs3b.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "1034726063302-281016ej5d7fsnl6m51r08ji796thiuo.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.mySaDocs"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1034726063302:android:93ba2d2917e5a842e26bc7",
+        "mobilesdk_app_id": "1:412377351142:android:e41d0c161dfd6c12afcc27",
         "android_client_info": {
           "package_name": "com.example.pocket_puppy_rattery"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1034726063302-vnt6kudnk9onl0irmvlu7l55rufc5f78.apps.googleusercontent.com",
+          "client_id": "412377351142-d7mkjnua5ds9vi4adchbftvfcsafrha2.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyARmYsEJg0xAgaqtNZaGW4732cLcLRVxF8"
+          "current_key": "AIzaSyAmDLqiUUvy_HvzqzNwaNIK_nTb0J02wzg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1034726063302-jviv9bpm00cccvls98jhd01ufjn2qs3b.apps.googleusercontent.com",
+              "client_id": "412377351142-d7mkjnua5ds9vi4adchbftvfcsafrha2.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "1034726063302-281016ej5d7fsnl6m51r08ji796thiuo.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.mySaDocs"
-              }
             }
           ]
         }

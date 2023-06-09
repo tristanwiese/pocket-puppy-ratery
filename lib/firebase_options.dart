@@ -44,40 +44,40 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCeWtP97ZtsStt69hFwticfQzfpo7zNImM',
-    appId: '1:1034726063302:web:22c8fc480808ca72e26bc7',
-    messagingSenderId: '1034726063302',
-    projectId: 'fir-bff42',
-    authDomain: 'fir-bff42.firebaseapp.com',
-    storageBucket: 'fir-bff42.appspot.com',
-    measurementId: 'G-WZNDGEJG19',
+    apiKey: 'AIzaSyDRS1x7F-tFkeoSzj2MCBilleDMgk6i718',
+    appId: '1:412377351142:web:7e4efa5a60bf1a66afcc27',
+    messagingSenderId: '412377351142',
+    projectId: 'pocket-puppy-rattery-c3f07',
+    authDomain: 'pocket-puppy-rattery-c3f07.firebaseapp.com',
+    storageBucket: 'pocket-puppy-rattery-c3f07.appspot.com',
+    measurementId: 'G-8PBYERMV29',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyARmYsEJg0xAgaqtNZaGW4732cLcLRVxF8',
-    appId: '1:1034726063302:android:93ba2d2917e5a842e26bc7',
-    messagingSenderId: '1034726063302',
-    projectId: 'fir-bff42',
-    storageBucket: 'fir-bff42.appspot.com',
+    apiKey: 'AIzaSyAmDLqiUUvy_HvzqzNwaNIK_nTb0J02wzg',
+    appId: '1:412377351142:android:e41d0c161dfd6c12afcc27',
+    messagingSenderId: '412377351142',
+    projectId: 'pocket-puppy-rattery-c3f07',
+    storageBucket: 'pocket-puppy-rattery-c3f07.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyALIUj5fj9O_b-BEVOH9biDxekVpkmMgTc',
-    appId: '1:1034726063302:ios:f5c009412147f755e26bc7',
-    messagingSenderId: '1034726063302',
-    projectId: 'fir-bff42',
-    storageBucket: 'fir-bff42.appspot.com',
-    iosClientId: '1034726063302-ibk8vprnd34vtj4jigpspip5g058nutm.apps.googleusercontent.com',
+    apiKey: 'AIzaSyDj-aRUYJSmWUcdpNaRUMUkPTay-kVuNu0',
+    appId: '1:412377351142:ios:60ad3e539ea34b0eafcc27',
+    messagingSenderId: '412377351142',
+    projectId: 'pocket-puppy-rattery-c3f07',
+    storageBucket: 'pocket-puppy-rattery-c3f07.appspot.com',
+    iosClientId: '412377351142-svcsa60q54t0649ls9hncchmibkoejp6.apps.googleusercontent.com',
     iosBundleId: 'com.example.pocketPuppyRattery',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyALIUj5fj9O_b-BEVOH9biDxekVpkmMgTc',
-    appId: '1:1034726063302:ios:f5c009412147f755e26bc7',
-    messagingSenderId: '1034726063302',
-    projectId: 'fir-bff42',
-    storageBucket: 'fir-bff42.appspot.com',
-    iosClientId: '1034726063302-ibk8vprnd34vtj4jigpspip5g058nutm.apps.googleusercontent.com',
-    iosBundleId: 'com.example.pocketPuppyRattery',
+    apiKey: 'AIzaSyDj-aRUYJSmWUcdpNaRUMUkPTay-kVuNu0',
+    appId: '1:412377351142:ios:a6888559e5386cdeafcc27',
+    messagingSenderId: '412377351142',
+    projectId: 'pocket-puppy-rattery-c3f07',
+    storageBucket: 'pocket-puppy-rattery-c3f07.appspot.com',
+    iosClientId: '412377351142-ralf8e3qvrgebg0t6l3deogs0va6ief6.apps.googleusercontent.com',
+    iosBundleId: 'com.example.pocketPuppyRattery.RunnerTests',
   );
 }
