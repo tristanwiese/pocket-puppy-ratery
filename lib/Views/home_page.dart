@@ -21,11 +21,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final PageController _pageController = PageController(initialPage: 0);
+
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
   late List<QueryDocumentSnapshot<Object?>> rats;
 
   int bottomVanIndex = 0;
+
   List<String>? result;
   Map<String, int>? resultPercentage;
   String geneCalChosenRat1Name = "Rat 1";
@@ -38,6 +41,8 @@ class _MyHomePageState extends State<MyHomePage> {
   List<String> filters = ["Gender"];
   List<QueryDocumentSnapshot> filteredRats = [];
   String activeFilters = "";
+
+  String appBarTitle = "Your Rats";
 
   mySetState() => setState(() {});
 
@@ -69,110 +74,131 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: null, //myFloatingActionButton(),
       bottomNavigationBar: myBottomNavBar(),
-      body: rats.isEmpty
-          ? const NoRatScreen()
-          : bottomVanIndex == 0
-              ? Center(
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: ConstrainedBox(
-                          constraints: BoxConstraints(maxWidth: getSize()),
-                          child: ListView.builder(
-                              itemCount: activeFilters.isEmpty
-                                  ? rats.length
-                                  : filteredRats.length,
-                              itemBuilder: (BuildContext context, i) {
-                                final buildItem =
-                                    activeFilters.isEmpty ? rats : filteredRats;
-                                DateTime birthdate = DateTime(
-                                    buildItem[i]["birthday"][0],
-                                    buildItem[i]["birthday"][1],
-                                    buildItem[i]["birthday"][2]);
-                                return Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: InkWell(
-                                    onTap: () {
-                                      QueryDocumentSnapshot rat =
-                                          activeFilters.isEmpty
-                                              ? rats[i]
-                                              : filteredRats[i];
-                                      navPush(context, RatInfo(info: rat));
-                                    },
-                                    child: ListTile(
-                                      tileColor: (AgeCalculator.age(birthdate).years >= 3) ? primaryThemeColor : null,
-                                      trailing: myIconButton(rat: buildItem[i]),
-                                      title: Text(buildItem[i]['name']),
-                                      shape: BeveledRectangleBorder(
-                                          side: BorderSide(
-                                              width: 1,
-                                              color: secondaryThemeColor),
-                                          borderRadius: const BorderRadius.all(
-                                              Radius.circular(15))),
-                                      contentPadding: const EdgeInsets.all(10),
-                                    ),
-                                  ),
-                                );
-                              }),
-                        ),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Container(
-                            height: 35,
-                            margin: const EdgeInsets.only(bottom: 10),
-                            child: Directionality(
-                              textDirection: TextDirection.rtl,
-                              child: ElevatedButton.icon(
-                                label: const Text("Add Rat",
-                                    style: TextStyle(color: Colors.black87)),
-                                icon: Icon(
-                                  Icons.add,
-                                  color: secondaryThemeColor,
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (value) => setState(() {
+          bottomVanIndex = value;
+          switch (value) {
+            case 0:
+              appBarTitle = "Your Rats";
+              break;
+            case 1:
+              appBarTitle = "Gene Callculator";
+              break;
+            default:
+              appBarTitle = "Breeding Tracker";
+          }
+        }),
+        children: [ratPage(), geneCal(rats), breedTracker()],
+      ));
+
+  Widget ratPage() {
+    return rats.isEmpty
+        ? const NoRatScreen()
+        : Center(
+            child: Column(
+              children: [
+                Expanded(
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: getSize()),
+                    child: ListView.builder(
+                        itemCount: activeFilters.isEmpty
+                            ? rats.length
+                            : filteredRats.length,
+                        itemBuilder: (BuildContext context, i) {
+                          final buildItem =
+                              activeFilters.isEmpty ? rats : filteredRats;
+                          DateTime birthdate = DateTime(
+                              buildItem[i]["birthday"][0],
+                              buildItem[i]["birthday"][1],
+                              buildItem[i]["birthday"][2]);
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: InkWell(
+                              onTap: () {
+                                QueryDocumentSnapshot rat =
+                                    activeFilters.isEmpty
+                                        ? rats[i]
+                                        : filteredRats[i];
+                                navPush(context, RatInfo(info: rat));
+                              },
+                              child: Card(
+                                elevation: 10,
+                                shadowColor: Colors.black,
+                                shape: BeveledRectangleBorder(
+                                    side: BorderSide(
+                                        width: 1, color: secondaryThemeColor),
+                                    borderRadius: const BorderRadius.all(
+                                        Radius.circular(15))),
+                                color: (AgeCalculator.age(birthdate).years >= 3)
+                                    ? primaryThemeColor
+                                    : null,
+                                child: ListTile(
+                                  leading: Icon(Icons.image),
+                                  trailing: myIconButton(rat: buildItem[i]),
+                                  title: Text(buildItem[i]['name']),
+                                  subtitle: Text(buildItem[i]['gender']),
+                                  contentPadding: const EdgeInsets.all(10),
                                 ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    side:
-                                        BorderSide(color: secondaryThemeColor),
-                                  ),
-                                ),
-                                onPressed: () =>
-                                    navPush(context, const AddRat()),
                               ),
                             ),
-                          ),
-                          Container(
-                              height: 35,
-                              margin: const EdgeInsets.only(bottom: 10),
-                              child: Directionality(
-                                textDirection: TextDirection.rtl,
-                                child: ElevatedButton.icon(
-                                    label: const Text("Filter",
-                                        style:
-                                            TextStyle(color: Colors.black87)),
-                                    icon: Icon(Icons.filter_list,
-                                        color: secondaryThemeColor),
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.white,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        side: BorderSide(
-                                            color: secondaryThemeColor),
-                                      ),
-                                    ),
-                                    onPressed: () {
-                                      _key.currentState!.openEndDrawer();
-                                    }),
-                              )),
-                        ],
-                      )
-                    ],
+                          );
+                        }),
                   ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Container(
+                      height: 35,
+                      margin: const EdgeInsets.only(bottom: 10),
+                      child: Directionality(
+                        textDirection: TextDirection.rtl,
+                        child: ElevatedButton.icon(
+                          label: const Text("Add Rat",
+                              style: TextStyle(color: Colors.black87)),
+                          icon: Icon(
+                            Icons.add,
+                            color: secondaryThemeColor,
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              side: BorderSide(color: secondaryThemeColor),
+                            ),
+                          ),
+                          onPressed: () => navPush(context, const AddRat()),
+                        ),
+                      ),
+                    ),
+                    Container(
+                        height: 35,
+                        margin: const EdgeInsets.only(bottom: 10),
+                        child: Directionality(
+                          textDirection: TextDirection.rtl,
+                          child: ElevatedButton.icon(
+                              label: const Text("Filter",
+                                  style: TextStyle(color: Colors.black87)),
+                              icon: Icon(Icons.filter_list,
+                                  color: secondaryThemeColor),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  side: BorderSide(color: secondaryThemeColor),
+                                ),
+                              ),
+                              onPressed: () {
+                                _key.currentState!.openEndDrawer();
+                              }),
+                        )),
+                  ],
                 )
-              : geneCal(rats));
+              ],
+            ),
+          );
+  }
 
   Widget geneCal(List<QueryDocumentSnapshot<Object?>> rats) {
     //test rat list with implementing genes
@@ -196,61 +222,75 @@ class _MyHomePageState extends State<MyHomePage> {
             style: TextStyle(fontStyle: FontStyle.italic),
           ),
           const SizedBox(height: 10),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                fixedSize: const Size(100, 40),
-                shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(20)))),
-            onPressed: () {
-              availableRatList(
-                  title: "Choose Rat 1",
-                  buildList: ratsWithGenes,
-                  activeListPosition: 0);
-            },
-            child: Text(geneCalChosenRat1Name),
+          SizedBox(
+            height: 35,
+            width: 80,
+            child: ElevatedButton(
+              style: MyElevatedButtonStyle.buttonStyle,
+              onPressed: () {
+                availableRatList(
+                    title: "Choose Rat 1",
+                    buildList: ratsWithGenes,
+                    activeListPosition: 0);
+              },
+              child: Text(geneCalChosenRat1Name, style: MyElevatedButtonStyle.textStyle,),
+            ),
           ),
           const SizedBox(height: 10),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                fixedSize: const Size(100, 40),
-                shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(20)))),
-            onPressed: () {
-              availableRatList(
-                  title: "Choose Rat 2",
-                  buildList: ratsWithGenes,
-                  activeListPosition: 1);
-            },
-            child: Text(geneCalChosenRat2Name),
+          SizedBox(
+            height: 35,
+            width: 80,
+            child: ElevatedButton(
+              style: MyElevatedButtonStyle.buttonStyle,
+              onPressed: () {
+                availableRatList(
+                    title: "Choose Rat 2",
+                    buildList: ratsWithGenes,
+                    activeListPosition: 1);
+              },
+              child: Text(geneCalChosenRat2Name,style: MyElevatedButtonStyle.textStyle,),
+            ),
           ),
           const SizedBox(height: 20),
-          ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  fixedSize: const Size(100, 40),
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(20)))),
-              onPressed: () {
-                for (Map map in chosenRats) {
-                  if (map["Rat"] == null) {
-                    scaffoldKey.currentState!.showSnackBar(SnackBar(
-                      content: const Text("Choose 2 rats to match!"),
-                      duration: const Duration(seconds: 4),
-                      backgroundColor: primaryThemeColor,
-                    ));
-                    return;
+          SizedBox(
+            height: 35,
+            width: 80,
+            child: ElevatedButton(
+                style: MyElevatedButtonStyle.buttonStyle,
+                onPressed: () {
+                  for (Map map in chosenRats) {
+                    if (map["Rat"] == null) {
+                      scaffoldKey.currentState!.showSnackBar(SnackBar(
+                        content: const Text("Choose 2 rats to match!"),
+                        duration: const Duration(seconds: 4),
+                        backgroundColor: primaryThemeColor,
+                      ));
+                      return;
+                    }
                   }
-                }
-                setState(() {
-                  result = matchRats(
-                      rat1: chosenRats[0]["Rat"], rat2: chosenRats[1]["Rat"]);
-                  resultPercentage = getPercentage(pairResults: result!);
-                });
-              },
-              child: const Text("Match")),
+                  setState(() {
+                    result = matchRats(
+                        rat1: chosenRats[0]["Rat"], rat2: chosenRats[1]["Rat"]);
+                    resultPercentage = getPercentage(pairResults: result!);
+                  });
+                },
+                child: const Text("Match", style: MyElevatedButtonStyle.textStyle,)),
+          ),
           const SizedBox(height: 20),
           Text("Outcome: ${result ?? ""}"),
           Text("Percentage: ${resultPercentage ?? ""}")
         ],
+      ),
+    );
+  }
+
+  Widget breedTracker() {
+    return const Center(
+      child: 
+      
+      Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [Text("Breed Tracker")],
       ),
     );
   }
@@ -262,13 +302,18 @@ class _MyHomePageState extends State<MyHomePage> {
         onTap: (index) {
           setState(() {
             bottomVanIndex = index;
+            _pageController.animateToPage(index,
+                duration: const Duration(milliseconds: 700),
+                curve: Curves.decelerate);
           });
         },
         items: const [
           BottomNavigationBarItem(
               icon: Icon(Icons.line_style_outlined), label: 'Rats'),
           BottomNavigationBarItem(
-              icon: Icon(Icons.calculate_outlined), label: 'Gene Calculator')
+              icon: Icon(Icons.calculate_outlined), label: 'Gene Calculator'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.bed_rounded), label: "Breeding Tracker")
         ]);
   }
 
@@ -280,7 +325,7 @@ class _MyHomePageState extends State<MyHomePage> {
             return AlertDialog(
               title: const Text("Warning"),
               content: SizedBox(
-                height: 100,
+                height: 150,
                 child: Column(
                   children: [
                     const Text("Are you sure you want to remove this rat?"),
@@ -313,14 +358,39 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       icon: Icon(Icons.delete, color: Colors.red[200]));
 
-  deleteRat(String name) async {
-    showDialog(
-      context: context,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
+  AppBar myAppBar(BuildContext context) {
+    AppBar appBar = AppBar();
+     
+     switch (bottomVanIndex) {
+       case 0 : appBar = ratScreenAppBar();
+       break;
+       case 1 : appBar = geneCalAppBar();
+       break;
+       case 2 : appBar = breedTrackerAppBar();
+       break;
+     }
+     return appBar;
+  }
+  
+  ratScreenAppBar(){
+    return AppBar(
+      actions: [Container()],
+      title: Center(child: Text((rats.isEmpty) ? "Your Rats" : "Your Rats: ${rats.length}")),
     );
-    await FirebaseFirestore.instance.collection('rats').doc(name).delete();
-    navPop(context);
-    navPop(context);
+  }
+  
+  breedTrackerAppBar(){
+    return AppBar(
+      actions: [Container()],
+      title: const Center(child: Text("Breed Tracker")),
+    );
+  }
+  
+  geneCalAppBar(){
+    return AppBar(
+      actions: [Container()],
+      title: const Center(child: Text("Gene Calculator")),
+    );
   }
 
   FloatingActionButton myFloatingActionButton() {
@@ -332,19 +402,66 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  AppBar myAppBar(BuildContext context) {
-    return AppBar(
-      actions: <Widget>[Container()],
-      title: const Center(child: Text('Your Rats')),
+  myDrawer() {
+    return Drawer(
+      width: 200,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            const Text("Gender"),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    if (activeFilters == "Female") {
+                      activeFilters = "";
+                      setState(() {
+                        activeFilters = "";
+                      });
+                      return;
+                    }
+                    activeFilters = "Female";
+                    filterRats(filter: "Female");
+                    setState(() {});
+                  },
+                  style: (activeFilters != "Female")
+                      ? MyElevatedButtonStyle.buttonStyle
+                      : MyElevatedButtonStyle.activeButtonStyle,
+                  child: const Text(
+                    "Female",
+                    style: MyElevatedButtonStyle.textStyle,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    if (activeFilters == "Male") {
+                      setState(() {
+                        activeFilters = "";
+                      });
+                      return;
+                    }
+                    activeFilters = "Male";
+                    filterRats(filter: "Male");
+                    setState(() {});
+                  },
+                  style: (activeFilters != "Male")
+                      ? MyElevatedButtonStyle.buttonStyle
+                      : MyElevatedButtonStyle.activeButtonStyle,
+                  child: const Text(
+                    "Male",
+                    style: MyElevatedButtonStyle.textStyle,
+                  ),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
     );
-  }
-
-  double getSize() {
-    if (MediaQuery.of(context).size.width < 435) {
-      return MediaQuery.of(context).size.width / 1.5;
-    } else {
-      return MediaQuery.of(context).size.width / 2;
-    }
   }
 
   availableRatList({
@@ -449,66 +566,22 @@ class _MyHomePageState extends State<MyHomePage> {
     filteredRats = rats.where((rat) => rat["gender"] == filter).toList();
   }
 
-  myDrawer() {
-    return Drawer(
-      width: 200,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            const Text("Gender"),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    if (activeFilters == "Female") {
-                      activeFilters = "";
-                      setState(() {
-                        activeFilters = "";
-                      });
-                      return;
-                    }
-                    activeFilters = "Female";
-                    filterRats(filter: "Female");
-                    setState(() {});
-                  },
-                  style: (activeFilters != "Female")
-                      ? MyElevatedButtonStyle.buttonStyle
-                      : MyElevatedButtonStyle.activeButtonStyle,
-                  child: const Text(
-                    "Female",
-                    style: MyElevatedButtonStyle.textStyle,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    if (activeFilters == "Male") {
-                      setState(() {
-                        activeFilters = "";
-                      });
-                      return;
-                    }
-                    activeFilters = "Male";
-                    filterRats(filter: "Male");
-                    setState(() {});
-                  },
-                  style: (activeFilters != "Male")
-                      ? MyElevatedButtonStyle.buttonStyle
-                      : MyElevatedButtonStyle.activeButtonStyle,
-                  child: const Text(
-                    "Male",
-                    style: MyElevatedButtonStyle.textStyle,
-                  ),
-                ),
-              ],
-            )
-          ],
-        ),
-      ),
+  double getSize() {
+    if (MediaQuery.of(context).size.width < 435) {
+      return MediaQuery.of(context).size.width / 1.5;
+    } else {
+      return MediaQuery.of(context).size.width / 2;
+    }
+  }
+
+  deleteRat(String name) async {
+    showDialog(
+      context: context,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
     );
+    await FirebaseFirestore.instance.collection('rats').doc(name).delete();
+    navPop(context);
+    navPop(context);
   }
 }
 
