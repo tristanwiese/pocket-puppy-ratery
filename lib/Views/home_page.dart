@@ -53,7 +53,11 @@ class _MyHomePageState extends State<MyHomePage> {
       decoration: const BoxDecoration(
           image: DecorationImage(image: AssetImage("asstes/images/Paws.jpg"))),
       child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection('rats').snapshots(),
+          stream: FirebaseFirestore.instance
+              .collection("users")
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .collection("rats")
+              .snapshots(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               rats = snapshot.data!.docs;
@@ -99,77 +103,86 @@ class _MyHomePageState extends State<MyHomePage> {
         children: [
           rats.isEmpty
               ? const Expanded(child: NoRatScreen())
-              : Expanded(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: getSize()),
-                    child: ListView.builder(
-                        itemCount: activeFilters.isEmpty
-                            ? rats.length
-                            : filteredRats.length,
-                        itemBuilder: (BuildContext context, i) {
-                          final buildItem =
-                              activeFilters.isEmpty ? rats : filteredRats;
-                          DateTime birthdate = DateTime(
-                              buildItem[i]["birthday"][0],
-                              buildItem[i]["birthday"][1],
-                              buildItem[i]["birthday"][2]);
-                          Color? colorCode;
-                          switch (buildItem[i]["colorCode"]) {
-                            case "green":
-                              colorCode = Colors.green;
-                            case "blue":
-                              colorCode = Colors.blue;
-                            case "red":
-                              colorCode = Colors.red;
-                          }
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: InkWell(
-                              onLongPress: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return colorCodePicker(i);
+              : (activeFilters.isNotEmpty && filteredRats.isEmpty)
+                  ? const Expanded(
+                    child: Center(
+                        child: Text("No rats match current filters..."),
+                      ),
+                  )
+                  : Expanded(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: getSize()),
+                        child: ListView.builder(
+                            itemCount: activeFilters.isEmpty
+                                ? rats.length
+                                : filteredRats.length,
+                            itemBuilder: (BuildContext context, i) {
+                              final buildItem =
+                                  activeFilters.isEmpty ? rats : filteredRats;
+                              DateTime birthdate = DateTime(
+                                  buildItem[i]["birthday"][0],
+                                  buildItem[i]["birthday"][1],
+                                  buildItem[i]["birthday"][2]);
+                              Color? colorCode;
+                              switch (buildItem[i]["colorCode"]) {
+                                case "green":
+                                  colorCode = Colors.green;
+                                case "blue":
+                                  colorCode = Colors.blue;
+                                case "red":
+                                  colorCode = Colors.red;
+                              }
+                              return Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: InkWell(
+                                  onLongPress: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return colorCodePicker(i);
+                                      },
+                                    );
                                   },
-                                );
-                              },
-                              onTap: () {
-                                QueryDocumentSnapshot rat =
-                                    activeFilters.isEmpty
-                                        ? rats[i]
-                                        : filteredRats[i];
-                                navPush(context, RatInfo(info: rat));
-                              },
-                              child: Card(
-                                elevation: 10,
-                                shadowColor: Colors.black,
-                                shape: BeveledRectangleBorder(
-                                    side: BorderSide(
-                                        width: 1, color: secondaryThemeColor),
-                                    borderRadius: const BorderRadius.all(
-                                        Radius.circular(15))),
-                                color: (AgeCalculator.age(birthdate).years >= 3)
-                                    ? primaryThemeColor
-                                    : null,
-                                child: ListTile(
-                                  leading: Icon(
-                                    Icons.square,
-                                    color: colorCode,
+                                  onTap: () {
+                                    QueryDocumentSnapshot rat =
+                                        activeFilters.isEmpty
+                                            ? rats[i]
+                                            : filteredRats[i];
+                                    navPush(context, RatInfo(info: rat));
+                                  },
+                                  child: Card(
+                                    elevation: 10,
+                                    shadowColor: Colors.black,
+                                    shape: BeveledRectangleBorder(
+                                        side: BorderSide(
+                                            width: 1,
+                                            color: secondaryThemeColor),
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(15))),
+                                    color:
+                                        (AgeCalculator.age(birthdate).years >=
+                                                3)
+                                            ? primaryThemeColor
+                                            : null,
+                                    child: ListTile(
+                                      leading: Icon(
+                                        Icons.square,
+                                        color: colorCode,
+                                      ),
+                                      trailing: myIconButton(rat: buildItem[i]),
+                                      title: Text(buildItem[i]['name']),
+                                      subtitle: Text(buildItem[i]['gender']),
+                                      contentPadding: const EdgeInsets.all(10),
+                                    ),
                                   ),
-                                  trailing: myIconButton(rat: buildItem[i]),
-                                  title: Text(buildItem[i]['name']),
-                                  subtitle: Text(buildItem[i]['gender']),
-                                  contentPadding: const EdgeInsets.all(10),
                                 ),
-                              ),
-                            ),
-                          );
-                        }),
-                  ),
-                ),
+                              );
+                            }),
+                      ),
+                    ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [ 
+            children: [
               Container(
                 height: 35,
                 margin: const EdgeInsets.only(bottom: 10),
@@ -214,7 +227,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           _key.currentState!.openEndDrawer();
                         }),
                   )),
-                Container(
+              Container(
                   height: 35,
                   margin: const EdgeInsets.only(bottom: 10),
                   child: Directionality(
@@ -222,8 +235,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: ElevatedButton.icon(
                         label: const Text("SignOut",
                             style: TextStyle(color: Colors.black87)),
-                        icon:
-                            Icon(Icons.logout, color: secondaryThemeColor),
+                        icon: Icon(Icons.logout, color: secondaryThemeColor),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
@@ -235,7 +247,6 @@ class _MyHomePageState extends State<MyHomePage> {
                           FirebaseAuth.instance.signOut();
                         }),
                   )),
-
             ],
           )
         ],
@@ -266,6 +277,8 @@ class _MyHomePageState extends State<MyHomePage> {
               QueryDocumentSnapshot rat =
                   activeFilters.isEmpty ? rats[i] : filteredRats[i];
               FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(FirebaseAuth.instance.currentUser!.uid)
                   .collection("rats")
                   .doc(rat.id)
                   .update({"colorCode": "red"});
@@ -287,6 +300,8 @@ class _MyHomePageState extends State<MyHomePage> {
               QueryDocumentSnapshot rat =
                   activeFilters.isEmpty ? rats[i] : filteredRats[i];
               FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(FirebaseAuth.instance.currentUser!.uid)
                   .collection("rats")
                   .doc(rat.id)
                   .update({"colorCode": "blue"});
@@ -308,6 +323,8 @@ class _MyHomePageState extends State<MyHomePage> {
               QueryDocumentSnapshot rat =
                   activeFilters.isEmpty ? rats[i] : filteredRats[i];
               FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(FirebaseAuth.instance.currentUser!.uid)
                   .collection("rats")
                   .doc(rat.id)
                   .update({"colorCode": "green"});
@@ -328,6 +345,8 @@ class _MyHomePageState extends State<MyHomePage> {
               QueryDocumentSnapshot rat =
                   activeFilters.isEmpty ? rats[i] : filteredRats[i];
               FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(FirebaseAuth.instance.currentUser!.uid)
                   .collection("rats")
                   .doc(rat.id)
                   .update({"colorCode": "none"});
@@ -756,7 +775,12 @@ class _MyHomePageState extends State<MyHomePage> {
       context: context,
       builder: (context) => const Center(child: CircularProgressIndicator()),
     );
-    await FirebaseFirestore.instance.collection('rats').doc(name).delete();
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection("rats")
+        .doc(name)
+        .delete();
     navPop(context);
     navPop(context);
   }

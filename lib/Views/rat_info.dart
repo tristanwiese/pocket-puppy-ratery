@@ -4,6 +4,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
@@ -40,6 +41,8 @@ class _RatInfoState extends State<RatInfo> {
   Widget myBody() {
     return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
       stream: FirebaseFirestore.instance
+          .collection("users")
+          .doc(FirebaseAuth.instance.currentUser!.uid)
           .collection("rats")
           .doc(widget.info.id)
           .snapshots(),
@@ -146,6 +149,7 @@ class _RatInfoState extends State<RatInfo> {
                                   birthday: DateTime(info["birthday"][0],
                                       info["birthday"][1], info["birthday"][2]),
                                   id: widget.info.id,
+                                  colorCode : info["colorCode"]
                                 ));
                           },
                           style: ElevatedButton.styleFrom(

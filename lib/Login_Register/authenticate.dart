@@ -1,9 +1,14 @@
+// ignore_for_file: use_build_context_synchronously
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_authentication/firebase_authentication.dart';
+import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'dart:developer' as dev;
+
+import 'package:pocket_puppy_rattery/Models/user.dart';
 
 class Authenticate extends StatefulWidget {
   const Authenticate({super.key});
@@ -16,8 +21,9 @@ class _AuthenticateState extends State<Authenticate> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   TextEditingController _emailController =
-      TextEditingController(text: "tristanwiese472@gmail.com");
+      TextEditingController(text: "tristanwiese7472@gmail.com");
   TextEditingController _passwordController = TextEditingController();
+  TextEditingController _nameController = TextEditingController();
 
   @override
   void dispose() {
@@ -37,56 +43,116 @@ class _AuthenticateState extends State<Authenticate> {
 
     return pageState == 0
         ? Login(
-            onPressedRegister: () {},
+            onPressedRegister: () {
+              setState(() {
+                pageState = 1;
+              });
+            },
             onPressedLogin: () async {
               if (_formKey.currentState!.validate()) {
-
-
-                try {
-                  await FirebaseAuth.instance.signInWithEmailAndPassword(
-                      email: _emailController.text,
-                      password: _passwordController.text);
-                } on FirebaseAuthException catch (e) {
-                  String eMessage = '';
-
-                  print(e.code + e.toString());
-
-                  switch (e.code) {
-                    case "wrong-password":
-                      eMessage = "Email or password was wrong";
-                      break;
-                    case "user-not-found":
-                      eMessage = "Email or Password wrong";
-                      break;
-                    default:
-                      eMessage = "Something went wrong";
-                      break;
-                  }
-
-                  scaffoldKey.currentState!.showSnackBar(SnackBar(
-                    content: Text(eMessage),
-                    duration: const Duration(seconds: 3),
-                    backgroundColor: primaryThemeColor,
-                  ));
-                }
+                showDialog(
+                    context: context,
+                    builder: (context) =>
+                        const Center(child: CircularProgressIndicator()));
+                await login();
+                navPop(context);
               }
             },
             formKey: _formKey,
             emailController: _emailController,
             passwordController: _passwordController,
-            imagePath: "asstes/images/Image.png",
-            imageHeight: 300,
+            imagePath: "asstes/images/logo.png",
+            imageHeight: 200,
             buttonStyle: ElevatedButton.styleFrom(
                 fixedSize: Size(screenWidth * 0.6, 40),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20))),
           )
         : Register(
-            onPressedLogin: () {},
-            onPressedSubmit: () {},
+            onPressedLogin: () {
+              setState(() {
+                pageState = 0;
+              });
+            },
+            onPressedSubmit: () async {
+              if (_formKey.currentState!.validate()) {
+                showDialog(
+                    context: context,
+                    builder: (context) =>
+                        const Center(child: CircularProgressIndicator()));
+                await register();
+                navPop(context);
+              }
+            },
             formKey: _formKey,
             emailController: _emailController,
             passwordController: _passwordController,
+            nameController: _nameController,
+            buttonStyle: ElevatedButton.styleFrom(
+                fixedSize: Size(screenWidth * 0.6, 40),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20))),
+            imagePath: "asstes/images/logo.png",
+            imageHeight: 200,
           );
+  }
+
+  register() async {
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+    } on FirebaseAuthException catch (e) {
+      print(e.toString());
+
+      String eMessage = "";
+
+      if (e.toString().contains("Password should be at least 6 characters")) {
+        eMessage = "Password should be at least 6 characters long";
+      } else if (e
+          .toString()
+          .contains("The email address is already in use by another account")) {
+        eMessage = "Email already in use";
+      }
+
+      scaffoldKey.currentState!.showSnackBar(SnackBar(
+        content: Text(eMessage),
+        duration: const Duration(seconds: 3),
+        backgroundColor: primaryThemeColor,
+      ));
+      return;
+    }
+    addToDB();
+  }
+
+  login() async {
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _emailController.text, password: _passwordController.text);
+    } on FirebaseAuthException catch (e) {
+      String eMessage = '';
+
+      print(e.code + e.toString());
+
+      if (e.toString().contains("many failed login attempts")) {
+        eMessage = "Too many attempts, try again later!";
+      } else {
+        eMessage = "Email or password incorrect!";
+      }
+
+      scaffoldKey.currentState!.showSnackBar(SnackBar(
+        content: Text(eMessage),
+        duration: const Duration(seconds: 3),
+        backgroundColor: primaryThemeColor,
+      ));
+    }
+  }
+  
+  addToDB() {
+    final users = FirebaseFirestore.instance.collection("users");
+    users.doc(FirebaseAuth.instance.currentUser!.uid).set(UserModel(
+            email: _emailController.text, userName: _nameController.text)
+        .toDB());
   }
 }

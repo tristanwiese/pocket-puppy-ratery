@@ -35,7 +35,6 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: AppBar(),
       body: Center(
         child: Form(
           key: widget.formKey,
@@ -43,9 +42,22 @@ class _LoginState extends State<Login> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               widget.imagePath != null
-                  ? Image(
-                      image: AssetImage(widget.imagePath!),
-                      height: widget.imageHeight)
+                  ? Column(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        child: const Text("Pocket Puppy Rattery",
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold
+                          ),
+                        ),
+                      ),
+                      Image(
+                          image: AssetImage(widget.imagePath!),
+                          height: widget.imageHeight),
+                    ],
+                  )
                   : Container(),
               Column(
                 children: [
@@ -115,6 +127,7 @@ class Register extends StatefulWidget {
       required this.onPressedSubmit,
       required this.emailController,
       required this.passwordController,
+      required this.nameController
       });
 
   final String? imagePath;
@@ -125,6 +138,7 @@ class Register extends StatefulWidget {
   final VoidCallback onPressedSubmit;
   final TextEditingController emailController;
   final TextEditingController passwordController;
+  final TextEditingController nameController;
 
   @override
   State<Register> createState() => _RegisterState();
@@ -137,7 +151,6 @@ class _RegisterState extends State<Register> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: AppBar(),
       body: Center(
         child: Form(
           key: widget.formKey,
@@ -145,15 +158,42 @@ class _RegisterState extends State<Register> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               widget.imagePath != null
-                  ? Image(
-                      image: AssetImage(widget.imagePath!),
-                      height: widget.imageHeight)
+                  ? Column(
+                    children: [
+                        Container(
+                        margin: const EdgeInsets.only(bottom: 10),
+                        child: const Text("Pocket Puppy Rattery",
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold
+                          ),
+                        ),
+                      ),
+                      Image(
+                          image: AssetImage(widget.imagePath!),
+                          height: widget.imageHeight),
+                    ],
+                  )
                   : Container(),
               Column(
                 children: [
                   const Text(
                     "Register",
                     style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 10),
+                  SizedBox(
+                    width: screenWidth * 0.6,
+                    child: MyInputField(
+                      validator: (p0) {
+                        if (p0 == null || p0.isEmpty){
+                          return "Required";
+                        }
+                        return null;
+                      },
+                      controller: widget.nameController,
+                      hintText: "Name",
+                    ),
                   ),
                   const SizedBox(height: 10),
                   SizedBox(

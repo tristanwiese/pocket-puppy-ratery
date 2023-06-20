@@ -3,6 +3,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import '../Functions/utils.dart';
@@ -32,7 +33,9 @@ class AddRat extends StatefulWidget {
       this.regName,
       this.birthday,
       this.gender,
-      this.markings});
+      this.markings,
+      this.colorCode
+      });
   final String? name;
   final String? regName;
   final List? color;
@@ -44,6 +47,7 @@ class AddRat extends StatefulWidget {
   final DateTime? birthday;
   final List? markings;
   final String? id;
+  final String? colorCode;
 
   @override
   State<AddRat> createState() => _AddRatState();
@@ -244,7 +248,10 @@ class _AddRatState extends State<AddRat> {
               birthday: _selectedDate,
             );
             if (widget.name != null) {
+              rat.colorCode = widget.colorCode!;
               await FirebaseFirestore.instance
+                  .collection("users")
+                  .doc(FirebaseAuth.instance.currentUser!.uid)
                   .collection("rats")
                   .doc(widget.id)
                   .update(rat.toDb());
@@ -253,6 +260,8 @@ class _AddRatState extends State<AddRat> {
               return;
             }
             await FirebaseFirestore.instance
+                .collection("users")
+                .doc(FirebaseAuth.instance.currentUser!.uid)
                 .collection("rats")
                 .doc()
                 .set(rat.toDb());

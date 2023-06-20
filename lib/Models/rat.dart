@@ -27,7 +27,7 @@ class Rat {
   final Parents parents;
   final Coats coat;
   final DateTime birthday;
-  final String colorCode = "none";
+  String colorCode = "none";
 
   static hLocusToList(){
     const markingsList = H_Locus.values;
