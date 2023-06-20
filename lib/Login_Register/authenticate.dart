@@ -1,3 +1,4 @@
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_authentication/firebase_authentication.dart';
@@ -14,12 +15,12 @@ class Authenticate extends StatefulWidget {
 class _AuthenticateState extends State<Authenticate> {
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  TextEditingController _emailController = TextEditingController(text: "tristanwiese472@gmail.com");
+  TextEditingController _emailController =
+      TextEditingController(text: "tristanwiese472@gmail.com");
   TextEditingController _passwordController = TextEditingController();
 
   @override
   void dispose() {
-    
     _emailController.dispose();
     _passwordController.dispose();
 
@@ -37,34 +38,36 @@ class _AuthenticateState extends State<Authenticate> {
     return pageState == 0
         ? Login(
             onPressedRegister: () {},
-            onPressedLogin: () async{
+            onPressedLogin: () async {
               if (_formKey.currentState!.validate()) {
-                try{
-                  await FirebaseAuth.instance.signInWithEmailAndPassword(
-                  email: _emailController.text,
-                  password: _passwordController.text,
-                );
-                }on FirebaseAuthException catch (e){
 
+
+                try {
+                  await FirebaseAuth.instance.signInWithEmailAndPassword(
+                      email: _emailController.text,
+                      password: _passwordController.text);
+                } on FirebaseAuthException catch (e) {
                   String eMessage = '';
 
-                  dev.log(e.code);
-                  dev.log(e.toString());
-                  
-                  switch (e.code){
-                    case "wrong-password" : eMessage = "Email or password was wrong";
-                    break;
-                    default: eMessage = "Something went wrong";
-                    break;
+                  print(e.code + e.toString());
+
+                  switch (e.code) {
+                    case "wrong-password":
+                      eMessage = "Email or password was wrong";
+                      break;
+                    case "user-not-found":
+                      eMessage = "Email or Password wrong";
+                      break;
+                    default:
+                      eMessage = "Something went wrong";
+                      break;
                   }
 
-                  scaffoldKey.currentState!.showSnackBar(
-                      SnackBar(
-                        content: Text(eMessage),
-                        duration: const Duration(seconds: 2),
-                        backgroundColor: primaryThemeColor,
-                      )
-                    );
+                  scaffoldKey.currentState!.showSnackBar(SnackBar(
+                    content: Text(eMessage),
+                    duration: const Duration(seconds: 3),
+                    backgroundColor: primaryThemeColor,
+                  ));
                 }
               }
             },
