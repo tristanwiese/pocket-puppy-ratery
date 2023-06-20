@@ -81,7 +81,7 @@ class _AuthenticateState extends State<Authenticate> {
                     builder: (context) =>
                         const Center(child: CircularProgressIndicator()));
                 await register();
-                navPop(context);
+                // navPop(context);
               }
             },
             formKey: _formKey,
@@ -103,8 +103,8 @@ class _AuthenticateState extends State<Authenticate> {
         email: _emailController.text,
         password: _passwordController.text,
       );
+      navPop(context);
     } on FirebaseAuthException catch (e) {
-      print(e.toString());
 
       String eMessage = "";
 
