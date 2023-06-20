@@ -39,6 +39,9 @@ dependencies:
   cloud_firestore: ^4.8.0
   flutter_launcher_icons: ^0.13.1
   age_calculator: ^1.0.0
+  firebase_authentication:
+    path: packages/firebase_authentication
+  firebase_auth: ^4.6.3
 
 flutter_launcher_icons:
   android: true

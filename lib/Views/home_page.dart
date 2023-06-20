@@ -4,6 +4,7 @@ import 'dart:developer';
 
 import 'package:age_calculator/age_calculator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_launcher_icons/main.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
@@ -213,6 +214,28 @@ class _MyHomePageState extends State<MyHomePage> {
                           _key.currentState!.openEndDrawer();
                         }),
                   )),
+                Container(
+                  height: 35,
+                  margin: const EdgeInsets.only(bottom: 10),
+                  child: Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: ElevatedButton.icon(
+                        label: const Text("SignOut",
+                            style: TextStyle(color: Colors.black87)),
+                        icon:
+                            Icon(Icons.logout, color: secondaryThemeColor),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: BorderSide(color: secondaryThemeColor),
+                          ),
+                        ),
+                        onPressed: () {
+                          FirebaseAuth.instance.signOut();
+                        }),
+                  )),
+
             ],
           )
         ],
