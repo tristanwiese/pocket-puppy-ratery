@@ -64,8 +64,6 @@ enum Colours {
 }
 
 enum Coats {
-
-  
   Standard,
   Harley,
   Hairless,
