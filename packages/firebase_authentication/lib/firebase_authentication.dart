@@ -8,6 +8,7 @@ class Login extends StatefulWidget {
     this.imagePath,
     this.imageHeight,
     this.buttonStyle,
+    this.onFieldSubmitted,
     required this.onPressedRegister,
     required this.formKey,
     required this.onPressedLogin,
@@ -23,6 +24,7 @@ class Login extends StatefulWidget {
   final VoidCallback onPressedLogin;
   final TextEditingController emailController;
   final TextEditingController passwordController;
+  final void Function(String)? onFieldSubmitted;
 
   @override
   State<Login> createState() => _LoginState();
@@ -38,91 +40,96 @@ class _LoginState extends State<Login> {
       body: Center(
         child: Form(
           key: widget.formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              widget.imagePath != null
-                  ? Column(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 10),
-                          child: const Text(
-                            "Pocket Puppy Rattery",
-                            style: TextStyle(
-                                fontSize: 30, fontWeight: FontWeight.bold),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                widget.imagePath != null
+                    ? Column(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            child: const Text(
+                              "Pocket Puppy Rattery",
+                              style: TextStyle(
+                                  fontSize: 30, fontWeight: FontWeight.bold),
+                            ),
                           ),
-                        ),
-                        Image(
-                            image: AssetImage(widget.imagePath!),
-                            height: widget.imageHeight),
-                      ],
-                    )
-                  : Container(),
-              Column(
-                children: [
-                  const Text(
-                    "Login",
-                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: screenWidth * 0.6,
-                    child: MyInputField(
-                      validator: (p0) {
-                        if (p0 == null || p0.isEmpty) {
-                          return "Required";
-                        }
-                        return null;
-                      },
-                      controller: widget.emailController,
-                      hintText: "Email",
+                          Image(
+                              image: AssetImage(widget.imagePath!),
+                              height: widget.imageHeight),
+                        ],
+                      )
+                    : Container(),
+                Column(
+                  children: [
+                    const Text(
+                      "Login",
+                      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: screenWidth * 0.6,
-                    child: MyInputField(
-                      isObscure: passwordObscure,
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          passwordObscure
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                        ),
-                        onPressed: () => setState(() {
-                          if (passwordObscure) {
-                            passwordObscure = false;
-                            return;
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: screenWidth * 0.6,
+                      child: MyInputField(
+                        textInputAction: TextInputAction.next,
+                        validator: (p0) {
+                          if (p0 == null || p0.isEmpty) {
+                            return "Required";
                           }
-                          passwordObscure = true;
-                        }),
+                          return null;
+                        },
+                        controller: widget.emailController,
+                        hintText: "Email",
                       ),
-                      validator: (p0) {
-                        if (p0 == null || p0.isEmpty) {
-                          return "Required";
-                        }
-                        return null;
-                      },
-                      controller: widget.passwordController,
-                      hintText: "Password",
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: widget.onPressedLogin,
-                    style: widget.buttonStyle,
-                    child: const Text("Login"),
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: widget.onPressedRegister,
-                    style: widget.buttonStyle,
-                    child: const Text("Register"),
-                  ),
-                ],
-              ),
-              Container()
-            ],
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: screenWidth * 0.6,
+                      child: MyInputField(
+                        textInputAction: TextInputAction.go,
+                        onFieldSubmitted: widget.onFieldSubmitted,
+                        isObscure: passwordObscure,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            passwordObscure
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                          ),
+                          onPressed: () => setState(() {
+                            if (passwordObscure) {
+                              passwordObscure = false;
+                              return;
+                            }
+                            passwordObscure = true;
+                          }),
+                        ),
+                        validator: (p0) {
+                          if (p0 == null || p0.isEmpty) {
+                            return "Required";
+                          }
+                          return null;
+                        },
+                        controller: widget.passwordController,
+                        hintText: "Password",
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: widget.onPressedLogin,
+                      style: widget.buttonStyle,
+                      child: const Text("Login"),
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: widget.onPressedRegister,
+                      style: widget.buttonStyle,
+                      child: const Text("Register"),
+                    ),
+                  ],
+                ),
+                Container()
+              ],
+            ),
           ),
         ),
       ),
@@ -136,6 +143,7 @@ class Register extends StatefulWidget {
       this.imagePath,
       this.imageHeight,
       this.buttonStyle,
+      this.onFieldSubmitted,
       required this.onPressedLogin,
       required this.formKey,
       required this.onPressedSubmit,
@@ -152,6 +160,7 @@ class Register extends StatefulWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final TextEditingController nameController;
+  final void Function(String)? onFieldSubmitted;
 
   @override
   State<Register> createState() => _RegisterState();
@@ -168,103 +177,109 @@ class _RegisterState extends State<Register> {
       body: Center(
         child: Form(
           key: widget.formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              widget.imagePath != null
-                  ? Column(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 10),
-                          child: const Text(
-                            "Pocket Puppy Rattery",
-                            style: TextStyle(
-                                fontSize: 30, fontWeight: FontWeight.bold),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                widget.imagePath != null
+                    ? Column(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 10),
+                            child: const Text(
+                              "Pocket Puppy Rattery",
+                              style: TextStyle(
+                                  fontSize: 30, fontWeight: FontWeight.bold),
+                            ),
                           ),
-                        ),
-                        Image(
-                            image: AssetImage(widget.imagePath!),
-                            height: widget.imageHeight),
-                      ],
-                    )
-                  : Container(),
-              Column(
-                children: [
-                  const Text(
-                    "Register",
-                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: screenWidth * 0.6,
-                    child: MyInputField(
-                      validator: (p0) {
-                        if (p0 == null || p0.isEmpty) {
-                          return "Required";
-                        }
-                        return null;
-                      },
-                      controller: widget.nameController,
-                      hintText: "Name",
+                          Image(
+                              image: AssetImage(widget.imagePath!),
+                              height: widget.imageHeight),
+                        ],
+                      )
+                    : Container(),
+                Column(
+                  children: [
+                    const Text(
+                      "Register",
+                      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: screenWidth * 0.6,
-                    child: MyInputField(
-                      validator: (p0) {
-                        if (p0 == null || p0.isEmpty) {
-                          return "Required";
-                        }
-                        return null;
-                      },
-                      controller: widget.emailController,
-                      hintText: "Email",
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: screenWidth * 0.6,
-                    child: MyInputField(
-                      isObscure: passwordObscure,
-                      suffixIcon: IconButton(
-                        icon: Icon(passwordObscure
-                            ? Icons.visibility
-                            : Icons.visibility_off),
-                        onPressed: () => setState(() {
-                          if (passwordObscure) {
-                            passwordObscure = false;
-                            return;
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: screenWidth * 0.6,
+                      child: MyInputField(
+                        textInputAction: TextInputAction.next,
+                        validator: (p0) {
+                          if (p0 == null || p0.isEmpty) {
+                            return "Required";
                           }
-                          passwordObscure = true;
-                        }),
+                          return null;
+                        },
+                        controller: widget.nameController,
+                        hintText: "Name",
                       ),
-                      validator: (p0) {
-                        if (p0 == null || p0.isEmpty) {
-                          return "Required";
-                        }
-                        return null;
-                      },
-                      controller: widget.passwordController,
-                      hintText: "Password",
                     ),
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: widget.onPressedSubmit,
-                    style: widget.buttonStyle,
-                    child: const Text("Submit"),
-                  ),
-                  const SizedBox(height: 10),
-                  ElevatedButton(
-                    onPressed: widget.onPressedLogin,
-                    style: widget.buttonStyle,
-                    child: const Text("Login"),
-                  ),
-                ],
-              ),
-              Container()
-            ],
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: screenWidth * 0.6,
+                      child: MyInputField(
+                        textInputAction: TextInputAction.next,
+                        validator: (p0) {
+                          if (p0 == null || p0.isEmpty) {
+                            return "Required";
+                          }
+                          return null;
+                        },
+                        controller: widget.emailController,
+                        hintText: "Email",
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    SizedBox(
+                      width: screenWidth * 0.6,
+                      child: MyInputField(
+                        onFieldSubmitted: widget.onFieldSubmitted,
+                        textInputAction: TextInputAction.go,
+                        isObscure: passwordObscure,
+                        suffixIcon: IconButton(
+                          icon: Icon(passwordObscure
+                              ? Icons.visibility
+                              : Icons.visibility_off),
+                          onPressed: () => setState(() {
+                            if (passwordObscure) {
+                              passwordObscure = false;
+                              return;
+                            }
+                            passwordObscure = true;
+                          }),
+                        ),
+                        validator: (p0) {
+                          if (p0 == null || p0.isEmpty) {
+                            return "Required";
+                          }
+                          return null;
+                        },
+                        controller: widget.passwordController,
+                        hintText: "Password",
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: widget.onPressedSubmit,
+                      style: widget.buttonStyle,
+                      child: const Text("Submit"),
+                    ),
+                    const SizedBox(height: 10),
+                    ElevatedButton(
+                      onPressed: widget.onPressedLogin,
+                      style: widget.buttonStyle,
+                      child: const Text("Login"),
+                    ),
+                  ],
+                ),
+                Container()
+              ],
+            ),
           ),
         ),
       ),
@@ -279,6 +294,8 @@ class MyInputField extends StatelessWidget {
       required this.controller,
       required this.hintText,
       required this.validator,
+      required this.textInputAction,
+      this.onFieldSubmitted,
       this.isObscure = false,
       this.suffixIcon});
 
@@ -286,12 +303,16 @@ class MyInputField extends StatelessWidget {
   final String hintText;
   final String? Function(String?) validator;
   final IconButton? suffixIcon;
+  final TextInputAction textInputAction;
+  final void Function(String)? onFieldSubmitted;
   bool isObscure;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       validator: validator,
+      onFieldSubmitted: onFieldSubmitted,
+      textInputAction: textInputAction,
       controller: controller,
       obscureText: isObscure,
       decoration: InputDecoration(

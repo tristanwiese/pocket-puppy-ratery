@@ -768,26 +768,28 @@ class _MyHomePageState extends State<MyHomePage> {
 
   myDrawer() {
     return Drawer(
-      child: Column(
-        children: [
-          Card(
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-                side: BorderSide(width: 1.5, color: secondaryThemeColor)),
-            elevation: 10,
-            margin: const EdgeInsets.all(10),
-            child: ListTile(
-              title: const Text(
-                "SignOut",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+      child: SafeArea(
+        child: Column(
+          children: [
+            Card(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: BorderSide(width: 1.5, color: secondaryThemeColor)),
+              elevation: 10,
+              margin: const EdgeInsets.all(10),
+              child: ListTile(
+                title: const Text(
+                  "SignOut",
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                ),
+                trailing: Icon(Icons.logout, color: Colors.red[300]),
+                onTap: () {
+                  FirebaseAuth.instance.signOut();
+                },
               ),
-              trailing: Icon(Icons.logout, color: Colors.red[300]),
-              onTap: () {
-                FirebaseAuth.instance.signOut();
-              },
-            ),
-          )
-        ],
+            )
+          ],
+        ),
       ),
     );
   }

@@ -58,6 +58,16 @@ class _AuthenticateState extends State<Authenticate> {
                 navPop(context);
               }
             },
+            onFieldSubmitted: (p0) async{
+              if (_formKey.currentState!.validate()) {
+                showDialog(
+                    context: context,
+                    builder: (context) =>
+                        const Center(child: CircularProgressIndicator()));
+                await login();
+                navPop(context);
+              }
+            },
             formKey: _formKey,
             emailController: _emailController,
             passwordController: _passwordController,
@@ -75,6 +85,15 @@ class _AuthenticateState extends State<Authenticate> {
               });
             },
             onPressedSubmit: () async {
+              if (_formKey.currentState!.validate()) {
+                showDialog(
+                    context: context,
+                    builder: (context) =>
+                        const Center(child: CircularProgressIndicator()));
+                await register();
+              }
+            },
+            onFieldSubmitted: (p0) async{
               if (_formKey.currentState!.validate()) {
                 showDialog(
                     context: context,
