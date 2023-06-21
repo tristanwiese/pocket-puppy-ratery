@@ -29,7 +29,6 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-
   bool passwordObscure = true;
 
   @override
@@ -85,9 +84,13 @@ class _LoginState extends State<Login> {
                     child: MyInputField(
                       isObscure: passwordObscure,
                       suffixIcon: IconButton(
-                        icon: Icon(passwordObscure ? Icons.visibility : Icons.visibility_off),
+                        icon: Icon(
+                          passwordObscure
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
                         onPressed: () => setState(() {
-                          if (passwordObscure){
+                          if (passwordObscure) {
                             passwordObscure = false;
                             return;
                           }
@@ -155,7 +158,6 @@ class Register extends StatefulWidget {
 }
 
 class _RegisterState extends State<Register> {
-
   bool passwordObscure = true;
 
   @override
@@ -226,9 +228,11 @@ class _RegisterState extends State<Register> {
                     child: MyInputField(
                       isObscure: passwordObscure,
                       suffixIcon: IconButton(
-                        icon: Icon(passwordObscure ? Icons.visibility : Icons.visibility_off),
+                        icon: Icon(passwordObscure
+                            ? Icons.visibility
+                            : Icons.visibility_off),
                         onPressed: () => setState(() {
-                          if (passwordObscure){
+                          if (passwordObscure) {
                             passwordObscure = false;
                             return;
                           }
@@ -268,27 +272,28 @@ class _RegisterState extends State<Register> {
   }
 }
 
+// ignore: must_be_immutable
 class MyInputField extends StatelessWidget {
   MyInputField(
       {super.key,
       required this.controller,
       required this.hintText,
       required this.validator,
-      this.isObscure,
+      this.isObscure = false,
       this.suffixIcon});
 
   final TextEditingController controller;
   final String hintText;
   final String? Function(String?) validator;
   final IconButton? suffixIcon;
-  bool? isObscure;
+  bool isObscure;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       validator: validator,
       controller: controller,
-      obscureText: isObscure ?? false,
+      obscureText: isObscure,
       decoration: InputDecoration(
           suffixIcon: suffixIcon,
           border: const OutlineInputBorder(),

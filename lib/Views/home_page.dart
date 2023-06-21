@@ -74,8 +74,9 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterFloat,
       appBar: myAppBar(context),
+      drawer: myDrawer(),
       endDrawer: SafeArea(
-        child: myDrawer(),
+        child: myEndDrawer(),
       ),
       floatingActionButton: null, //myFloatingActionButton(),
       bottomNavigationBar: myBottomNavBar(),
@@ -105,10 +106,10 @@ class _MyHomePageState extends State<MyHomePage> {
               ? const Expanded(child: NoRatScreen())
               : (activeFilters.isNotEmpty && filteredRats.isEmpty)
                   ? const Expanded(
-                    child: Center(
+                      child: Center(
                         child: Text("No rats match current filters..."),
                       ),
-                  )
+                    )
                   : Expanded(
                       child: ConstrainedBox(
                         constraints: BoxConstraints(maxWidth: getSize()),
@@ -225,26 +226,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         onPressed: () {
                           _key.currentState!.openEndDrawer();
-                        }),
-                  )),
-              Container(
-                  height: 35,
-                  margin: const EdgeInsets.only(bottom: 10),
-                  child: Directionality(
-                    textDirection: TextDirection.rtl,
-                    child: ElevatedButton.icon(
-                        label: const Text("SignOut",
-                            style: TextStyle(color: Colors.black87)),
-                        icon: Icon(Icons.logout, color: secondaryThemeColor),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            side: BorderSide(color: secondaryThemeColor),
-                          ),
-                        ),
-                        onPressed: () {
-                          FirebaseAuth.instance.signOut();
                         }),
                   )),
             ],
@@ -598,7 +579,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  myDrawer() {
+  myEndDrawer() {
     return Drawer(
       width: 200,
       child: Padding(
@@ -783,6 +764,32 @@ class _MyHomePageState extends State<MyHomePage> {
         .delete();
     navPop(context);
     navPop(context);
+  }
+
+  myDrawer() {
+    return Drawer(
+      child: Column(
+        children: [
+          Card(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: BorderSide(width: 1.5, color: secondaryThemeColor)),
+            elevation: 10,
+            margin: const EdgeInsets.all(10),
+            child: ListTile(
+              title: const Text(
+                "SignOut",
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+              ),
+              trailing: Icon(Icons.logout, color: Colors.red[300]),
+              onTap: () {
+                FirebaseAuth.instance.signOut();
+              },
+            ),
+          )
+        ],
+      ),
+    );
   }
 }
 
