@@ -2,20 +2,18 @@ library firebase_authentication;
 
 import 'package:flutter/material.dart';
 
-
-
 class Login extends StatefulWidget {
-  const Login(
-      {super.key,
-      this.imagePath,
-      this.imageHeight,
-      this.buttonStyle,
-      required this.onPressedRegister,
-      required this.formKey,
-      required this.onPressedLogin,
-      required this.emailController,
-      required this.passwordController,
-      });
+  const Login({
+    super.key,
+    this.imagePath,
+    this.imageHeight,
+    this.buttonStyle,
+    required this.onPressedRegister,
+    required this.formKey,
+    required this.onPressedLogin,
+    required this.emailController,
+    required this.passwordController,
+  });
 
   final String? imagePath;
   final double? imageHeight;
@@ -31,6 +29,9 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+
+  bool passwordObscure = true;
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -43,21 +44,20 @@ class _LoginState extends State<Login> {
             children: [
               widget.imagePath != null
                   ? Column(
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 10),
-                        child: const Text("Pocket Puppy Rattery",
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          child: const Text(
+                            "Pocket Puppy Rattery",
+                            style: TextStyle(
+                                fontSize: 30, fontWeight: FontWeight.bold),
                           ),
                         ),
-                      ),
-                      Image(
-                          image: AssetImage(widget.imagePath!),
-                          height: widget.imageHeight),
-                    ],
-                  )
+                        Image(
+                            image: AssetImage(widget.imagePath!),
+                            height: widget.imageHeight),
+                      ],
+                    )
                   : Container(),
               Column(
                 children: [
@@ -70,7 +70,7 @@ class _LoginState extends State<Login> {
                     width: screenWidth * 0.6,
                     child: MyInputField(
                       validator: (p0) {
-                        if (p0 == null || p0.isEmpty){
+                        if (p0 == null || p0.isEmpty) {
                           return "Required";
                         }
                         return null;
@@ -83,8 +83,19 @@ class _LoginState extends State<Login> {
                   SizedBox(
                     width: screenWidth * 0.6,
                     child: MyInputField(
+                      isObscure: passwordObscure,
+                      suffixIcon: IconButton(
+                        icon: Icon(passwordObscure ? Icons.visibility : Icons.visibility_off),
+                        onPressed: () => setState(() {
+                          if (passwordObscure){
+                            passwordObscure = false;
+                            return;
+                          }
+                          passwordObscure = true;
+                        }),
+                      ),
                       validator: (p0) {
-                        if (p0 == null || p0.isEmpty){
+                        if (p0 == null || p0.isEmpty) {
                           return "Required";
                         }
                         return null;
@@ -114,8 +125,8 @@ class _LoginState extends State<Login> {
       ),
     );
   }
-  
 }
+
 class Register extends StatefulWidget {
   const Register(
       {super.key,
@@ -127,8 +138,7 @@ class Register extends StatefulWidget {
       required this.onPressedSubmit,
       required this.emailController,
       required this.passwordController,
-      required this.nameController
-      });
+      required this.nameController});
 
   final String? imagePath;
   final double? imageHeight;
@@ -146,6 +156,8 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
 
+  bool passwordObscure = true;
+
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -159,21 +171,20 @@ class _RegisterState extends State<Register> {
             children: [
               widget.imagePath != null
                   ? Column(
-                    children: [
+                      children: [
                         Container(
-                        margin: const EdgeInsets.only(bottom: 10),
-                        child: const Text("Pocket Puppy Rattery",
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.bold
+                          margin: const EdgeInsets.only(bottom: 10),
+                          child: const Text(
+                            "Pocket Puppy Rattery",
+                            style: TextStyle(
+                                fontSize: 30, fontWeight: FontWeight.bold),
                           ),
                         ),
-                      ),
-                      Image(
-                          image: AssetImage(widget.imagePath!),
-                          height: widget.imageHeight),
-                    ],
-                  )
+                        Image(
+                            image: AssetImage(widget.imagePath!),
+                            height: widget.imageHeight),
+                      ],
+                    )
                   : Container(),
               Column(
                 children: [
@@ -186,7 +197,7 @@ class _RegisterState extends State<Register> {
                     width: screenWidth * 0.6,
                     child: MyInputField(
                       validator: (p0) {
-                        if (p0 == null || p0.isEmpty){
+                        if (p0 == null || p0.isEmpty) {
                           return "Required";
                         }
                         return null;
@@ -200,7 +211,7 @@ class _RegisterState extends State<Register> {
                     width: screenWidth * 0.6,
                     child: MyInputField(
                       validator: (p0) {
-                        if (p0 == null || p0.isEmpty){
+                        if (p0 == null || p0.isEmpty) {
                           return "Required";
                         }
                         return null;
@@ -213,8 +224,19 @@ class _RegisterState extends State<Register> {
                   SizedBox(
                     width: screenWidth * 0.6,
                     child: MyInputField(
+                      isObscure: passwordObscure,
+                      suffixIcon: IconButton(
+                        icon: Icon(passwordObscure ? Icons.visibility : Icons.visibility_off),
+                        onPressed: () => setState(() {
+                          if (passwordObscure){
+                            passwordObscure = false;
+                            return;
+                          }
+                          passwordObscure = true;
+                        }),
+                      ),
                       validator: (p0) {
-                        if (p0 == null || p0.isEmpty){
+                        if (p0 == null || p0.isEmpty) {
                           return "Required";
                         }
                         return null;
@@ -244,26 +266,33 @@ class _RegisterState extends State<Register> {
       ),
     );
   }
-
-  
-
- 
 }
+
 class MyInputField extends StatelessWidget {
-   MyInputField(
-      {super.key, required this.controller, required this.hintText, required this.validator});
+  MyInputField(
+      {super.key,
+      required this.controller,
+      required this.hintText,
+      required this.validator,
+      this.isObscure,
+      this.suffixIcon});
 
   final TextEditingController controller;
   final String hintText;
-  String? Function(String?) validator;
+  final String? Function(String?) validator;
+  final IconButton? suffixIcon;
+  bool? isObscure;
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
       validator: validator,
       controller: controller,
+      obscureText: isObscure ?? false,
       decoration: InputDecoration(
-          border: const OutlineInputBorder(), hintText: hintText),
+          suffixIcon: suffixIcon,
+          border: const OutlineInputBorder(),
+          hintText: hintText),
     );
   }
 }

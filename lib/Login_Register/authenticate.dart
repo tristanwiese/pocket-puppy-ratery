@@ -81,7 +81,6 @@ class _AuthenticateState extends State<Authenticate> {
                     builder: (context) =>
                         const Center(child: CircularProgressIndicator()));
                 await register();
-                // navPop(context);
               }
             },
             formKey: _formKey,
