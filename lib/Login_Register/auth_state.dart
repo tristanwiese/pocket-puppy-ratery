@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pocket_puppy_rattery/Views/home_page.dart';
+import 'package:pocket_puppy_rattery/Login_Register/verifyemail.dart';
 
 import 'authenticate.dart';
 
@@ -15,7 +15,7 @@ class AuthState extends StatelessWidget {
         if (snapshot.data == null){
           return const Authenticate();
         } else {
-          return const MyHomePage();
+          return const VerifyEmail();
         }
       },);
   }

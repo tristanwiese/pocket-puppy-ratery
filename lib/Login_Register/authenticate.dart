@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_authentication/firebase_authentication.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
-import 'dart:developer' as dev;
 
 import 'package:pocket_puppy_rattery/Models/user.dart';
 
@@ -18,12 +17,12 @@ class Authenticate extends StatefulWidget {
 }
 
 class _AuthenticateState extends State<Authenticate> {
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  TextEditingController _emailController =
+  final TextEditingController _emailController =
       TextEditingController(text: "tristanwiese7472@gmail.com");
-  TextEditingController _passwordController = TextEditingController();
-  TextEditingController _nameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController(text: "password");
+  final TextEditingController _nameController = TextEditingController();
 
   @override
   void dispose() {
@@ -150,9 +149,6 @@ class _AuthenticateState extends State<Authenticate> {
           email: _emailController.text, password: _passwordController.text);
     } on FirebaseAuthException catch (e) {
       String eMessage = '';
-
-      print(e.code + e.toString());
-
       if (e.toString().contains("many failed login attempts")) {
         eMessage = "Too many attempts, try again later!";
       } else {

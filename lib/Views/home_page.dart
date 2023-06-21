@@ -12,7 +12,10 @@ import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Models/genes.dart';
 import 'package:pocket_puppy_rattery/Models/rat.dart';
 import 'package:pocket_puppy_rattery/Views/add_rat.dart';
+import 'package:pocket_puppy_rattery/Views/profile_page.dart';
 import 'package:pocket_puppy_rattery/Views/rat_info.dart';
+
+import '../Dev/dev_page.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -45,28 +48,33 @@ class _MyHomePageState extends State<MyHomePage> {
 
   String appBarTitle = "Your Rats";
 
+  bool showLoad = false;
+
   mySetState() => setState(() {});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-          image: DecorationImage(image: AssetImage("asstes/images/Paws.jpg"))),
-      child: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection("users")
-              .doc(FirebaseAuth.instance.currentUser!.uid)
-              .collection("rats")
-              .snapshots(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              rats = snapshot.data!.docs;
-              return myBody(rats);
-            }
+    return showLoad
+        ? const LoadScreen()
+        : Container(
+            decoration: const BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage("asstes/images/Paws.jpg"))),
+            child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection("users")
+                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                    .collection("rats")
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    rats = snapshot.data!.docs;
+                    return myBody(rats);
+                  }
 
-            return const LoadScreen();
-          }),
-    );
+                  return const LoadScreen();
+                }),
+          );
   }
 
   myBody(List<QueryDocumentSnapshot<Object?>> rats) => Scaffold(
@@ -226,6 +234,27 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         onPressed: () {
                           _key.currentState!.openEndDrawer();
+                        }),
+                  )),
+              Container(
+                  height: 35,
+                  margin: const EdgeInsets.only(bottom: 10),
+                  child: Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: ElevatedButton.icon(
+                        label: const Text("Devs only!",
+                            style: TextStyle(color: Colors.red)),
+                        icon:
+                            const Icon(Icons.error_outline, color: Colors.red),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: BorderSide(color: secondaryThemeColor),
+                          ),
+                        ),
+                        onPressed: () {
+                          navPush(context, const DevPage());
                         }),
                   )),
             ],
@@ -771,23 +800,116 @@ class _MyHomePageState extends State<MyHomePage> {
       child: SafeArea(
         child: Column(
           children: [
-            Card(
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  side: BorderSide(width: 1.5, color: secondaryThemeColor)),
-              elevation: 10,
-              margin: const EdgeInsets.all(10),
-              child: ListTile(
-                title: const Text(
-                  "SignOut",
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  border: BorderDirectional(
+                    bottom: BorderSide(
+                      color: secondaryThemeColor
+                    )
+                    ),
                 ),
-                trailing: Icon(Icons.logout, color: Colors.red[300]),
-                onTap: () {
-                  FirebaseAuth.instance.signOut();
-                },
+                child: Column(
+                  children: [
+                    Card(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          side: BorderSide(width: 1.5, color: secondaryThemeColor)),
+                      elevation: 10,
+                      margin: const EdgeInsets.all(10),
+                      child: ListTile(
+                        title: const Text(
+                          "Profile",
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                        ),
+                        trailing: Icon(Icons.person, color: secondaryThemeColor),
+                        onTap: () {
+                          navPush(context, const ProfilePage());
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            )
+            ),
+            Column(
+              children: [
+                Card(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          side: BorderSide(width: 1.5, color: secondaryThemeColor)),
+                      elevation: 10,
+                      margin: const EdgeInsets.all(10),
+                      child: ListTile(
+                        title: const Text(
+                          "SignOut",
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                        ),
+                        trailing: Icon(Icons.logout, color: Colors.red[300]),
+                        onTap: () {
+                          FirebaseAuth.instance.signOut();
+                        },
+                      ),
+                    ),
+                Card(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: BorderSide(width: 1.5, color: secondaryThemeColor)),
+                  elevation: 10,
+                  margin: const EdgeInsets.all(10),
+                  child: ListTile(
+                    title: const Text(
+                      "Delete Account",
+                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                    ),
+                    trailing: Icon(Icons.delete_forever_outlined, color: Colors.red[300]),
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          final actions = [
+                            ElevatedButton(
+                              onPressed: () {
+                                navPop(context);
+                              },
+                              style: MyElevatedButtonStyle.buttonStyle,
+                              child: const Text("Cancel"),
+                            ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                navPop(context);
+                                setState(() {
+                                  showLoad = true;
+                                });
+                                final user = FirebaseAuth.instance.currentUser!;
+                                await FirebaseFirestore.instance
+                                    .collection("users")
+                                    .doc(user.uid)
+                                    .delete();
+                                user.delete();
+                              },
+                              style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red,
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      side: const BorderSide())),
+                              child: const Text("Delete"),
+                            ),
+                          ];
+
+                          return AlertDialog(
+                            actions: actions,
+                            title: const Text("Warning!"),
+                            content: const Text(
+                                "If you proceed you will loose all your data and account!"),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
           ],
         ),
       ),
