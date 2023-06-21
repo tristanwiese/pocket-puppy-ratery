@@ -67,153 +67,210 @@ class _RatInfoState extends State<RatInfo> {
         if (_dropDownValue == null) {
           age = defaultAgeCalculator(birthdate);
         }
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                margin: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                    border: Border.all(),
-                    borderRadius: BorderRadius.circular(20),
-                    color: secondaryThemeColor),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Name: ${info["name"] ?? "name"}",
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                    const SizedBox(height: 10),
-                    Text("Registered Name: ${info["registeredName"]}"),
-                    const SizedBox(height: 10),
-                    Text(
-                        "Color: ${stringReplace(string: info["colours"].toString(), searchElement: [
-                              "[",
-                              "]"
-                            ], replacementElement: "")}"),
-                    const SizedBox(height: 10),
-                    Text("Coat: ${info["coat"]}"),
-                    const SizedBox(height: 10),
-                    Text(
-                        "Markings: ${stringReplace(string: info["markings"].toString(), searchElement: [
-                              "[",
-                              "]"
-                            ], replacementElement: "")}",
-                            textAlign: TextAlign.center,
-                            ),
-                    const SizedBox(height: 10),
-                    Text("Ears: ${info["ears"]}"),
-                    const SizedBox(height: 10),
-                    Text("Gender: ${info["gender"]}"),
-                    const SizedBox(height: 10),
-                    Text(
-                        "Birthday: ${info["birthday"][0]}/${info["birthday"][1]}/${info["birthday"][2]}"),
-                    const SizedBox(height: 10),
-                    Text("Mother: ${info["mother"]}"),
-                    const SizedBox(height: 10),
-                    Text("Father: ${info["father"]}"),
-                    const SizedBox(height: 10),
-                    Text("Age: $age"),
-                    (_dropDownValue == "Days") ? 
-                    const Text("This number in a rough estimate and does not consider leap years or other factors that could effect the result!",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontStyle: FontStyle.italic,
-                      fontSize: 10,
-                    ),
-                    ) :
-                    Container(),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            navPush(
-                                context,
-                                AddRat(
-                                  coat: info["coat"],
-                                  color: info["colours"],
-                                  ears: info["ears"],
-                                  father: info["father"],
-                                  mother: info["mother"],
-                                  name: info["name"],
-                                  regName: info["registeredName"],
-                                  markings: info["markings"],
-                                  gender: info["gender"],
-                                  birthday: DateTime(info["birthday"][0],
-                                      info["birthday"][1], info["birthday"][2]),
-                                  id: widget.info.id,
-                                  colorCode : info["colorCode"]
-                                ));
-                          },
-                          style: ElevatedButton.styleFrom(
-                              fixedSize: const Size(80, 40),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15))),
-                          child: const Text("Edit"),
-                        ),
-                        const SizedBox(width: 10),
-                        Container(
-                          height: 40,
-                          padding: const EdgeInsets.all(5),
-                          decoration: BoxDecoration(
-                            border: Border.all(),
-                            borderRadius: BorderRadius.circular(15)
-                          ),
-                          child: DropdownButtonHideUnderline(
-                              child: DropdownButton<String>(
-                            hint: const Text("View Age"),
-                            items: ageView
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                  value: value, child: Text(value));
-                            }).toList(),
-                            value: _dropDownValue,
-                            onChanged: (value) {
-                              log(value!);
-                              _dropDownValue = value;
-                              switch (value) {
-                                case "Days":
-                                  age = "${ageCalculatorDay(birthdate)} days";
-                                  break;
-                                case "Weeks":
-                                  age = "${ageCalculatorWeek(birthdate)} weeks";
-                                  break;
-                                case "Months":
-                                  age = "${ageCalculatorMonth(birthdate)} months";
-                                  break;
-                                case "Years":
-                                  age = "${ageCalculatorYear(birthdate)} years";
-                                  break;
-                                case "Default":
-                                  age = "${defaultAgeCalculator(birthdate)}";
-                              }
-                              setState(() {
-                                log(age);
-                              });
-                            },
-                          )),
-                        )
-                      ],
-                    ),
-                  ],
+        return Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                MyInfoCard(
+                  title: "Details",
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("Name: ${info["name"]}"),
+                      Text("Regestered Name: ${info["registeredName"]}"),
+                      Text("Gender: ${info["gender"]}"),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox()
-            ],
-          ),
+                MyInfoCard(
+                  title: "Age",
+                  child: Column(
+                    children: [
+                      Text('Age: $age'),
+                      const SizedBox(height: 10),
+                      ageViewSelector(birthdate)
+                    ],
+                  ),
+                )
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                MyInfoCard(
+                  title: "Markings",
+                  child: SizedBox(
+                    height: 100,
+                    width: 200,
+                    child: ListView.builder(
+
+                      itemCount: info["markings"].length,
+                      itemBuilder: (context, index) {
+                        return Text("- ${info["markings"][index]}");
+                      },
+                    ),
+                  ),
+                ),
+                MyInfoCard(title: "Colours", 
+                child: SizedBox(
+                  height: 100,
+                  width: 100,
+                  child: ListView.builder(
+                    itemCount: info["colours"].length,
+                    itemBuilder: (context, index) {
+                      return Text("- ${info["colours"][index]}");
+                    },
+                    ),
+                  ),
+                )
+              ],
+            ),
+            SizedBox(
+              height: 40,
+              width: 100,
+              child: ElevatedButton(
+                      onPressed: () {
+              navPush(
+                  context,
+                  AddRat(
+                      coat: info["coat"],
+                      color: info["colours"],
+                      ears: info["ears"],
+                      father: info["father"],
+                      mother: info["mother"],
+                      name: info["name"],
+                      regName: info["registeredName"],
+                      markings: info["markings"],
+                      gender: info["gender"],
+                      birthday: DateTime(info["birthday"][0], info["birthday"][1],
+                          info["birthday"][2]),
+                      id: widget.info.id,
+                      colorCode: info["colorCode"]));
+                      },
+                      style: MyElevatedButtonStyle.buttonStyle,
+                      child: const Text("Edit"),
+                    ),
+            ),
+          ],
         );
       },
+    );
+  }
+
+  Row editRow(
+      BuildContext context, Map<String, dynamic> info, DateTime birthdate) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton(
+          onPressed: () {
+            navPush(
+                context,
+                AddRat(
+                    coat: info["coat"],
+                    color: info["colours"],
+                    ears: info["ears"],
+                    father: info["father"],
+                    mother: info["mother"],
+                    name: info["name"],
+                    regName: info["registeredName"],
+                    markings: info["markings"],
+                    gender: info["gender"],
+                    birthday: DateTime(info["birthday"][0], info["birthday"][1],
+                        info["birthday"][2]),
+                    id: widget.info.id,
+                    colorCode: info["colorCode"]));
+          },
+          style: ElevatedButton.styleFrom(
+              fixedSize: const Size(80, 40),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15))),
+          child: const Text("Edit"),
+        ),
+      ],
+    );
+  }
+
+  ageViewSelector(DateTime birthdate) {
+    return Card(
+      elevation: 10,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+        side: BorderSide(color: secondaryThemeColor)
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal:8.0),
+        child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+          hint: const Text("View Age"),
+          items: ageView.map<DropdownMenuItem<String>>((String value) {
+            return DropdownMenuItem<String>(value: value, child: Text(value));
+          }).toList(),
+          value: _dropDownValue,
+          onChanged: (value) {
+            log(value!);
+            _dropDownValue = value;
+            switch (value) {
+              case "Days":
+                age = "${ageCalculatorDay(birthdate)} days";
+                break;
+              case "Weeks":
+                age = "${ageCalculatorWeek(birthdate)} weeks";
+                break;
+              case "Months":
+                age = "${ageCalculatorMonth(birthdate)} months";
+                break;
+              case "Years":
+                age = "${ageCalculatorYear(birthdate)} years";
+                break;
+              case "Default":
+                age = "${defaultAgeCalculator(birthdate)}";
+            }
+            setState(() {
+              log(age);
+            });
+          },
+        )),
+      ),
     );
   }
 
   AppBar myAppBar() => AppBar(
         title: Text("Rat: ${widget.info["name"]}"),
       );
+}
+
+class MyInfoCard extends StatelessWidget {
+  const MyInfoCard({super.key, required this.child, required this.title});
+
+  final Widget child;
+  final String title;
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 10,
+      semanticContainer: false,
+      shape: RoundedRectangleBorder(
+          side: BorderSide(
+            color: secondaryThemeColor,
+            width: 1.4,
+          ),
+          borderRadius: BorderRadius.circular(10)),
+      margin: const EdgeInsets.all(10),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Text(
+              title,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            child
+          ],
+        ),
+      ),
+    );
+  }
 }
