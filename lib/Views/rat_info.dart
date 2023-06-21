@@ -115,7 +115,7 @@ class _RatInfoState extends State<RatInfo> {
                 MyInfoCard(title: "Colours", 
                 child: SizedBox(
                   height: 100,
-                  width: 100,
+                  width: 150,
                   child: ListView.builder(
                     itemCount: info["colours"].length,
                     itemBuilder: (context, index) {
