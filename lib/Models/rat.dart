@@ -79,7 +79,7 @@ class Rat {
     return elementsName;
   }
 
-  static earsToList(){
+  static List<String>earsToList(){
     const elementList = Ears.values;
     final List<String> elementsName = [];
 

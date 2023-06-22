@@ -1,7 +1,4 @@
 // ignore_for_file: use_build_context_synchronously, non_constant_identifier_names
-
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -24,30 +21,10 @@ class AddRat extends StatefulWidget {
   const AddRat(
       {super.key,
       this.id,
-      this.name,
-      this.coat,
-      this.color,
-      this.ears,
-      this.father,
-      this.mother,
-      this.regName,
-      this.birthday,
-      this.gender,
-      this.markings,
-      this.colorCode
+      this.rat
       });
-  final String? name;
-  final String? regName;
-  final List? color;
-  final String? ears;
-  final String? coat;
-  final String? mother;
-  final String? father;
-  final String? gender;
-  final DateTime? birthday;
-  final List? markings;
+  final Rat? rat;
   final String? id;
-  final String? colorCode;
 
   @override
   State<AddRat> createState() => _AddRatState();
@@ -82,27 +59,19 @@ class _AddRatState extends State<AddRat> {
 
   @override
   void initState() {
-    if (widget.name != null) {
-      log("fired!");
-      nameController = TextEditingController(text: widget.name);
-      momController = TextEditingController(text: widget.mother);
-      dadController = TextEditingController(text: widget.father);
-      registeredNameController = TextEditingController(text: widget.regName);
-      activeColorsList = widget.color!;
-      earController = widget.ears;
-      coatController = widget.coat;
-      actvieMarkingsList = widget.markings!;
-      activeColorsList = widget.color!;
-      _selectedDate = widget.birthday!;
-
-      if (widget.gender == "Male") {
-        _pickedGender = Gender.Male;
-        selectedGender = [true, false];
-      } else {
-        _pickedGender = Gender.Female;
-        selectedGender = [false, true];
-      }
-      if (getMarkingtype(widget.markings!) == "hLocus") {
+    if (widget.rat != null) {
+      nameController = TextEditingController(text: widget.rat!.name);
+      momController = TextEditingController(text: widget.rat!.parents.mom);
+      dadController = TextEditingController(text: widget.rat!.parents.dad);
+      registeredNameController = TextEditingController(text: widget.rat!.registeredName);
+      activeColorsList = widget.rat!.colours;
+      earController = widget.rat!.ears.name;
+      coatController = widget.rat!.coat.name;
+      actvieMarkingsList = widget.rat!.markings;
+      activeColorsList = widget.rat!.colours;
+      _selectedDate = widget.rat!.birthday;
+      _pickedGender = widget.rat!.gender;
+      if (getMarkingtype(widget.rat!.markings) == "hLocus") {
         markingList = hMarkingsList;
         selectedMarkings = [false, true];
       }
@@ -232,6 +201,7 @@ class _AddRatState extends State<AddRat> {
               navPop(context);
               return;
             }
+            coatsList.sort();
             final Rat rat = Rat(
               name: nameController.text.trim(),
               registeredName: registeredNameController.text.trim(),
@@ -247,8 +217,8 @@ class _AddRatState extends State<AddRat> {
                   coatsList.indexWhere((element) => element == coatController)],
               birthday: _selectedDate,
             );
-            if (widget.name != null) {
-              rat.colorCode = widget.colorCode!;
+            if (widget.rat != null) {
+              rat.colorCode = widget.rat!.colorCode;
               await FirebaseFirestore.instance
                   .collection("users")
                   .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -291,7 +261,6 @@ class _AddRatState extends State<AddRat> {
           setState(() {
             _selectedDate = _pickedDate!;
           });
-          log(_selectedDate.toString());
         }
       },
       style: ElevatedButton.styleFrom(

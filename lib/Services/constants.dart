@@ -15,7 +15,7 @@ List<String> genderList = Rat.genderToList();
 
 enum Gender { Male, Female }
 
-enum Ears { Standard, Dumbo }
+enum Ears { Dumbo, Standard }
 
 enum H_Locus {
   Unmarked,
@@ -64,7 +64,7 @@ enum Colours {
 }
 
 enum Coats {
-  Standard,
-  Harley,
   Hairless,
+  Harley,
+  Standard,
 }
