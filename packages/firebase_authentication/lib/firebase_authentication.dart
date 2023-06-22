@@ -14,6 +14,8 @@ class Login extends StatefulWidget {
     required this.onPressedLogin,
     required this.emailController,
     required this.passwordController,
+    required this.forgotPasswordTextColor,
+    required this.onPressedForgotPassword
   });
 
   final String? imagePath;
@@ -22,9 +24,11 @@ class Login extends StatefulWidget {
   final VoidCallback onPressedRegister;
   final GlobalKey<FormState> formKey;
   final VoidCallback onPressedLogin;
+  final VoidCallback onPressedForgotPassword;
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final void Function(String)? onFieldSubmitted;
+  final Color forgotPasswordTextColor;
 
   @override
   State<Login> createState() => _LoginState();
@@ -125,6 +129,14 @@ class _LoginState extends State<Login> {
                       style: widget.buttonStyle,
                       child: const Text("Register"),
                     ),
+                    const SizedBox(height: 20),
+                     InkWell(
+                      onTap: widget.onPressedForgotPassword,
+                       child: Text("Forgot Password", style: TextStyle(
+                        color: widget.forgotPasswordTextColor,
+                        decoration: TextDecoration.underline
+                                         ),),
+                     )
                   ],
                 ),
                 Container()

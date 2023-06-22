@@ -825,6 +825,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         trailing: Icon(Icons.person, color: secondaryThemeColor),
                         onTap: () {
                           navPush(context, const ProfilePage());
+                          _key.currentState!.closeDrawer();
                         },
                       ),
                     ),

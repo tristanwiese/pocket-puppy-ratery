@@ -23,7 +23,8 @@ class _AuthenticateState extends State<Authenticate> {
 
   final TextEditingController _emailController =
       TextEditingController(text: "tristanwiese7472@gmail.com");
-  final TextEditingController _passwordController = TextEditingController(text: "password");
+  final TextEditingController _passwordController =
+      TextEditingController(text: "password");
   final TextEditingController _nameController = TextEditingController();
 
   @override
@@ -59,7 +60,10 @@ class _AuthenticateState extends State<Authenticate> {
                 navPop(context);
               }
             },
-            onFieldSubmitted: (p0) async{
+            onPressedForgotPassword: () {
+              navPush(context, ForgotPasswordPage());
+            },
+            onFieldSubmitted: (p0) async {
               if (_formKey.currentState!.validate()) {
                 showDialog(
                     context: context,
@@ -78,6 +82,7 @@ class _AuthenticateState extends State<Authenticate> {
                 fixedSize: Size(screenWidth * 0.6, 40),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20))),
+            forgotPasswordTextColor: primaryThemeColor,
           )
         : Register(
             onPressedLogin: () {
@@ -94,7 +99,7 @@ class _AuthenticateState extends State<Authenticate> {
                 await register();
               }
             },
-            onFieldSubmitted: (p0) async{
+            onFieldSubmitted: (p0) async {
               if (_formKey.currentState!.validate()) {
                 showDialog(
                     context: context,
@@ -124,7 +129,6 @@ class _AuthenticateState extends State<Authenticate> {
       );
       navPop(context);
     } on FirebaseAuthException catch (e) {
-
       String eMessage = "";
 
       if (e.toString().contains("Password should be at least 6 characters")) {
@@ -165,14 +169,82 @@ class _AuthenticateState extends State<Authenticate> {
       ));
     }
   }
-  
-  addToDB() {
 
+  addToDB() {
     log("Messed with user DB");
 
     final users = FirebaseFirestore.instance.collection("users");
-    users.doc(FirebaseAuth.instance.currentUser!.uid).set(UserModel(
-            email: _emailController.text, userName: _nameController.text)
-        .toDB());
+    users.doc(FirebaseAuth.instance.currentUser!.uid).set(
+        UserModel(email: _emailController.text, userName: _nameController.text)
+            .toDB());
+  }
+}
+
+class ForgotPasswordPage extends StatelessWidget {
+  ForgotPasswordPage({super.key});
+
+  final TextEditingController _emailController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Center(child: Text("Forgot Password")),
+      ),
+      body: Form(
+        key: _formKey,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                "Enter enter email to send password reset email",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(
+                width: MediaQuery.of(context).size.width * 0.6,
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                      hintText: "Email", border: OutlineInputBorder()),
+                  controller: _emailController,
+                  validator: (value) {
+                    if (value == null || value.isEmpty){
+                      return "Required";
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: 150,
+                height: 40,
+                child: ElevatedButton(
+                  onPressed: () async{
+                    if (_formKey.currentState!.validate()) {
+                      showDialog(context: context, builder: (context) => const Center(child: CircularProgressIndicator()));
+                      await FirebaseAuth.instance.sendPasswordResetEmail(email: _emailController.text.trim());
+                      navPop(context);
+                      scaffoldKey.currentState!.showSnackBar(
+                         SnackBar(
+                          backgroundColor: primaryThemeColor,
+                          duration: const Duration(seconds: 3),
+                          content: const Text("Email sent! Please check inbox"),
+                          )
+                      );
+                      return;
+                    }
+                  },
+                  style: MyElevatedButtonStyle.buttonStyle,
+                  child: const Text("Reset Password"),
+                ),
+              )
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
