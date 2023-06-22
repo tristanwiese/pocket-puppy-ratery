@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously, unused_import
 
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:age_calculator/age_calculator.dart';
@@ -14,6 +15,8 @@ import 'package:pocket_puppy_rattery/Models/rat.dart';
 import 'package:pocket_puppy_rattery/Views/add_rat.dart';
 import 'package:pocket_puppy_rattery/Views/profile_page.dart';
 import 'package:pocket_puppy_rattery/Views/rat_info.dart';
+import 'package:pocket_puppy_rattery/Views/settings_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Dev/dev_page.dart';
 
@@ -50,7 +53,34 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bool showLoad = false;
 
+  late SharedPreferences prefs;
+
+  late Timer timer;
+
+  
+
   mySetState() => setState(() {});
+
+  getPrefs() async{
+    prefs = await SharedPreferences.getInstance();
+  }
+
+
+@override
+  void initState() {
+
+    getPrefs();
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    
+    // timer.cancel();
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -133,11 +163,11 @@ class _MyHomePageState extends State<MyHomePage> {
                               Color? colorCode;
                               switch (buildItem[i]["colorCode"]) {
                                 case "green":
-                                  colorCode = Colors.green;
+                                  colorCode = Colors.green[300];
                                 case "blue":
-                                  colorCode = Colors.blue;
+                                  colorCode = Colors.blue[300];
                                 case "red":
-                                  colorCode = Colors.red;
+                                  colorCode = Colors.red[300];
                               }
                               return Padding(
                                 padding: const EdgeInsets.all(8.0),
@@ -169,11 +199,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                     color:
                                         (AgeCalculator.age(birthdate).years >=
                                                 3)
-                                            ? primaryThemeColor
+                                            ? Color(prefs.getInt("seniorColor")??0xff78E0C7)
                                             : null,
                                     child: ListTile(
                                       leading: Icon(
-                                        Icons.square,
+                                        Icons.square_rounded,
                                         color: colorCode,
                                       ),
                                       trailing: myIconButton(rat: buildItem[i]),
@@ -796,6 +826,26 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   myDrawer() {
+    Card drawerCard(
+        {required VoidCallback onTap,
+        required String title,
+        required IconData icon}) {
+      return Card(
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(width: 1.5, color: secondaryThemeColor)),
+        elevation: 10,
+        margin: const EdgeInsets.all(10),
+        child: ListTile(
+            title: Text(
+              title,
+              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+            ),
+            trailing: Icon(icon, color: secondaryThemeColor),
+            onTap: onTap),
+      );
+    }
+
     return Drawer(
       child: SafeArea(
         child: Column(
@@ -804,31 +854,25 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Container(
                 decoration: BoxDecoration(
                   border: BorderDirectional(
-                    bottom: BorderSide(
-                      color: secondaryThemeColor
-                    )
-                    ),
+                      bottom: BorderSide(color: secondaryThemeColor)),
                 ),
                 child: Column(
                   children: [
-                    Card(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          side: BorderSide(width: 1.5, color: secondaryThemeColor)),
-                      elevation: 10,
-                      margin: const EdgeInsets.all(10),
-                      child: ListTile(
-                        title: const Text(
-                          "Profile",
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-                        ),
-                        trailing: Icon(Icons.person, color: secondaryThemeColor),
-                        onTap: () {
-                          navPush(context, const ProfilePage());
-                          _key.currentState!.closeDrawer();
-                        },
-                      ),
+                    drawerCard(
+                      icon: Icons.person,
+                      title: "Profile",
+                      onTap: () {
+                        navPush(context, const ProfilePage());
+                        _key.currentState!.closeDrawer();
+                      },
                     ),
+                    drawerCard(
+                      onTap: () {
+                        navPush(context, const SettingsPage());
+                      },
+                      title: "Settings",
+                      icon: Icons.settings,
+                    )
                   ],
                 ),
               ),
@@ -836,22 +880,23 @@ class _MyHomePageState extends State<MyHomePage> {
             Column(
               children: [
                 Card(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          side: BorderSide(width: 1.5, color: secondaryThemeColor)),
-                      elevation: 10,
-                      margin: const EdgeInsets.all(10),
-                      child: ListTile(
-                        title: const Text(
-                          "SignOut",
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-                        ),
-                        trailing: Icon(Icons.logout, color: Colors.red[300]),
-                        onTap: () {
-                          FirebaseAuth.instance.signOut();
-                        },
-                      ),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      side: BorderSide(width: 1.5, color: secondaryThemeColor)),
+                  elevation: 10,
+                  margin: const EdgeInsets.all(10),
+                  child: ListTile(
+                    title: const Text(
+                      "SignOut",
+                      style:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                     ),
+                    trailing: Icon(Icons.logout, color: Colors.red[300]),
+                    onTap: () {
+                      FirebaseAuth.instance.signOut();
+                    },
+                  ),
+                ),
                 Card(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -861,9 +906,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: ListTile(
                     title: const Text(
                       "Delete Account",
-                      style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
+                      style:
+                          TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
                     ),
-                    trailing: Icon(Icons.delete_forever_outlined, color: Colors.red[300]),
+                    trailing: Icon(Icons.delete_forever_outlined,
+                        color: Colors.red[300]),
                     onTap: () {
                       showDialog(
                         context: context,

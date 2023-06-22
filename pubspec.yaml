@@ -42,6 +42,8 @@ dependencies:
   firebase_authentication:
     path: packages/firebase_authentication
   firebase_auth: ^4.6.3
+  flutter_colorpicker: ^1.0.3
+  shared_preferences: ^2.1.2
 
 flutter_launcher_icons:
   android: true
