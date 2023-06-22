@@ -115,7 +115,6 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: myAppBar(context),
       drawer: myDrawer(),
       endDrawer: myEndDrawer(),
-      floatingActionButton: null, //myFloatingActionButton(),
       bottomNavigationBar: myBottomNavBar(),
       body: PageView(
         controller: _pageController,
@@ -207,14 +206,26 @@ class _MyHomePageState extends State<MyHomePage> {
                                             ? seniorState ? Color(seniorColor) : null
                                             : null,
                                     child: ListTile(
-                                      leading: Icon(
-                                        Icons.square_rounded,
-                                        color: colorCode,
+                                      leading: SizedBox(
+                                        width: 70,
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Icon(
+                                              Icons.square_rounded,
+                                              color: colorCode,
+                                            ),
+                                            Image.asset("asstes/images/logo.png", 
+                                            width: 30,
+                                            errorBuilder: (context, error, stackTrace) => const Icon(Icons.image),)
+                                          ],
+                                        ),
                                       ),
                                       trailing: myIconButton(rat: buildItem[i]),
                                       title: Text(buildItem[i]['name']),
                                       subtitle: Text(buildItem[i]['gender']),
                                       contentPadding: const EdgeInsets.all(10),
+                                      
                                     ),
                                   ),
                                 ),
@@ -809,9 +820,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   double getSize() {
     if (MediaQuery.of(context).size.width < 435) {
-      return MediaQuery.of(context).size.width / 1.5;
+      return MediaQuery.of(context).size.width / 1.3;
     } else {
-      return MediaQuery.of(context).size.width / 2;
+      return MediaQuery.of(context).size.width / 1.3;
     }
   }
 
