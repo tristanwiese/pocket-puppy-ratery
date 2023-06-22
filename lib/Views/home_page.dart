@@ -83,9 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
           FloatingActionButtonLocation.miniCenterFloat,
       appBar: myAppBar(context),
       drawer: myDrawer(),
-      endDrawer: SafeArea(
-        child: myEndDrawer(),
-      ),
+      endDrawer: myEndDrawer(),
       floatingActionButton: null, //myFloatingActionButton(),
       bottomNavigationBar: myBottomNavBar(),
       body: PageView(
@@ -611,60 +609,62 @@ class _MyHomePageState extends State<MyHomePage> {
   myEndDrawer() {
     return Drawer(
       width: 200,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            const Text("Gender"),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  onPressed: () {
-                    if (activeFilters == "Female") {
-                      activeFilters = "";
-                      setState(() {
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              const Text("Gender"),
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      if (activeFilters == "Female") {
                         activeFilters = "";
-                      });
-                      return;
-                    }
-                    activeFilters = "Female";
-                    filterRats(filter: "Female");
-                    setState(() {});
-                  },
-                  style: (activeFilters != "Female")
-                      ? MyElevatedButtonStyle.buttonStyle
-                      : MyElevatedButtonStyle.activeButtonStyle,
-                  child: const Text(
-                    "Female",
-                    style: MyElevatedButtonStyle.textStyle,
+                        setState(() {
+                          activeFilters = "";
+                        });
+                        return;
+                      }
+                      activeFilters = "Female";
+                      filterRats(filter: "Female");
+                      setState(() {});
+                    },
+                    style: (activeFilters != "Female")
+                        ? MyElevatedButtonStyle.buttonStyle
+                        : MyElevatedButtonStyle.activeButtonStyle,
+                    child: const Text(
+                      "Female",
+                      style: MyElevatedButtonStyle.textStyle,
+                    ),
                   ),
-                ),
-                const SizedBox(width: 10),
-                ElevatedButton(
-                  onPressed: () {
-                    if (activeFilters == "Male") {
-                      setState(() {
-                        activeFilters = "";
-                      });
-                      return;
-                    }
-                    activeFilters = "Male";
-                    filterRats(filter: "Male");
-                    setState(() {});
-                  },
-                  style: (activeFilters != "Male")
-                      ? MyElevatedButtonStyle.buttonStyle
-                      : MyElevatedButtonStyle.activeButtonStyle,
-                  child: const Text(
-                    "Male",
-                    style: MyElevatedButtonStyle.textStyle,
+                  const SizedBox(width: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (activeFilters == "Male") {
+                        setState(() {
+                          activeFilters = "";
+                        });
+                        return;
+                      }
+                      activeFilters = "Male";
+                      filterRats(filter: "Male");
+                      setState(() {});
+                    },
+                    style: (activeFilters != "Male")
+                        ? MyElevatedButtonStyle.buttonStyle
+                        : MyElevatedButtonStyle.activeButtonStyle,
+                    child: const Text(
+                      "Male",
+                      style: MyElevatedButtonStyle.textStyle,
+                    ),
                   ),
-                ),
-              ],
-            )
-          ],
+                ],
+              )
+            ],
+          ),
         ),
       ),
     );

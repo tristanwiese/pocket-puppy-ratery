@@ -71,6 +71,11 @@ class _AddRatState extends State<AddRat> {
       activeColorsList = widget.rat!.colours;
       _selectedDate = widget.rat!.birthday;
       _pickedGender = widget.rat!.gender;
+      if (_pickedGender == Gender.Male){
+        selectedGender = [true, false];
+      } else {
+        selectedGender = [false, true];
+      }
       if (getMarkingtype(widget.rat!.markings) == "hLocus") {
         markingList = hMarkingsList;
         selectedMarkings = [false, true];

@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -138,6 +140,7 @@ class _AuthenticateState extends State<Authenticate> {
         duration: const Duration(seconds: 3),
         backgroundColor: primaryThemeColor,
       ));
+      navPop(context);
       return;
     }
     addToDB();
@@ -164,6 +167,9 @@ class _AuthenticateState extends State<Authenticate> {
   }
   
   addToDB() {
+
+    log("Messed with user DB");
+
     final users = FirebaseFirestore.instance.collection("users");
     users.doc(FirebaseAuth.instance.currentUser!.uid).set(UserModel(
             email: _emailController.text, userName: _nameController.text)
