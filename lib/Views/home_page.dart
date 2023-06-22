@@ -12,13 +12,14 @@ import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Models/genes.dart';
 import 'package:pocket_puppy_rattery/Models/rat.dart';
+import 'package:pocket_puppy_rattery/Services/senior_rat_watcher.dart';
 import 'package:pocket_puppy_rattery/Views/add_rat.dart';
 import 'package:pocket_puppy_rattery/Views/profile_page.dart';
 import 'package:pocket_puppy_rattery/Views/rat_info.dart';
 import 'package:pocket_puppy_rattery/Views/settings_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../Dev/dev_page.dart';
+import 'package:provider/provider.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -83,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext ctx) {
     return showLoad
         ? const LoadScreen()
         : Container(
@@ -99,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     rats = snapshot.data!.docs;
-                    return myBody(rats);
+                    return myBody(rats, ctx);
                   }
 
                   return const LoadScreen();
@@ -107,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
           );
   }
 
-  myBody(List<QueryDocumentSnapshot<Object?>> rats) => Scaffold(
+  myBody(List<QueryDocumentSnapshot<Object?>> rats, BuildContext ctx) => Scaffold(
       key: _key,
       floatingActionButtonLocation:
           FloatingActionButtonLocation.miniCenterFloat,
@@ -131,10 +132,14 @@ class _MyHomePageState extends State<MyHomePage> {
               appBarTitle = "Breeding Tracker";
           }
         }),
-        children: [ratPage(), geneCal(rats), breedTracker()],
+        children: [ratPage(ctx), geneCal(rats), breedTracker()],
       ));
 
-  Widget ratPage() {
+  Widget ratPage(BuildContext ctx) {
+
+   int seniorColor = ctx.watch<SeniorRatWatcher>().color;
+   bool seniorState = ctx.watch<SeniorRatWatcher>().state;
+
     return Center(
       child: Column(
         children: [
@@ -199,7 +204,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     color:
                                         (AgeCalculator.age(birthdate).years >=
                                                 3)
-                                            ? Color(prefs.getInt("seniorColor")??0xff78E0C7)
+                                            ? seniorState ? Color(seniorColor) : null
                                             : null,
                                     child: ListTile(
                                       leading: Icon(
