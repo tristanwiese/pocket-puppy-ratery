@@ -8,7 +8,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
+import 'package:pocket_puppy_rattery/Services/constants.dart';
 import 'package:pocket_puppy_rattery/Views/add_rat.dart';
+
+import '../Models/rat.dart';
 
 class RatInfo extends StatefulWidget {
   const RatInfo({
@@ -62,133 +65,125 @@ class _RatInfoState extends State<RatInfo> {
           );
         }
         final info = snapshot.data!.data();
-        DateTime birthdate = DateTime(
-            info!["birthday"][0], info["birthday"][1], info["birthday"][2]);
-        if (_dropDownValue == null) {
-          age = defaultAgeCalculator(birthdate);
-        }
-        return Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                MyInfoCard(
-                  title: "Details",
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Name: ${info["name"]}"),
-                      Text("Regestered Name: ${info["registeredName"]}"),
-                      Text("Gender: ${info["gender"]}"),
-                    ],
-                  ),
-                ),
-                MyInfoCard(
-                  title: "Age",
-                  child: Column(
-                    children: [
-                      Text('Age: $age'),
-                      const SizedBox(height: 10),
-                      ageViewSelector(birthdate)
-                    ],
-                  ),
-                )
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                MyInfoCard(
-                  title: "Markings",
-                  child: SizedBox(
-                    height: 100,
-                    width: 200,
-                    child: ListView.builder(
+        final ratInfo = infoToModel(info: info!);
 
-                      itemCount: info["markings"].length,
-                      itemBuilder: (context, index) {
-                        return Text("- ${info["markings"][index]}");
-                      },
+        if (_dropDownValue == null) {
+          age = defaultAgeCalculator(ratInfo.birthday);
+        }
+        return SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: MyInfoCard(
+                      title: "Details",
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Name: ${ratInfo.name}"),
+                          Text("Regestered Name: ${ratInfo.registeredName}"),
+                          Text("Gender: ${ratInfo.gender.name}"),
+                        ],
+                      ),
                     ),
                   ),
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: MyInfoCard(
+                      title: "Age",
+                      child: Column(
+                        children: [
+                          Text(
+                              "Birthday: ${birthdayView(data: ratInfo.birthday)}"),
+                          Text('Age: $age'),
+                          const SizedBox(height: 10),
+                          ageViewSelector(ratInfo.birthday)
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: MyInfoCard(
+                      title: "Coat",
+                      child: Text("Coat: ${ratInfo.coat.name}"),
+                    ),
+                  ),
+                  Expanded(
+                      child: MyInfoCard(
+                          title: "Ears",
+                          child: Text("Ears: ${ratInfo.ears.name}")))
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: MyInfoCard(
+                      title: "Markings",
+                      child: SizedBox(
+                        height: listContainerHeight(
+                            itemLenght: ratInfo.markings.length),
+                        child: ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: ratInfo.markings.length,
+                          itemBuilder: (context, index) {
+                            return Text("- ${ratInfo.markings[index]}");
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: MyInfoCard(
+                      title: "Colours",
+                      child: SizedBox(
+                        height: listContainerHeight(
+                            itemLenght: ratInfo.colours.length),
+                        child: ListView.builder(
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: ratInfo.colours.length,
+                          itemBuilder: (context, index) {
+                            return Text("- ${ratInfo.colours[index]}");
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(
+                height: 40,
+                width: 100,
+                child: ElevatedButton(
+                  onPressed: () {
+                    navPush(
+                        context,
+                        AddRat(
+                          id: widget.info.id,
+                          rat: ratInfo,
+                        ));
+                  },
+                  style: MyElevatedButtonStyle.buttonStyle,
+                  child: const Text("Edit"),
                 ),
-                MyInfoCard(title: "Colours", 
-                child: SizedBox(
-                  height: 100,
-                  width: 150,
-                  child: ListView.builder(
-                    itemCount: info["colours"].length,
-                    itemBuilder: (context, index) {
-                      return Text("- ${info["colours"][index]}");
-                    },
-                    ),
-                  ),
-                )
-              ],
-            ),
-            SizedBox(
-              height: 40,
-              width: 100,
-              child: ElevatedButton(
-                      onPressed: () {
-              navPush(
-                  context,
-                  AddRat(
-                      coat: info["coat"],
-                      color: info["colours"],
-                      ears: info["ears"],
-                      father: info["father"],
-                      mother: info["mother"],
-                      name: info["name"],
-                      regName: info["registeredName"],
-                      markings: info["markings"],
-                      gender: info["gender"],
-                      birthday: DateTime(info["birthday"][0], info["birthday"][1],
-                          info["birthday"][2]),
-                      id: widget.info.id,
-                      colorCode: info["colorCode"]));
-                      },
-                      style: MyElevatedButtonStyle.buttonStyle,
-                      child: const Text("Edit"),
-                    ),
-            ),
-          ],
+              ),
+            ],
+          ),
         );
       },
-    );
-  }
-
-  Row editRow(
-      BuildContext context, Map<String, dynamic> info, DateTime birthdate) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        ElevatedButton(
-          onPressed: () {
-            navPush(
-                context,
-                AddRat(
-                    coat: info["coat"],
-                    color: info["colours"],
-                    ears: info["ears"],
-                    father: info["father"],
-                    mother: info["mother"],
-                    name: info["name"],
-                    regName: info["registeredName"],
-                    markings: info["markings"],
-                    gender: info["gender"],
-                    birthday: DateTime(info["birthday"][0], info["birthday"][1],
-                        info["birthday"][2]),
-                    id: widget.info.id,
-                    colorCode: info["colorCode"]));
-          },
-          style: ElevatedButton.styleFrom(
-              fixedSize: const Size(80, 40),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15))),
-          child: const Text("Edit"),
-        ),
-      ],
     );
   }
 
@@ -196,11 +191,10 @@ class _RatInfoState extends State<RatInfo> {
     return Card(
       elevation: 10,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-        side: BorderSide(color: secondaryThemeColor)
-      ),
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(color: secondaryThemeColor)),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal:8.0),
+        padding: const EdgeInsets.symmetric(horizontal: 8.0),
         child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
           hint: const Text("View Age"),
@@ -209,7 +203,6 @@ class _RatInfoState extends State<RatInfo> {
           }).toList(),
           value: _dropDownValue,
           onChanged: (value) {
-            log(value!);
             _dropDownValue = value;
             switch (value) {
               case "Days":
@@ -228,7 +221,6 @@ class _RatInfoState extends State<RatInfo> {
                 age = "${defaultAgeCalculator(birthdate)}";
             }
             setState(() {
-              log(age);
             });
           },
         )),
@@ -239,18 +231,58 @@ class _RatInfoState extends State<RatInfo> {
   AppBar myAppBar() => AppBar(
         title: Text("Rat: ${widget.info["name"]}"),
       );
+
+  double listContainerHeight({required itemLenght}) {
+    //Compensate for title size
+    const int headerSize = 5;
+
+    //Size to give for each item in list
+    const sizePerLine = 20;
+
+    return (headerSize + itemLenght * sizePerLine).toDouble();
+  }
+
+  String birthdayView({required DateTime data}) {
+    return "${data.year}/${data.month}/${data.day}";
+  }
+
+  Rat infoToModel({required info}) {
+    DateTime birthday =
+        DateTime(info["birthday"][0], info["birthday"][1], info["birthday"][2]);
+
+    final rat = Rat(
+      name: info["name"],
+      registeredName: info["registeredName"],
+      colours: info["colours"],
+      ears: Ears.values[
+          Rat.earsToList().indexWhere((element) => element == info["ears"])],
+      gender: Gender.values[Rat.genderToList()
+          .indexWhere((element) => element == info["gender"])],
+      markings: info["markings"],
+      parents: Parents(dad: info["father"], mom: info["mother"]),
+      coat: Coats.values[
+          Rat.coatsToList().indexWhere((element) => element == info["coat"])],
+      birthday: birthday,
+    );
+    rat.colorCode = info["colorCode"];
+
+    return rat;
+  }
 }
 
 class MyInfoCard extends StatelessWidget {
-  const MyInfoCard({super.key, required this.child, required this.title});
+  const MyInfoCard({
+    super.key,
+    required this.title,
+    required this.child,
+  });
 
-  final Widget child;
   final String title;
+  final Widget child;
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 10,
-      semanticContainer: false,
       shape: RoundedRectangleBorder(
           side: BorderSide(
             color: secondaryThemeColor,
