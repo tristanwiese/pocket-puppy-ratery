@@ -2,7 +2,6 @@
 
 import 'dart:async';
 import 'dart:developer';
-
 import 'package:age_calculator/age_calculator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,6 +19,8 @@ import 'package:pocket_puppy_rattery/Views/settings_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Dev/dev_page.dart';
 import 'package:provider/provider.dart';
+
+import 'breeding_scheme.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -58,29 +59,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
   late Timer timer;
 
-  
-
   mySetState() => setState(() {});
 
-  getPrefs() async{
+  getPrefs() async {
     prefs = await SharedPreferences.getInstance();
   }
 
-
-@override
+  @override
   void initState() {
-
     getPrefs();
 
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    
-    // timer.cancel();
-
-    super.dispose();
   }
 
   @override
@@ -108,36 +97,36 @@ class _MyHomePageState extends State<MyHomePage> {
           );
   }
 
-  myBody(List<QueryDocumentSnapshot<Object?>> rats, BuildContext ctx) => Scaffold(
-      key: _key,
-      floatingActionButtonLocation:
-          FloatingActionButtonLocation.miniCenterFloat,
-      appBar: myAppBar(context),
-      drawer: myDrawer(),
-      endDrawer: myEndDrawer(),
-      bottomNavigationBar: myBottomNavBar(),
-      body: PageView(
-        controller: _pageController,
-        onPageChanged: (value) => setState(() {
-          bottomVanIndex = value;
-          switch (value) {
-            case 0:
-              appBarTitle = "Your Rats";
-              break;
-            case 1:
-              appBarTitle = "Gene Callculator";
-              break;
-            default:
-              appBarTitle = "Breeding Tracker";
-          }
-        }),
-        children: [ratPage(ctx), geneCal(rats), breedTracker()],
-      ));
+  myBody(List<QueryDocumentSnapshot<Object?>> rats, BuildContext ctx) =>
+      Scaffold(
+          key: _key,
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.miniCenterFloat,
+          appBar: myAppBar(context),
+          drawer: myDrawer(),
+          endDrawer: myEndDrawer(),
+          bottomNavigationBar: myBottomNavBar(),
+          body: PageView(
+            controller: _pageController,
+            onPageChanged: (value) => setState(() {
+              bottomVanIndex = value;
+              switch (value) {
+                case 0:
+                  appBarTitle = "Your Rats";
+                  break;
+                case 1:
+                  appBarTitle = "Gene Callculator";
+                  break;
+                default:
+                  appBarTitle = "Breeding Tracker";
+              }
+            }),
+            children: [ratPage(ctx), geneCal(rats), breedTracker()],
+          ));
 
   Widget ratPage(BuildContext ctx) {
-
-   int seniorColor = ctx.watch<SeniorRatWatcher>().color;
-   bool seniorState = ctx.watch<SeniorRatWatcher>().state;
+    int seniorColor = ctx.watch<SeniorRatWatcher>().color;
+    bool seniorState = ctx.watch<SeniorRatWatcher>().state;
 
     return Center(
       child: Column(
@@ -192,8 +181,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                     navPush(context, RatInfo(info: rat));
                                   },
                                   child: Card(
-                                    elevation: 10,
-                                    shadowColor: Colors.black,
+                                    elevation: 20,
+                                    shadowColor:
+                                        (AgeCalculator.age(birthdate).years >=
+                                                3)
+                                            ? seniorState
+                                                ? Color(seniorColor)
+                                                : Colors.black
+                                            : Colors.black,
                                     shape: BeveledRectangleBorder(
                                         side: BorderSide(
                                             width: 1,
@@ -203,29 +198,38 @@ class _MyHomePageState extends State<MyHomePage> {
                                     color:
                                         (AgeCalculator.age(birthdate).years >=
                                                 3)
-                                            ? seniorState ? Color(seniorColor) : null
+                                            ? seniorState
+                                                ? Color(seniorColor)
+                                                : null
                                             : null,
                                     child: ListTile(
+                                      isThreeLine: true,
                                       leading: SizedBox(
                                         width: 70,
                                         child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             Icon(
                                               Icons.square_rounded,
                                               color: colorCode,
                                             ),
-                                            Image.asset("asstes/images/logo.png", 
-                                            width: 30,
-                                            errorBuilder: (context, error, stackTrace) => const Icon(Icons.image),)
+                                            Image.asset(
+                                              "asstes/images/logo.png",
+                                              width: 30,
+                                              errorBuilder: (context, error,
+                                                      stackTrace) =>
+                                                  const Icon(Icons.image),
+                                            )
                                           ],
                                         ),
                                       ),
                                       trailing: myIconButton(rat: buildItem[i]),
                                       title: Text(buildItem[i]['name']),
-                                      subtitle: Text(buildItem[i]['gender']),
+                                      subtitle: Text(buildItem[i]['gender'] +
+                                          "\n" +
+                                          "Age: ${defaultAgeCalculator(birthdate)}"),
                                       contentPadding: const EdgeInsets.all(10),
-                                      
                                     ),
                                   ),
                                 ),
@@ -532,11 +536,87 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget breedTracker() {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [Text("Breed Tracker")],
-      ),
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection("users")
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection("breedingSchemes")
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: Text(
+              "Fethcing Schemes..",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          );
+        }
+
+        final schemes = snapshot.data!.docs;
+        return schemes.isEmpty
+            ? const Center(
+                child: Text("No Shemes"),
+              )
+            : Column(
+                children: [
+                  Expanded(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(maxWidth: getSize()),
+                      child: ListView.builder(
+                        itemCount: schemes.length,
+                        itemBuilder: (context, index) {
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Card(
+                              shape: BeveledRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  side: BorderSide(
+                                    color: secondaryThemeColor
+                                  ),
+                                  ),
+                                  child: ListTile(
+                                    title: Text("Scheme: ${index + 1}"),
+                          
+                                  ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                       Container(
+                height: 35,
+                margin: const EdgeInsets.only(bottom: 10),
+                child: Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: ElevatedButton.icon(
+                    label: const Text("Add Scheme",
+                        style: TextStyle(color: Colors.black87)),
+                    icon: Icon(
+                      Icons.add,
+                      color: secondaryThemeColor,
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        side: BorderSide(color: secondaryThemeColor),
+                      ),
+                    ),
+                    onPressed: () {
+                      navPush(context, BreedingScheme(rats: rats,));
+                    },
+                  ),
+                ),
+              ),
+                    ],
+                  )
+                ],
+              );
+      },
     );
   }
 
