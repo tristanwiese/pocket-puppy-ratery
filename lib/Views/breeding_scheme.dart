@@ -40,107 +40,115 @@ class _BreedingSchemeState extends State<BreedingScheme> {
         title: const Text("New Breeding Scheme"),
       ),
       body: body(),
-      resizeToAvoidBottomInset: false,
     );
   }
 
   Widget body() {
-    return Form(
-      key: _nameKey,
-      child: Column(
-        children: [
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 10),
-            child: Text(
-              !showCustomRatScreen
-                  ? "Choose two rats from existing rats"
-                  : "Enter name of two rats",
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Form(
+          key: _nameKey,
+          child: Center(
+            child: SizedBox(
+              height: MediaQuery.of(context).size.height - 80,
+              child: Column(
+                children: [
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    child: Text(
+                      !showCustomRatScreen
+                          ? "Choose two rats from existing rats"
+                          : "Enter name of two rats",
+                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    child: MyInputText(
+                      controller: _nameController,
+                      hintText: "Name Scheme",
+                      validatorMessage: "Required",
+                      textInputAction: TextInputAction.next,
+                    ),
+                  ),
+                  showCustomRatScreen ? customRatScreen() : existingRatScreen(),
+                  Container(
+                    margin: const EdgeInsets.symmetric(vertical: 10),
+                    width: 150,
+                    height: 40,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (showCustomRatScreen) {
+                          setState(() {
+                            showCustomRatScreen = false;
+                          });
+                          return;
+                        }
+                        setState(() {
+                          showCustomRatScreen = true;
+                        });
+                      },
+                      style: MyElevatedButtonStyle.buttonStyle,
+                      child:
+                          Text(showCustomRatScreen ? "Existing Rats" : "Custom Rats"),
+                    ),
+                  ),
+                  Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    width: 150,
+                    height: 40,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (_nameKey.currentState!.validate()) {
+                          if (showCustomRatScreen) {
+                            if (_formKey.currentState!.validate()) {
+                              addScheme(
+                                  _maleController.text.trim(),
+                                  _femaleController.text.trim(),
+                                  _nameController.text.trim());
+                            }
+                            return;
+                          }
+                
+                          if (chosenRatsList.length != 2) {
+                            scaffoldKey.currentState!.showSnackBar(
+                              const SnackBar(
+                                duration: Duration(seconds: 2),
+                                backgroundColor: Colors.green,
+                                content: Text("Please choose two rats"),
+                              ),
+                            );
+                            return;
+                          }
+                          if (chosenRatsList[0]["gender"] ==
+                              chosenRatsList[1]["gender"]) {
+                            scaffoldKey.currentState!.showSnackBar(
+                              SnackBar(
+                                duration: const Duration(seconds: 2),
+                                backgroundColor: primaryThemeColor,
+                                content: const Text(
+                                    "Cannot choose 2 rats with the same gender"),
+                              ),
+                            );
+                            return;
+                          }
+                          final male = chosenRatsList[chosenRatsList
+                              .indexWhere((element) => element["gender"] == "Male")];
+                          final female = chosenRatsList[chosenRatsList
+                              .indexWhere((element) => element["gender"] == "Female")];
+                          addScheme(male["name"], female["name"],
+                              _nameController.text.trim());
+                        }
+                      },
+                      style: MyElevatedButtonStyle.buttonStyle,
+                      child: const Text("Create Scheme"),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
-          Container(
-            margin: const EdgeInsets.symmetric(horizontal: 10),
-            child: MyInputText(
-              controller: _nameController,
-              hintText: "Name Scheme",
-              validatorMessage: "Required",
-              textInputAction: TextInputAction.next,
-            ),
-          ),
-          showCustomRatScreen ? customRatScreen() : existingRatScreen(),
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 10),
-            width: 150,
-            height: 40,
-            child: ElevatedButton(
-              onPressed: () {
-                if (showCustomRatScreen) {
-                  setState(() {
-                    showCustomRatScreen = false;
-                  });
-                  return;
-                }
-                setState(() {
-                  showCustomRatScreen = true;
-                });
-              },
-              style: MyElevatedButtonStyle.buttonStyle,
-              child:
-                  Text(showCustomRatScreen ? "Existing Rats" : "Custom Rats"),
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.only(bottom: 10),
-            width: 150,
-            height: 40,
-            child: ElevatedButton(
-              onPressed: () {
-                if (_nameKey.currentState!.validate()) {
-                  if (showCustomRatScreen) {
-                    if (_formKey.currentState!.validate()) {
-                      addScheme(
-                          _maleController.text.trim(),
-                          _femaleController.text.trim(),
-                          _nameController.text.trim());
-                    }
-                    return;
-                  }
-
-                  if (chosenRatsList.length != 2) {
-                    scaffoldKey.currentState!.showSnackBar(
-                      const SnackBar(
-                        duration: Duration(seconds: 2),
-                        backgroundColor: Colors.green,
-                        content: Text("Please choose two rats"),
-                      ),
-                    );
-                    return;
-                  }
-                  if (chosenRatsList[0]["gender"] ==
-                      chosenRatsList[1]["gender"]) {
-                    scaffoldKey.currentState!.showSnackBar(
-                      SnackBar(
-                        duration: const Duration(seconds: 2),
-                        backgroundColor: primaryThemeColor,
-                        content: const Text(
-                            "Cannot choose 2 rats with the same gender"),
-                      ),
-                    );
-                    return;
-                  }
-                  final male = chosenRatsList[chosenRatsList
-                      .indexWhere((element) => element["gender"] == "Male")];
-                  final female = chosenRatsList[chosenRatsList
-                      .indexWhere((element) => element["gender"] == "Female")];
-                  addScheme(male["name"], female["name"],
-                      _nameController.text.trim());
-                }
-              },
-              style: MyElevatedButtonStyle.buttonStyle,
-              child: const Text("Create Scheme"),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
