@@ -40,6 +40,7 @@ class _BreedingSchemeState extends State<BreedingScheme> {
         title: const Text("New Breeding Scheme"),
       ),
       body: body(),
+      resizeToAvoidBottomInset: false,
     );
   }
 
