@@ -13,6 +13,7 @@ import 'package:pocket_puppy_rattery/Models/genes.dart';
 import 'package:pocket_puppy_rattery/Models/rat.dart';
 import 'package:pocket_puppy_rattery/Services/senior_rat_watcher.dart';
 import 'package:pocket_puppy_rattery/Views/add_rat.dart';
+import 'package:pocket_puppy_rattery/Views/breeding_sheme_info_page.dart';
 import 'package:pocket_puppy_rattery/Views/profile_page.dart';
 import 'package:pocket_puppy_rattery/Views/rat_info.dart';
 import 'package:pocket_puppy_rattery/Views/settings_page.dart';
@@ -565,19 +566,25 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: ListView.builder(
                         itemCount: schemes.length,
                         itemBuilder: (context, index) {
+                          final scheme = schemes[index];
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Card(
+                              elevation: 10,
                               shape: BeveledRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  side: BorderSide(
-                                    color: secondaryThemeColor
-                                  ),
-                                  ),
-                                  child: ListTile(
-                                    title: Text("Scheme: ${index + 1}"),
-                          
-                                  ),
+                                borderRadius: BorderRadius.circular(10),
+                                side: BorderSide(color: secondaryThemeColor),
+                              ),
+                              child: ListTile(
+                                title: Text("Scheme: ${index + 1}"),
+                                isThreeLine: true,
+                                subtitle: Text(
+                                    "Male: ${scheme["male"]} \nFemale: ${scheme["female"]}"),
+                                onTap: () {
+                                  navPush(context,
+                                      BreedingShcemeInfoPage(scheme: scheme));
+                                },
+                              ),
                             ),
                           );
                         },
@@ -587,31 +594,35 @@ class _MyHomePageState extends State<MyHomePage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                       Container(
-                height: 35,
-                margin: const EdgeInsets.only(bottom: 10),
-                child: Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: ElevatedButton.icon(
-                    label: const Text("Add Scheme",
-                        style: TextStyle(color: Colors.black87)),
-                    icon: Icon(
-                      Icons.add,
-                      color: secondaryThemeColor,
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        side: BorderSide(color: secondaryThemeColor),
+                      Container(
+                        height: 35,
+                        margin: const EdgeInsets.only(bottom: 10),
+                        child: Directionality(
+                          textDirection: TextDirection.rtl,
+                          child: ElevatedButton.icon(
+                            label: const Text("Add Scheme",
+                                style: TextStyle(color: Colors.black87)),
+                            icon: Icon(
+                              Icons.add,
+                              color: secondaryThemeColor,
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                side: BorderSide(color: secondaryThemeColor),
+                              ),
+                            ),
+                            onPressed: () {
+                              navPush(
+                                  context,
+                                  BreedingScheme(
+                                    rats: rats,
+                                  ));
+                            },
+                          ),
+                        ),
                       ),
-                    ),
-                    onPressed: () {
-                      navPush(context, BreedingScheme(rats: rats,));
-                    },
-                  ),
-                ),
-              ),
                     ],
                   )
                 ],

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
@@ -19,7 +20,17 @@ class _BreedingSchemeState extends State<BreedingScheme> {
 
   final GlobalKey<FormState> _fomrKey = GlobalKey<FormState>();
 
-  List chosenratsList = [];
+  List chosenRatsList = [];
+  bool showCustomRatScreen = false;
+
+  @override
+  void dispose() {
+
+    _femaleController.dispose();
+    _maleController.dispose();
+
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,77 +44,110 @@ class _BreedingSchemeState extends State<BreedingScheme> {
 
   Widget body() {
     return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            child: Text(
+              !showCustomRatScreen
+                  ? "Choose two rats from existing rats"
+                  : "Enter name of two rats",
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ),
+          showCustomRatScreen ? customRatScreen() : existingRatScreen(),
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            width: 150,
+            height: 40,
+            child: ElevatedButton(
+              onPressed: () {
+                if (showCustomRatScreen) {
+                  setState(() {
+                    showCustomRatScreen = false;
+                  });
+                  return;
+                }
+                setState(() {
+                  showCustomRatScreen = true;
+                });
+              },
+              style: MyElevatedButtonStyle.buttonStyle,
+              child:
+                  Text(showCustomRatScreen ? "Existing Rats" : "Custom Rats"),
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(bottom: 10),
+            width: 150,
+            height: 40,
+            child: ElevatedButton(
+              onPressed: () {
+                if (showCustomRatScreen) {
+                  if (_fomrKey.currentState!.validate()) {
+                    addScheme(_maleController.text, _femaleController.text);
+                  }
+                  return;
+                }
+                if (chosenRatsList.length != 2) {
+                  scaffoldKey.currentState!.showSnackBar(
+                    const SnackBar(
+                      duration: Duration(seconds: 2),
+                      backgroundColor: Colors.green,
+                      content: Text("Please choose two rats"),
+                    ),
+                  );
+                }
+                if (chosenRatsList[0]["gender"] ==
+                    chosenRatsList[1]["gender"]) {
+                  scaffoldKey.currentState!.showSnackBar(
+                    SnackBar(
+                      duration: const Duration(seconds: 2),
+                      backgroundColor: primaryThemeColor,
+                      content: const Text(
+                          "Cannot choose 2 rats with the same gender"),
+                    ),
+                  );
+                  return;
+                }
+                final male = chosenRatsList[chosenRatsList
+                    .indexWhere((element) => element["gender"] == "Male")];
+                final female = chosenRatsList[chosenRatsList
+                    .indexWhere((element) => element["gender"] == "Female")];
+                addScheme(male["name"], female["name"]);
+              },
+              style: MyElevatedButtonStyle.buttonStyle,
+              child: const Text("Create Scheme"),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget customRatScreen() {
+    return Expanded(
       child: Form(
         key: _fomrKey,
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(),
-            Column(
-              children: [
-                const Text(
-                  "Enter Custom Rat details",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 10),
-                  child: MyInputText(
-                    controller: _maleController,
-                    hintText: "Male Rat",
-                    validatorMessage: "Required",
-                  ),
-                ),
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 10),
-                  child: MyInputText(
-                    controller: _femaleController,
-                    hintText: "Female Rat",
-                    validatorMessage: "Required",
-                  ),
-                ),
-                const Text(
-                  "or",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Container(
-                        height: 50,
-                        margin: const EdgeInsets.all(10),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            _femaleController.clear();
-                            _maleController.clear();
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return existingRatsList();
-                              },
-                            );
-                          },
-                          style: MyElevatedButtonStyle.buttonStyle,
-                          child: const Text("Choose Existing Rats"),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
             Container(
-              margin: const EdgeInsets.all(10),
-              width: 150,
-              height: 40,
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_fomrKey.currentState!.validate()) {
-                    print(_maleController.text + "\n" + _maleController.text);
-                  }
-                },
-                style: MyElevatedButtonStyle.buttonStyle,
-                child: const Text("Create Scheme"),
+              margin: const EdgeInsets.symmetric(horizontal: 10),
+              child: MyInputText(
+                controller: _maleController,
+                hintText: "Male Rat",
+                validatorMessage: "Required",
+              ),
+            ),
+            const SizedBox(height: 10),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 10),
+              child: MyInputText(
+                controller: _femaleController,
+                hintText: 'Female Rat',
+                validatorMessage: "Required",
               ),
             ),
           ],
@@ -112,74 +156,59 @@ class _BreedingSchemeState extends State<BreedingScheme> {
     );
   }
 
-  Widget existingRatsList() {
-    final List<QueryDocumentSnapshot<Object?>> rats = widget.rats;
-
-    const title = Text("Existing Rats");
-
-    final actions = [
-      ElevatedButton(
-        onPressed: () {
-          navPop(context);
+  Widget existingRatScreen() {
+    return Expanded(
+      child: ListView.builder(
+        itemCount: widget.rats.length,
+        itemBuilder: (context, index) {
+          final rat = widget.rats[index];
+          return Card(
+            elevation: 10,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: BorderSide(color: secondaryThemeColor)),
+            child: ListTile(
+              title: Text(rat["name"]),
+              subtitle: Text(rat["gender"]),
+              trailing: chosenRatsList.contains(rat)
+                  ? const Icon(Icons.check, color: Colors.green)
+                  : null,
+              onTap: () {
+                if (chosenRatsList.contains(rat)) {
+                  chosenRatsList.remove(rat);
+                  setState(() {});
+                  return;
+                }
+                if (chosenRatsList.length == 2) {
+                  chosenRatsList.removeAt(1);
+                  chosenRatsList.add(rat);
+                  setState(() {});
+                  return;
+                }
+                chosenRatsList.add(rat);
+                setState(() {});
+              },
+            ),
+          );
         },
-        style: MyElevatedButtonStyle.buttonStyle,
-        child: const Text("Cancel"),
       ),
-      ElevatedButton(
-          onPressed: () {},
-          style: MyElevatedButtonStyle.buttonStyle,
-          child: const Text("Done"))
-    ];
-
-    final content = ListView.builder(
-      itemCount: rats.length,
-      itemBuilder: (context, index) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            final rat = rats[index];
-            return Card(
-              elevation: 10,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  side: const BorderSide()),
-              child: ListTile(
-                trailing: chosenratsList.contains(rat["name"])
-                    ? const Icon(
-                        Icons.check,
-                        color: Colors.green,
-                      )
-                    : null,
-                onTap: () {
-                  print(chosenratsList.length);
-                  if(chosenratsList.contains(rat["name"])){
-                    chosenratsList.remove(rat["name"]);
-                    setState((){});
-                    print(chosenratsList);
-                    return;
-                  }
-                  if (chosenratsList.length == 2){
-                    chosenratsList.removeAt(1);
-                    chosenratsList.add(rat["name"]);
-                    print(chosenratsList);
-                    setState((){});
-                    return;
-                  }
-                  chosenratsList.add(rat["name"]);
-                  setState((){});
-                  print(chosenratsList);
-                },
-                title: Text(rat["name"]),
-              ),
-            );
-          },
-        );
-      },
     );
+  }
 
-    return AlertDialog(
-      title: title,
-      actions: actions,
-      content: content,
+  void addScheme(String male, String female) async {
+    showDialog(
+      context: context,
+      builder: (context) => const Center(
+        child: CircularProgressIndicator(),
+      ),
     );
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection("breedingSchemes")
+        .add({"male": male, "female": female});
+
+    // ignore: use_build_context_synchronously
+    navPop(context);
   }
 }
