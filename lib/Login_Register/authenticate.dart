@@ -22,9 +22,9 @@ class _AuthenticateState extends State<Authenticate> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   final TextEditingController _emailController =
-      TextEditingController(text: "tristanwiese7472@gmail.com");
+      TextEditingController();
   final TextEditingController _passwordController =
-      TextEditingController(text: "password");
+      TextEditingController();
   final TextEditingController _nameController = TextEditingController();
 
   @override

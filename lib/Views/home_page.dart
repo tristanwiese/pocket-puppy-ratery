@@ -11,6 +11,7 @@ import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Models/genes.dart';
 import 'package:pocket_puppy_rattery/Models/rat.dart';
+import 'package:pocket_puppy_rattery/Services/constants.dart';
 import 'package:pocket_puppy_rattery/Services/senior_rat_watcher.dart';
 import 'package:pocket_puppy_rattery/Views/add_rat.dart';
 import 'package:pocket_puppy_rattery/Views/breeding_sheme_info_page.dart';
@@ -31,7 +32,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final PageController _pageController = PageController(initialPage: 0);
+  final PageController _pageController = PageController(initialPage: 2);
 
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
@@ -116,7 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   appBarTitle = "Your Rats";
                   break;
                 case 1:
-                  appBarTitle = "Gene Callculator";
+                  appBarTitle = "Gene Calculator";
                   break;
                 default:
                   appBarTitle = "Breeding Tracker";
@@ -225,7 +226,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                           ],
                                         ),
                                       ),
-                                      trailing: myIconButton(rat: buildItem[i]),
+                                      trailing: myIconButton(item: buildItem[i], itemType: "rat"),
                                       title: Text(buildItem[i]['name']),
                                       subtitle: Text(buildItem[i]['gender'] +
                                           "\n" +
@@ -554,13 +555,15 @@ class _MyHomePageState extends State<MyHomePage> {
         }
 
         final schemes = snapshot.data!.docs;
-        return schemes.isEmpty
-            ? const Center(
-                child: Text("No Shemes"),
-              )
-            : Column(
-                children: [
-                  Expanded(
+        return Column(
+          children: [
+            schemes.isEmpty
+                ? const Expanded(
+                  child: Center(
+                      child: Text("No Shemes"),
+                    ),
+                )
+                : Expanded(
                     child: ConstrainedBox(
                       constraints: BoxConstraints(maxWidth: getSize()),
                       child: ListView.builder(
@@ -576,13 +579,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                 side: BorderSide(color: secondaryThemeColor),
                               ),
                               child: ListTile(
-                                title: Text("Scheme: ${index + 1}"),
+                                title: Text(scheme["name"]),
                                 isThreeLine: true,
                                 subtitle: Text(
                                     "Male: ${scheme["male"]} \nFemale: ${scheme["female"]}"),
+                                    trailing: myIconButton(item: scheme, itemType: "scheme"),
                                 onTap: () {
                                   navPush(context,
-                                      BreedingShcemeInfoPage(scheme: scheme));
+                                      BreedingShcemeInfoPage(scheme: scheme, rats: rats,));
                                 },
                               ),
                             ),
@@ -591,42 +595,42 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     ),
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        height: 35,
-                        margin: const EdgeInsets.only(bottom: 10),
-                        child: Directionality(
-                          textDirection: TextDirection.rtl,
-                          child: ElevatedButton.icon(
-                            label: const Text("Add Scheme",
-                                style: TextStyle(color: Colors.black87)),
-                            icon: Icon(
-                              Icons.add,
-                              color: secondaryThemeColor,
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                side: BorderSide(color: secondaryThemeColor),
-                              ),
-                            ),
-                            onPressed: () {
-                              navPush(
-                                  context,
-                                  BreedingScheme(
-                                    rats: rats,
-                                  ));
-                            },
-                          ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  height: 35,
+                  margin: const EdgeInsets.only(bottom: 10),
+                  child: Directionality(
+                    textDirection: TextDirection.rtl,
+                    child: ElevatedButton.icon(
+                      label: const Text("Add Scheme",
+                          style: TextStyle(color: Colors.black87)),
+                      icon: Icon(
+                        Icons.add,
+                        color: secondaryThemeColor,
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          side: BorderSide(color: secondaryThemeColor),
                         ),
                       ),
-                    ],
-                  )
-                ],
-              );
+                      onPressed: () {
+                        navPush(
+                            context,
+                            BreedingScheme(
+                              rats: rats,
+                            ));
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            )
+          ],
+        );
       },
     );
   }
@@ -653,7 +657,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ]);
   }
 
-  IconButton myIconButton({required QueryDocumentSnapshot rat}) => IconButton(
+  IconButton myIconButton({required QueryDocumentSnapshot item, required String itemType}) => IconButton(
       onPressed: () {
         showDialog(
           context: context,
@@ -664,10 +668,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 height: 150,
                 child: Column(
                   children: [
-                    const Text("Are you sure you want to remove this rat?"),
+                    Text("Are you sure you want to remove this $itemType?"),
                     const SizedBox(height: 30),
                     Text(
-                      rat["name"],
+                      item["name"],
                       style: const TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 20),
                     ),
@@ -680,7 +684,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: const Text('Cancel'),
                 ),
                 ElevatedButton(
-                  onPressed: () => deleteRat(rat.id),
+                  onPressed: () => deleteRat(item.id, itemType),
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                   child: const Text("Delete"),
                 ),
@@ -917,15 +921,21 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  deleteRat(String name) async {
+  deleteRat(String name, String itemType) async {
     showDialog(
       context: context,
       builder: (context) => const Center(child: CircularProgressIndicator()),
     );
-    await FirebaseFirestore.instance
+    itemType=="rat" ?  await FirebaseFirestore.instance
         .collection('users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
         .collection("rats")
+        .doc(name)
+        .delete()
+        : await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .collection("breedingSchemes")
         .doc(name)
         .delete();
     navPop(context);

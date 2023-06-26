@@ -1,10 +1,16 @@
 import 'package:age_calculator/age_calculator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 var primaryThemeColor = const Color.fromARGB(255, 120, 224, 199);
 
 var secondaryThemeColor = const Color.fromARGB(255, 181, 144, 185);
+
+CollectionReference schemes = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).collection("breedingSchemes");
+
+CollectionReference rats = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).collection("rats");
 
 late SharedPreferences prefs;
 

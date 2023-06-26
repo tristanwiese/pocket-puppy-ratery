@@ -18,11 +18,7 @@ List<String> coatsList = Rat.coatsToList();
 List<String> genderList = Rat.genderToList();
 
 class AddRat extends StatefulWidget {
-  const AddRat(
-      {super.key,
-      this.id,
-      this.rat
-      });
+  const AddRat({super.key, this.id, this.rat});
   final Rat? rat;
   final String? id;
 
@@ -63,7 +59,8 @@ class _AddRatState extends State<AddRat> {
       nameController = TextEditingController(text: widget.rat!.name);
       momController = TextEditingController(text: widget.rat!.parents.mom);
       dadController = TextEditingController(text: widget.rat!.parents.dad);
-      registeredNameController = TextEditingController(text: widget.rat!.registeredName);
+      registeredNameController =
+          TextEditingController(text: widget.rat!.registeredName);
       activeColorsList = widget.rat!.colours;
       earController = widget.rat!.ears.name;
       coatController = widget.rat!.coat.name;
@@ -71,7 +68,7 @@ class _AddRatState extends State<AddRat> {
       activeColorsList = widget.rat!.colours;
       _selectedDate = widget.rat!.birthday;
       _pickedGender = widget.rat!.gender;
-      if (_pickedGender == Gender.Male){
+      if (_pickedGender == Gender.Male) {
         selectedGender = [true, false];
       } else {
         selectedGender = [false, true];
@@ -120,21 +117,29 @@ class _AddRatState extends State<AddRat> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       MyInputText(
-                          controller: nameController,
-                          hintText: 'Name',
-                          validatorMessage: 'Name required'),
+                        controller: nameController,
+                        hintText: 'Name',
+                        validatorMessage: 'Name required',
+                        textInputAction: TextInputAction.next,
+                      ),
                       MyInputText(
-                          controller: registeredNameController,
-                          hintText: 'Registered Name',
-                          validatorMessage: 'Registered Name Required'),
+                        controller: registeredNameController,
+                        hintText: 'Registered Name',
+                        validatorMessage: 'Registered Name Required',
+                        textInputAction: TextInputAction.next,
+                      ),
                       MyInputText(
-                          controller: momController,
-                          hintText: 'Parent: Mother',
-                          validatorMessage: 'Parent Required'),
+                        controller: momController,
+                        hintText: 'Parent: Mother',
+                        validatorMessage: 'Parent Required',
+                        textInputAction: TextInputAction.next,
+                      ),
                       MyInputText(
-                          controller: dadController,
-                          hintText: 'Parent: Father',
-                          validatorMessage: 'Parent Required'),
+                        controller: dadController,
+                        hintText: 'Parent: Father',
+                        validatorMessage: 'Parent Required',
+                        textInputAction: TextInputAction.next,
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -562,22 +567,27 @@ class _AddRatState extends State<AddRat> {
 }
 
 class MyInputText extends StatelessWidget {
-  const MyInputText({
-    super.key,
-    required this.controller,
-    required this.hintText,
-    required this.validatorMessage,
-  });
+  const MyInputText(
+      {super.key,
+      required this.controller,
+      required this.hintText,
+      required this.validatorMessage,
+      this.onFieldSubmited,
+      required this.textInputAction});
 
   final TextEditingController controller;
   final String hintText;
   final String validatorMessage;
+  final void Function(String)? onFieldSubmited;
+  final TextInputAction textInputAction;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 10),
       child: TextFormField(
+        onFieldSubmitted: onFieldSubmited,
+        textInputAction: textInputAction,
         controller: controller,
         decoration: InputDecoration(
             hintText: hintText, border: const OutlineInputBorder()),
