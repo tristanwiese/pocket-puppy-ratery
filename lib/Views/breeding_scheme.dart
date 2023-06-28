@@ -1,29 +1,77 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Views/add_rat.dart';
 
 class BreedingScheme extends StatefulWidget {
-  const BreedingScheme({super.key, required this.rats});
+  const BreedingScheme({
+    super.key,
+    required this.rats,
+    required this.schemeCount,
+    this.chosenRats,
+    this.date,
+    this.isCustomRats,
+    this.name,
+    this.id,
+  });
 
-  final rats;
+  final List<QueryDocumentSnapshot> rats;
+  final int schemeCount;
+  final List<String>? chosenRats;
+  final DateTime? date;
+  final bool? isCustomRats;
+  final String? name;
+  final String? id;
 
   @override
   State<BreedingScheme> createState() => _BreedingSchemeState();
 }
 
 class _BreedingSchemeState extends State<BreedingScheme> {
-  final TextEditingController _maleController = TextEditingController();
-  final TextEditingController _femaleController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
+  TextEditingController _maleController = TextEditingController();
+  TextEditingController _femaleController = TextEditingController();
+  TextEditingController _nameController = TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _nameKey = GlobalKey<FormState>();
 
   List chosenRatsList = [];
   bool showCustomRatScreen = false;
+
+  DateTime? customDate;
+  
+  String createSchemeButtonText = "Create Scheme";
+
+  @override
+  void initState() {
+    if (widget.isCustomRats != null) {
+      createSchemeButtonText = "Update Scheme";
+      _maleController = TextEditingController(text: widget.chosenRats![0]);
+      _femaleController = TextEditingController(text: widget.chosenRats![1]);
+      customDate = widget.date;
+      _nameController = TextEditingController(text: widget.name);
+      showCustomRatScreen = true;
+      if (!widget.isCustomRats!) {
+        for (String name in widget.chosenRats!) {
+          chosenRatsList.add(widget.rats[
+              widget.rats.indexWhere((element) => element["name"] == name)]);
+        }
+        _maleController.clear();
+        _femaleController.clear();
+        showCustomRatScreen = false;
+      }
+      return;
+    }
+    
+
+    _nameController =
+        TextEditingController(text: "Scheme: ${widget.schemeCount + 1}");
+
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -59,18 +107,54 @@ class _BreedingSchemeState extends State<BreedingScheme> {
                       !showCustomRatScreen
                           ? "Choose two rats from existing rats"
                           : "Enter name of two rats",
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
                     ),
                   ),
+                  const SizedBox(height: 50),
+                  const DirectiveText(text: "Name Scheme: "),
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 10),
-                    child: MyInputText(
+                    child: TextFormField(
                       controller: _nameController,
-                      hintText: "Name Scheme",
-                      validatorMessage: "Required",
                       textInputAction: TextInputAction.next,
+                      decoration: const InputDecoration(
+                        hintText: "Name Scheme",
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Required";
+                        }
+                        return null;
+                      },
                     ),
                   ),
+                  const SizedBox(height: 10),
+                  const DirectiveText(
+                      text: "Select Custom date. Defaults to current date"),
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
+                    width: MediaQuery.of(context).size.width,
+                    height: 40,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        customDate = await showDatePicker(
+                          context: context,
+                          initialDate:
+                              customDate == null ? DateTime.now() : customDate!,
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime.now(),
+                        );
+                      },
+                      style: MyElevatedButtonStyle.buttonStyle,
+                      child: const Text("Custom Date"),
+                    ),
+                  ),
+                  const SizedBox(height: 50),
+                  showCustomRatScreen
+                      ? Container()
+                      : const DirectiveText(text: "Select rat"),
                   showCustomRatScreen ? customRatScreen() : existingRatScreen(),
                   Container(
                     margin: const EdgeInsets.symmetric(vertical: 10),
@@ -89,8 +173,9 @@ class _BreedingSchemeState extends State<BreedingScheme> {
                         });
                       },
                       style: MyElevatedButtonStyle.buttonStyle,
-                      child:
-                          Text(showCustomRatScreen ? "Existing Rats" : "Custom Rats"),
+                      child: Text(showCustomRatScreen
+                          ? "Existing Rats"
+                          : "Custom Rats"),
                     ),
                   ),
                   Container(
@@ -103,13 +188,16 @@ class _BreedingSchemeState extends State<BreedingScheme> {
                           if (showCustomRatScreen) {
                             if (_formKey.currentState!.validate()) {
                               addScheme(
-                                  _maleController.text.trim(),
-                                  _femaleController.text.trim(),
-                                  _nameController.text.trim());
+                                  dateOfBreeding: (customDate == null)
+                                      ? DateTime.now()
+                                      : customDate!,
+                                  male: _maleController.text.trim(),
+                                  female: _femaleController.text.trim(),
+                                  name: _nameController.text.trim());
                             }
                             return;
                           }
-                
+
                           if (chosenRatsList.length != 2) {
                             scaffoldKey.currentState!.showSnackBar(
                               const SnackBar(
@@ -132,16 +220,24 @@ class _BreedingSchemeState extends State<BreedingScheme> {
                             );
                             return;
                           }
-                          final male = chosenRatsList[chosenRatsList
-                              .indexWhere((element) => element["gender"] == "Male")];
-                          final female = chosenRatsList[chosenRatsList
-                              .indexWhere((element) => element["gender"] == "Female")];
-                          addScheme(male["name"], female["name"],
-                              _nameController.text.trim());
+                          final male = chosenRatsList[chosenRatsList.indexWhere(
+                              (element) => element["gender"] == "Male")];
+                          final female = chosenRatsList[
+                              chosenRatsList.indexWhere(
+                                  (element) => element["gender"] == "Female")];
+
+                          addScheme(
+                            male: male["name"],
+                            female: female["name"],
+                            name: _nameController.text.trim(),
+                            dateOfBreeding: (customDate == null)
+                                ? DateTime.now()
+                                : customDate!,
+                          );
                         }
                       },
                       style: MyElevatedButtonStyle.buttonStyle,
-                      child: const Text("Create Scheme"),
+                      child: Text(createSchemeButtonText),
                     ),
                   ),
                 ],
@@ -160,6 +256,7 @@ class _BreedingSchemeState extends State<BreedingScheme> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const DirectiveText(text: "Name Rats"),
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 10),
               child: MyInputText(
@@ -180,9 +277,11 @@ class _BreedingSchemeState extends State<BreedingScheme> {
                 onFieldSubmited: (p0) {
                   if (_formKey.currentState!.validate()) {
                     addScheme(
-                        _maleController.text.trim(),
-                        _femaleController.text.trim(),
-                        _nameController.text.trim());
+                        dateOfBreeding:
+                            (customDate == null) ? DateTime.now() : customDate!,
+                        male: _maleController.text.trim(),
+                        female: _femaleController.text.trim(),
+                        name: _nameController.text.trim());
                   }
                 },
               ),
@@ -232,21 +331,74 @@ class _BreedingSchemeState extends State<BreedingScheme> {
     );
   }
 
-  void addScheme(String male, String female, String name) async {
+  void addScheme({
+    required String male,
+    required String female,
+    required String name,
+    required DateTime dateOfBreeding,
+  }) async {
     showDialog(
       context: context,
       builder: (context) => const Center(
         child: CircularProgressIndicator(),
       ),
     );
-    await FirebaseFirestore.instance
-        .collection("users")
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection("breedingSchemes")
-        .add({"male": male, "female": female, "name": name});
 
-    // ignore: use_build_context_synchronously
-    navPop(context);
-    navPop(context);
+    if (widget.name == null) {
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection("breedingSchemes")
+          .add({
+        "male": male,
+        "female": female,
+        "name": name,
+        "dateOfMating": [
+          dateOfBreeding.year,
+          dateOfBreeding.month,
+          dateOfBreeding.day
+        ],
+        "isCustomRats": showCustomRatScreen ? true : false,
+        "notes": []
+      });
+    } else {
+      FirebaseSchemes.doc(widget.id).update({
+        "male": male,
+        "female": female,
+        "name": name,
+        "dateOfMating": [
+          dateOfBreeding.year,
+          dateOfBreeding.month,
+          dateOfBreeding.day
+        ],
+        "isCustomRats": showCustomRatScreen ? true : false,
+        "notes": []
+      });
+    }
+
+    Navigator.popUntil(context, (route) => route.isFirst);
+  }
+}
+
+class DirectiveText extends StatelessWidget {
+  const DirectiveText({super.key, required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 10),
+          child: Text(
+            text,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

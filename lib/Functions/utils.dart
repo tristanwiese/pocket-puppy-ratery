@@ -8,14 +8,19 @@ var primaryThemeColor = const Color.fromARGB(255, 120, 224, 199);
 
 var secondaryThemeColor = const Color.fromARGB(255, 181, 144, 185);
 
-CollectionReference schemes = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).collection("breedingSchemes");
+CollectionReference FirebaseSchemes = FirebaseFirestore.instance
+    .collection('users')
+    .doc(FirebaseAuth.instance.currentUser!.uid)
+    .collection("breedingSchemes");
 
-CollectionReference rats = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser!.uid).collection("rats");
+CollectionReference FirebaseRats = FirebaseFirestore.instance
+    .collection('users')
+    .doc(FirebaseAuth.instance.currentUser!.uid)
+    .collection("rats");
 
 late SharedPreferences prefs;
 
 class MyElevatedButtonStyle {
-
   static final buttonStyle = ElevatedButton.styleFrom(
     backgroundColor: Colors.white,
     shape: RoundedRectangleBorder(
@@ -32,9 +37,15 @@ class MyElevatedButtonStyle {
     ),
   );
   static final doneButtonStyle = ElevatedButton.styleFrom(
-    fixedSize: const Size(100, 40),
-    shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(20))));
+      fixedSize: const Size(100, 40),
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(20))));
+  static final cancelButtonStyle = ElevatedButton.styleFrom(
+      backgroundColor: Colors.white,
+      fixedSize: const Size(100, 40),
+      shape: RoundedRectangleBorder(
+          borderRadius: const BorderRadius.all(Radius.circular(20)),
+          side: BorderSide(color: secondaryThemeColor)));
 
   static const textStyle = TextStyle(color: Colors.black87);
 }
