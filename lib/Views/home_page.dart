@@ -1008,7 +1008,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 navPop(context);
                                                 bugReport();
                                               },
-                                              style: MyElevatedButtonStyle.buttonStyle,
+                                              style: MyElevatedButtonStyle
+                                                  .buttonStyle,
                                               child: const Text("Report Bug"),
                                             ),
                                           ),
@@ -1026,9 +1027,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   navPop(context);
                                                   bugReport(bugs: false);
                                                 },
-                                                style: MyElevatedButtonStyle.buttonStyle,
-                                                child:
-                                                    const Text("Report Improvement Idea")),
+                                                style: MyElevatedButtonStyle
+                                                    .buttonStyle,
+                                                child: const Text(
+                                                    "Report Improvement Idea")),
                                           ),
                                         ),
                                       ],
@@ -1147,7 +1149,7 @@ class _MyHomePageState extends State<MyHomePage> {
             final TextEditingController areaController =
                 TextEditingController();
 
-             Widget title = Text(bugs ? "Bug Report" : "Improvements");
+            Widget title = Text(bugs ? "Bug Report" : "Improvements");
 
             final List<Widget> actions = [
               ElevatedButton(
@@ -1164,32 +1166,34 @@ class _MyHomePageState extends State<MyHomePage> {
                       builder: (context) => const Center(
                             child: CircularProgressIndicator(),
                           ));
-                          bugs
-                  ? await FirebaseFirestore.instance
-                      .collection("bugReports")
-                      .doc()
-                      .set({
-                    "user": FirebaseAuth.instance.currentUser!.email,
-                    "title": titleController.text.trim(),
-                    "area": areaController.text.trim(),
-                    "description": descriptionController.text.trim(),
-                    "state": "lowPriority"
-                  })
-                  :await FirebaseFirestore.instance
-                      .collection("improvements")
-                      .doc()
-                      .set({
-                    "user": FirebaseAuth.instance.currentUser!.email,
-                    "title": titleController.text.trim(),
-                    "area": areaController.text.trim(),
-                    "description": descriptionController.text.trim(),
-                    "state": "lowPriority"
-                  });
+                  bugs
+                      ? await FirebaseFirestore.instance
+                          .collection("bugReports")
+                          .doc()
+                          .set({
+                          "user": FirebaseAuth.instance.currentUser!.email,
+                          "title": titleController.text.trim(),
+                          "area": areaController.text.trim(),
+                          "description": descriptionController.text.trim(),
+                          "state": "lowPriority"
+                        })
+                      : await FirebaseFirestore.instance
+                          .collection("improvements")
+                          .doc()
+                          .set({
+                          "user": FirebaseAuth.instance.currentUser!.email,
+                          "title": titleController.text.trim(),
+                          "area": areaController.text.trim(),
+                          "description": descriptionController.text.trim(),
+                          "state": "lowPriority"
+                        });
                   navPop(context);
                   navPop(context);
-                  scaffoldKey.currentState!.showSnackBar(const SnackBar(
-                      content:
-                          Text("Report sent. Thank you for the feedback!")));
+                  scaffoldKey.currentState!.showSnackBar(SnackBar(
+                    content:
+                        const Text("Report sent. Thank you for the feedback!"),
+                    backgroundColor: primaryThemeColor,
+                  ));
                 },
                 style: ElevatedButton.styleFrom(
                     fixedSize: const Size(120, 40),
@@ -1204,7 +1208,10 @@ class _MyHomePageState extends State<MyHomePage> {
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-                    DirectiveText(text: bugs ? "Short title about problem:" : "Short title for improvement"),
+                    DirectiveText(
+                        text: bugs
+                            ? "Short title about problem:"
+                            : "Short title for improvement"),
                     TextField(
                       controller: titleController,
                       decoration: const InputDecoration(
@@ -1215,7 +1222,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     const SizedBox(height: 10),
                     DirectiveText(
-                        text: bugs ? "In what area of the\napp did it occur?" : "In what area of the\napp is the improvement?"),
+                        text: bugs
+                            ? "In what area of the\napp did it occur?"
+                            : "In what area of the\napp is the improvement?"),
                     TextField(
                       controller: areaController,
                       decoration: const InputDecoration(
@@ -1225,25 +1234,23 @@ class _MyHomePageState extends State<MyHomePage> {
                       textInputAction: TextInputAction.next,
                     ),
                     const SizedBox(height: 10),
-                     DirectiveText(
+                    DirectiveText(
                         text: bugs
                             ? "Describe in detail what\nhappened and how to\nrecreate it:"
-                            : "Describe in detail the\nImprovement idea"
-                            ),
+                            : "Describe in detail the\nImprovement idea"),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       decoration: BoxDecoration(
                           border: Border.all(color: Colors.black45),
                           borderRadius: BorderRadius.circular(5)),
                       child: TextField(
-                        decoration: const InputDecoration(
-                            hintText: "Description",
-                            border: InputBorder.none,
-                            constraints: BoxConstraints.expand(height: 200)),
-                        controller: descriptionController,
-                        maxLines: null,
-                        textInputAction: TextInputAction.go
-                      ),
+                          decoration: const InputDecoration(
+                              hintText: "Description",
+                              border: InputBorder.none,
+                              constraints: BoxConstraints.expand(height: 200)),
+                          controller: descriptionController,
+                          maxLines: null,
+                          textInputAction: TextInputAction.go),
                     ),
                   ],
                 ),
