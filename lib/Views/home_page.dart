@@ -1172,7 +1172,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     "user": FirebaseAuth.instance.currentUser!.email,
                     "title": titleController.text.trim(),
                     "area": areaController.text.trim(),
-                    "description": descriptionController.text.trim()
+                    "description": descriptionController.text.trim(),
+                    "state": "lowPriority"
                   })
                   :await FirebaseFirestore.instance
                       .collection("improvements")
@@ -1181,7 +1182,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     "user": FirebaseAuth.instance.currentUser!.email,
                     "title": titleController.text.trim(),
                     "area": areaController.text.trim(),
-                    "description": descriptionController.text.trim()
+                    "description": descriptionController.text.trim(),
+                    "state": "lowPriority"
                   });
                   navPop(context);
                   navPop(context);
@@ -1209,6 +1211,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         hintText: "Title",
                         border: OutlineInputBorder(),
                       ),
+                      textInputAction: TextInputAction.next,
                     ),
                     const SizedBox(height: 10),
                     DirectiveText(
@@ -1219,6 +1222,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         hintText: "Area",
                         border: OutlineInputBorder(),
                       ),
+                      textInputAction: TextInputAction.next,
                     ),
                     const SizedBox(height: 10),
                      DirectiveText(
@@ -1238,6 +1242,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             constraints: BoxConstraints.expand(height: 200)),
                         controller: descriptionController,
                         maxLines: null,
+                        textInputAction: TextInputAction.go
                       ),
                     ),
                   ],
