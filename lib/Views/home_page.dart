@@ -32,7 +32,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final PageController _pageController = PageController(initialPage: 2);
+  final PageController _pageController = PageController(initialPage: 0);
 
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
@@ -226,7 +226,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                           ],
                                         ),
                                       ),
-                                      trailing: myIconButton(item: buildItem[i], itemType: "rat"),
+                                      trailing: myIconButton(
+                                          item: buildItem[i], itemType: "rat"),
                                       title: Text(buildItem[i]['name']),
                                       subtitle: Text(buildItem[i]['gender'] +
                                           "\n" +
@@ -284,27 +285,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         onPressed: () {
                           _key.currentState!.openEndDrawer();
-                        }),
-                  )),
-              Container(
-                  height: 35,
-                  margin: const EdgeInsets.only(bottom: 10),
-                  child: Directionality(
-                    textDirection: TextDirection.rtl,
-                    child: ElevatedButton.icon(
-                        label: const Text("Devs only!",
-                            style: TextStyle(color: Colors.red)),
-                        icon:
-                            const Icon(Icons.error_outline, color: Colors.red),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            side: BorderSide(color: secondaryThemeColor),
-                          ),
-                        ),
-                        onPressed: () {
-                          navPush(context, const DevPage());
                         }),
                   )),
             ],
@@ -559,10 +539,10 @@ class _MyHomePageState extends State<MyHomePage> {
           children: [
             schemes.isEmpty
                 ? const Expanded(
-                  child: Center(
+                    child: Center(
                       child: Text("No Shemes"),
                     ),
-                )
+                  )
                 : Expanded(
                     child: ConstrainedBox(
                       constraints: BoxConstraints(maxWidth: getSize()),
@@ -583,10 +563,15 @@ class _MyHomePageState extends State<MyHomePage> {
                                 isThreeLine: true,
                                 subtitle: Text(
                                     "Male: ${scheme["male"]} \nFemale: ${scheme["female"]}"),
-                                    trailing: myIconButton(item: scheme, itemType: "scheme"),
+                                trailing: myIconButton(
+                                    item: scheme, itemType: "scheme"),
                                 onTap: () {
-                                  navPush(context,
-                                      BreedingShcemeInfoPage(scheme: scheme, rats: rats,));
+                                  navPush(
+                                      context,
+                                      BreedingShcemeInfoPage(
+                                        scheme: scheme,
+                                        rats: rats,
+                                      ));
                                 },
                               ),
                             ),
@@ -658,46 +643,49 @@ class _MyHomePageState extends State<MyHomePage> {
         ]);
   }
 
-  IconButton myIconButton({required QueryDocumentSnapshot item, required String itemType}) => IconButton(
-      onPressed: () {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text("Warning"),
-              content: SizedBox(
-                height: 150,
-                child: Column(
-                  children: [
-                    Text("Are you sure you want to remove this $itemType?"),
-                    const SizedBox(height: 30),
-                    Text(
-                      item["name"],
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 20),
+  IconButton myIconButton(
+          {required QueryDocumentSnapshot item, required String itemType}) =>
+      IconButton(
+          onPressed: () {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: const Text("Warning"),
+                  content: SizedBox(
+                    height: 150,
+                    child: Column(
+                      children: [
+                        Text("Are you sure you want to remove this $itemType?"),
+                        const SizedBox(height: 30),
+                        Text(
+                          item["name"],
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 20),
+                        ),
+                      ],
+                    ),
+                  ),
+                  actions: [
+                    ElevatedButton(
+                      onPressed: () => navPop(context),
+                      child: const Text('Cancel'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => deleteRat(item.id, itemType),
+                      style:
+                          ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                      child: const Text("Delete"),
                     ),
                   ],
-                ),
-              ),
-              actions: [
-                ElevatedButton(
-                  onPressed: () => navPop(context),
-                  child: const Text('Cancel'),
-                ),
-                ElevatedButton(
-                  onPressed: () => deleteRat(item.id, itemType),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                  child: const Text("Delete"),
-                ),
-              ],
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                );
+              },
             );
           },
-        );
-      },
-      icon: Icon(Icons.delete, color: Colors.red[200]));
+          icon: Icon(Icons.delete, color: Colors.red[200]));
 
   AppBar myAppBar(BuildContext context) {
     AppBar appBar = AppBar();
@@ -927,18 +915,19 @@ class _MyHomePageState extends State<MyHomePage> {
       context: context,
       builder: (context) => const Center(child: CircularProgressIndicator()),
     );
-    itemType=="rat" ?  await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection("rats")
-        .doc(name)
-        .delete()
+    itemType == "rat"
+        ? await FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .collection("rats")
+            .doc(name)
+            .delete()
         : await FirebaseFirestore.instance
-        .collection('users')
-        .doc(FirebaseAuth.instance.currentUser!.uid)
-        .collection("breedingSchemes")
-        .doc(name)
-        .delete();
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .collection("breedingSchemes")
+            .doc(name)
+            .delete();
     navPop(context);
     navPop(context);
   }
@@ -990,6 +979,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       },
                       title: "Settings",
                       icon: Icons.settings,
+                    ),
+                    drawerCard(
+                      onTap: () {
+                        bugReport();
+                      },
+                      title: "Bug Reports",
+                      icon: Icons.bug_report,
                     )
                   ],
                 ),
@@ -1079,6 +1075,107 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
+    );
+  }
+
+  Future<dynamic> bugReport() {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        final TextEditingController titleController = TextEditingController();
+        final TextEditingController descriptionController =
+            TextEditingController();
+        final TextEditingController areaController = TextEditingController();
+
+        const Widget title = Text("Bug Report");
+
+        final List<Widget> actions = [
+          ElevatedButton(
+            onPressed: () {
+              navPop(context);
+            },
+            style: MyElevatedButtonStyle.cancelButtonStyle,
+            child: const Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              showDialog(
+                  context: context,
+                  builder: (context) => const Center(
+                        child: CircularProgressIndicator(),
+                      ));
+              await FirebaseFirestore.instance
+                  .collection("bugReports")
+                  .doc()
+                  .set({
+                "user": FirebaseAuth.instance.currentUser!.email,
+                "title": titleController.text.trim(),
+                "area": areaController.text.trim(),
+                "description": descriptionController.text.trim()
+              });
+              navPop(context);
+              navPop(context);
+              scaffoldKey.currentState!.showSnackBar(const SnackBar(
+                  content: Text("Report send. Thank you for the feedback!")));
+            },
+            style: ElevatedButton.styleFrom(
+                fixedSize: const Size(120, 40),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20))),
+            child: const Text("Send Report"),
+          ),
+        ];
+
+        final Widget content = SizedBox(
+          height: 500,
+          child: Column(
+            children: [
+              const DirectiveText(text: "Short Title about problem:"),
+              TextField(
+                controller: titleController,
+                decoration: const InputDecoration(
+                  hintText: "Title",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 10),
+              const DirectiveText(
+                  text: "In what area of the\napp did it occur?"),
+              TextField(
+                controller: areaController,
+                decoration: const InputDecoration(
+                  hintText: "Area",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 10),
+              const DirectiveText(
+                  text:
+                      "Describe in detail what\nhappened and how to\nrecreate it:"),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black45),
+                    borderRadius: BorderRadius.circular(5)),
+                child: TextField(
+                  decoration: const InputDecoration(
+                      hintText: "Description",
+                      border: InputBorder.none,
+                      constraints: BoxConstraints.expand(height: 200)),
+                  controller: descriptionController,
+                  maxLines: null,
+                ),
+              ),
+            ],
+          ),
+        );
+
+        return AlertDialog(
+          title: title,
+          actions: actions,
+          content: content,
+        );
+      },
     );
   }
 }
