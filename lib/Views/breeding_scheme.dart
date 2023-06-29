@@ -42,7 +42,7 @@ class _BreedingSchemeState extends State<BreedingScheme> {
   bool showCustomRatScreen = false;
 
   DateTime? customDate;
-  
+
   String createSchemeButtonText = "Create Scheme";
 
   @override
@@ -65,7 +65,6 @@ class _BreedingSchemeState extends State<BreedingScheme> {
       }
       return;
     }
-    
 
     _nameController =
         TextEditingController(text: "Scheme: ${widget.schemeCount + 1}");
@@ -372,7 +371,6 @@ class _BreedingSchemeState extends State<BreedingScheme> {
           dateOfBreeding.day
         ],
         "isCustomRats": showCustomRatScreen ? true : false,
-        "notes": []
       });
     }
 
