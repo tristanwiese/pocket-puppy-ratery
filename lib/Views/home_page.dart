@@ -982,9 +982,65 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     drawerCard(
                       onTap: () {
-                        bugReport();
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: const Text("Report Bug/Improvement"),
+                              actions: [
+                                ElevatedButton(
+                                    onPressed: () => navPop(context),
+                                    style: MyElevatedButtonStyle.buttonStyle,
+                                    child: const Text("Cancel"))
+                              ],
+                              content: SizedBox(
+                                height: 200,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: SizedBox(
+                                            height: 40,
+                                            child: ElevatedButton(
+                                              onPressed: () {
+                                                navPop(context);
+                                                bugReport();
+                                              },
+                                              style: MyElevatedButtonStyle.buttonStyle,
+                                              child: const Text("Report Bug"),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: SizedBox(
+                                            height: 40,
+                                            child: ElevatedButton(
+                                                onPressed: () {
+                                                  navPop(context);
+                                                  bugReport(bugs: false);
+                                                },
+                                                style: MyElevatedButtonStyle.buttonStyle,
+                                                child:
+                                                    const Text("Report Improvement Idea")),
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        );
                       },
-                      title: "Bug Reports",
+                      title: "Bug Reports/Improvements",
                       icon: Icons.bug_report,
                     )
                   ],
@@ -1078,102 +1134,123 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Future<dynamic> bugReport() {
+  Future<dynamic> bugReport({bool bugs = true}) {
     return showDialog(
       context: context,
       builder: (context) {
-        final TextEditingController titleController = TextEditingController();
-        final TextEditingController descriptionController =
-            TextEditingController();
-        final TextEditingController areaController = TextEditingController();
+        return StatefulBuilder(
+          builder: (context, setState) {
+            final TextEditingController titleController =
+                TextEditingController();
+            final TextEditingController descriptionController =
+                TextEditingController();
+            final TextEditingController areaController =
+                TextEditingController();
 
-        const Widget title = Text("Bug Report");
+             Widget title = Text(bugs ? "Bug Report" : "Improvements");
 
-        final List<Widget> actions = [
-          ElevatedButton(
-            onPressed: () {
-              navPop(context);
-            },
-            style: MyElevatedButtonStyle.cancelButtonStyle,
-            child: const Text("Cancel"),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              showDialog(
-                  context: context,
-                  builder: (context) => const Center(
-                        child: CircularProgressIndicator(),
-                      ));
-              await FirebaseFirestore.instance
-                  .collection("bugReports")
-                  .doc()
-                  .set({
-                "user": FirebaseAuth.instance.currentUser!.email,
-                "title": titleController.text.trim(),
-                "area": areaController.text.trim(),
-                "description": descriptionController.text.trim()
-              });
-              navPop(context);
-              navPop(context);
-              scaffoldKey.currentState!.showSnackBar(const SnackBar(
-                  content: Text("Report send. Thank you for the feedback!")));
-            },
-            style: ElevatedButton.styleFrom(
-                fixedSize: const Size(120, 40),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20))),
-            child: const Text("Send Report"),
-          ),
-        ];
+            final List<Widget> actions = [
+              ElevatedButton(
+                onPressed: () {
+                  navPop(context);
+                },
+                style: MyElevatedButtonStyle.cancelButtonStyle,
+                child: const Text("Cancel"),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  showDialog(
+                      context: context,
+                      builder: (context) => const Center(
+                            child: CircularProgressIndicator(),
+                          ));
+                          bugs
+                  ? await FirebaseFirestore.instance
+                      .collection("bugReports")
+                      .doc()
+                      .set({
+                    "user": FirebaseAuth.instance.currentUser!.email,
+                    "title": titleController.text.trim(),
+                    "area": areaController.text.trim(),
+                    "description": descriptionController.text.trim()
+                  })
+                  :await FirebaseFirestore.instance
+                      .collection("improvements")
+                      .doc()
+                      .set({
+                    "user": FirebaseAuth.instance.currentUser!.email,
+                    "title": titleController.text.trim(),
+                    "area": areaController.text.trim(),
+                    "description": descriptionController.text.trim()
+                  });
+                  navPop(context);
+                  navPop(context);
+                  scaffoldKey.currentState!.showSnackBar(const SnackBar(
+                      content:
+                          Text("Report sent. Thank you for the feedback!")));
+                },
+                style: ElevatedButton.styleFrom(
+                    fixedSize: const Size(120, 40),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20))),
+                child: const Text("Send Report"),
+              ),
+            ];
 
-        final Widget content = SizedBox(
-          height: 500,
-          child: Column(
-            children: [
-              const DirectiveText(text: "Short Title about problem:"),
-              TextField(
-                controller: titleController,
-                decoration: const InputDecoration(
-                  hintText: "Title",
-                  border: OutlineInputBorder(),
+            final Widget content = SizedBox(
+              height: 500,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    DirectiveText(text: bugs ? "Short title about problem:" : "Short title for improvement"),
+                    TextField(
+                      controller: titleController,
+                      decoration: const InputDecoration(
+                        hintText: "Title",
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    DirectiveText(
+                        text: bugs ? "In what area of the\napp did it occur?" : "In what area of the\napp is the improvement?"),
+                    TextField(
+                      controller: areaController,
+                      decoration: const InputDecoration(
+                        hintText: "Area",
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                     DirectiveText(
+                        text: bugs
+                            ? "Describe in detail what\nhappened and how to\nrecreate it:"
+                            : "Describe in detail the\nImprovement idea"
+                            ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black45),
+                          borderRadius: BorderRadius.circular(5)),
+                      child: TextField(
+                        decoration: const InputDecoration(
+                            hintText: "Description",
+                            border: InputBorder.none,
+                            constraints: BoxConstraints.expand(height: 200)),
+                        controller: descriptionController,
+                        maxLines: null,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 10),
-              const DirectiveText(
-                  text: "In what area of the\napp did it occur?"),
-              TextField(
-                controller: areaController,
-                decoration: const InputDecoration(
-                  hintText: "Area",
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 10),
-              const DirectiveText(
-                  text:
-                      "Describe in detail what\nhappened and how to\nrecreate it:"),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black45),
-                    borderRadius: BorderRadius.circular(5)),
-                child: TextField(
-                  decoration: const InputDecoration(
-                      hintText: "Description",
-                      border: InputBorder.none,
-                      constraints: BoxConstraints.expand(height: 200)),
-                  controller: descriptionController,
-                  maxLines: null,
-                ),
-              ),
-            ],
-          ),
-        );
+            );
 
-        return AlertDialog(
-          title: title,
-          actions: actions,
-          content: content,
+            return AlertDialog(
+              title: title,
+              actions: actions,
+              content: content,
+            );
+          },
         );
       },
     );
