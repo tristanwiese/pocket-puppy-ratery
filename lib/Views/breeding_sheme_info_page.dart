@@ -1,7 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-
-import 'dart:js_interop';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
@@ -400,9 +397,9 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
-            if (date.isNull) {
-              date = DateTime.now();
-            }
+            
+              date ??= DateTime.now();
+            
 
             const title = Text("Add Weight Entry");
 
