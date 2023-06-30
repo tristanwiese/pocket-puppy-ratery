@@ -95,17 +95,19 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  weights.isNotEmpty ? SizedBox(
-                    height: weights.length > 10 ? 200 : weights.length * 20,
-                    child: ListView.builder(
-                      itemCount: weights.length,
-                      itemBuilder: (context, index) {
-                        return Text(
-                            "- ${weights[index]["date"][0]}/${weights[index]["date"][1]}/${weights[index]["date"][2]} : ${weights[index]["weight"]}g");
-                      },
-                    ),
-                  )
-                  : const Text("No Weights Recorded"),
+                  weights.isNotEmpty
+                      ? SizedBox(
+                          height:
+                              weights.length > 10 ? 200 : weights.length * 20,
+                          child: ListView.builder(
+                            itemCount: weights.length,
+                            itemBuilder: (context, index) {
+                              return Text(
+                                  "- ${weights[index]["date"][0]}/${weights[index]["date"][1]}/${weights[index]["date"][2]} : ${weights[index]["weight"]}g");
+                            },
+                          ),
+                        )
+                      : const Text("No Weights Recorded"),
                   const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -397,9 +399,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
-            
-              date ??= DateTime.now();
-            
+            date ??= DateTime.now();
 
             const title = Text("Add Weight Entry");
 
