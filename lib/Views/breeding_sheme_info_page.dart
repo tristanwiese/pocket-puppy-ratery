@@ -1,7 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:js_interop';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:numberpicker/numberpicker.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Views/breeding_scheme.dart';
@@ -27,6 +30,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
 
   bool editAble = false;
   List<Map> notes = [];
+  List<Map> weights = [];
 
   customSetState() => setState(() {});
 
@@ -43,6 +47,9 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
 
     for (int i = 0; i < scheme["notes"].length; i++) {
       notes.add(scheme["notes"][i]);
+    }
+    for (int i = 0; i < scheme["weightTracker"].length; i++) {
+      weights.add(scheme["weightTracker"][i]);
     }
 
     super.initState();
@@ -87,12 +94,54 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
               ),
             ),
             MyInfoCard(
+              title: "Weight Tracker",
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  weights.isNotEmpty ? SizedBox(
+                    height: weights.length > 10 ? 200 : weights.length * 20,
+                    child: ListView.builder(
+                      itemCount: weights.length,
+                      itemBuilder: (context, index) {
+                        return Text(
+                            "- ${weights[index]["date"][0]}/${weights[index]["date"][1]}/${weights[index]["date"][2]} : ${weights[index]["weight"]}g");
+                      },
+                    ),
+                  )
+                  : const Text("No Weights Recorded"),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton.icon(
+                        label: const Text("Add Entry"),
+                        style: MyElevatedButtonStyle.buttonStyle,
+                        onPressed: () {
+                          addWeightEntry();
+                        },
+                        icon: const Icon(Icons.add, color: Colors.green),
+                      ),
+                      const SizedBox(width: 10),
+                      ElevatedButton.icon(
+                        label: const Text("Edit Entries"),
+                        style: MyElevatedButtonStyle.buttonStyle,
+                        onPressed: () {
+                          editWeightEntries();
+                        },
+                        icon: const Icon(Icons.edit),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            ),
+            MyInfoCard(
               title: "Notes",
               child: Column(
                 children: [
                   notes.isNotEmpty
                       ? SizedBox(
-                          height: 100,
+                          height: notes.length > 10 ? 200 : notes.length * 20,
                           child: ListView.builder(
                             itemCount: notes.length,
                             itemBuilder: (context, index) => Text(
@@ -100,7 +149,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                           ),
                         )
                       : const Text("No notes"),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -301,7 +350,8 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
               noteController.dispose();
             },
             style: MyElevatedButtonStyle.doneButtonStyle,
-            child: const Text("Add Note"),
+            child:
+                Text((note != '' || noteTitle != "") ? "Update" : "Add Note"),
           ),
         ];
 
@@ -341,6 +391,214 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
           content: content,
         );
       },
+    );
+  }
+
+  void addWeightEntry({int weight = 100, DateTime? date, int? index}) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            if (date.isNull) {
+              date = DateTime.now();
+            }
+
+            const title = Text("Add Weight Entry");
+
+            final actions = [
+              ElevatedButton(
+                onPressed: () => navPop(context),
+                style: MyElevatedButtonStyle.cancelButtonStyle,
+                child: const Text("Cancel"),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  final entry = {
+                    "date": [date!.year, date!.month, date!.day],
+                    "weight": weight
+                  };
+                  if (index != null) {
+                    FirebaseSchemes.doc(scheme.id).update({
+                      "weightTracker": FieldValue.arrayRemove([weights[index]]),
+                    });
+                    weights[index] = entry;
+                    FirebaseSchemes.doc(scheme.id).update({
+                      "weightTracker": FieldValue.arrayUnion([entry]),
+                    });
+                    customSetState();
+                    navPop(context);
+                    navPop(context);
+                    return;
+                  }
+                  weights.add(entry);
+                  customSetState();
+                  FirebaseSchemes.doc(scheme.id).update({
+                    "weightTracker": FieldValue.arrayUnion([entry])
+                  });
+                  navPop(context);
+                },
+                style: MyElevatedButtonStyle.doneButtonStyle,
+                child: Text((index != null) ? "Update" : "Add"),
+              ),
+            ];
+
+            final content = SizedBox(
+              height: 240,
+              child: Column(
+                children: [
+                  const DirectiveText(
+                      text: "Select Date.\nDefaults to current date"),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: SizedBox(
+                          height: 40,
+                          child: ElevatedButton(
+                              onPressed: () async {
+                                date = await showDatePicker(
+                                  context: context,
+                                  initialDate: date!,
+                                  firstDate: DateTime(2000),
+                                  lastDate: DateTime.now(),
+                                );
+                              },
+                              style: MyElevatedButtonStyle.buttonStyle,
+                              child: const Text("Date")),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  const DirectiveText(text: "Select weight"),
+                  NumberPicker(
+                    axis: Axis.horizontal,
+                    minValue: 0,
+                    maxValue: 300,
+                    value: weight,
+                    onChanged: (value) {
+                      weight = value;
+                      setState(
+                        () {},
+                      );
+                    },
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Current Weight: $weight"),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          IconButton(
+                            onPressed: () {
+                              weight -= 20;
+                              setState(
+                                () {},
+                              );
+                            },
+                            icon: const Icon(
+                              (Icons.remove),
+                            ),
+                          ),
+                          const Text("Increment: 20"),
+                          IconButton(
+                            onPressed: () {
+                              weight += 20;
+                              setState(
+                                () {},
+                              );
+                            },
+                            icon: const Icon(
+                              (Icons.add),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            );
+
+            return AlertDialog(
+              title: title,
+              actions: actions,
+              content: content,
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void editWeightEntries() {
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          const Widget title = Text("Edit Entries");
+
+          final List<Widget> actions = [
+            ElevatedButton(
+              onPressed: () {
+                customSetState();
+                navPop(context);
+              },
+              child: const Text("Done"),
+            ),
+          ];
+
+          final Widget content = SizedBox(
+            height: 300,
+            child: ListView.builder(
+              itemCount: weights.length,
+              itemBuilder: (context, index) {
+                return Card(
+                  elevation: 10,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
+                  child: ListTile(
+                    onTap: () => addWeightEntry(
+                        date: DateTime(
+                            weights[index]["date"][0],
+                            weights[index]["date"][1],
+                            weights[index]["date"][2]),
+                        weight: weights[index]["weight"],
+                        index: index),
+                    title: Text(
+                        "- ${weights[index]["date"][0]}/${weights[index]["date"][1]}/${weights[index]["date"][2]} : ${weights[index]["weight"]}g"),
+                    trailing: IconButton(
+                      onPressed: () {
+                        FirebaseSchemes.doc(scheme.id).update({
+                          "weightTracker": FieldValue.arrayRemove(
+                            [weights[index]],
+                          )
+                        });
+
+                        setState(() {
+                          weights.removeAt(index);
+                        });
+                        customSetState();
+                      },
+                      icon: Icon(
+                        Icons.delete,
+                        color: Colors.red[300],
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          );
+
+          return AlertDialog(
+            title: title,
+            actions: actions,
+            content: content,
+          );
+        },
+      ),
     );
   }
 }

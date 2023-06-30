@@ -358,7 +358,8 @@ class _BreedingSchemeState extends State<BreedingScheme> {
           dateOfBreeding.day
         ],
         "isCustomRats": showCustomRatScreen ? true : false,
-        "notes": []
+        "notes": [],
+        "weightTracker": []
       });
     } else {
       FirebaseSchemes.doc(widget.id).update({
