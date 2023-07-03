@@ -243,7 +243,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
           ],
         ),
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
               margin: const EdgeInsets.symmetric(vertical: 10),
@@ -269,18 +269,18 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                 child: const Text('Edit'),
               ),
             ),
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 10),
-              width: 150,
-              height: 40,
-              child: ElevatedButton(
-                onPressed: () {
-                  setState(() {});
-                },
-                style: MyElevatedButtonStyle.buttonStyle,
-                child: const Text('Refresh'),
-              ),
-            ),
+            // Container(
+            //   margin: const EdgeInsets.symmetric(vertical: 10),
+            //   width: 150,
+            //   height: 40,
+            //   child: ElevatedButton(
+            //     onPressed: () {
+            //       setState(() {});
+            //     },
+            //     style: MyElevatedButtonStyle.buttonStyle,
+            //     child: const Text('Refresh'),
+            //   ),
+            // ),
           ],
         )
       ],
