@@ -32,7 +32,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final PageController _pageController = PageController(initialPage: 2);
+  final PageController _pageController = PageController(initialPage: 0);
 
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
