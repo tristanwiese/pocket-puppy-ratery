@@ -354,33 +354,35 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
           ),
         ];
 
-        final Widget content = SizedBox(
-          height: 300,
-          child: Column(
-            children: [
-              TextField(
-                controller: titleController,
-                decoration: const InputDecoration(
-                  hintText: "Title",
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 10),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black45),
-                    borderRadius: BorderRadius.circular(5)),
-                child: TextField(
+        final Widget content = SingleChildScrollView(
+          child: SizedBox(
+            height: 300,
+            child: Column(
+              children: [
+                TextField(
+                  controller: titleController,
                   decoration: const InputDecoration(
-                      hintText: "Note",
-                      border: InputBorder.none,
-                      constraints: BoxConstraints.expand(height: 200)),
-                  controller: noteController,
-                  maxLines: null,
+                    hintText: "Title",
+                    border: OutlineInputBorder(),
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8),
+                  decoration: BoxDecoration(
+                      border: Border.all(color: Colors.black45),
+                      borderRadius: BorderRadius.circular(5)),
+                  child: TextField(
+                    decoration: const InputDecoration(
+                        hintText: "Note",
+                        border: InputBorder.none,
+                        constraints: BoxConstraints.expand(height: 200)),
+                    controller: noteController,
+                    maxLines: null,
+                  ),
+                ),
+              ],
+            ),
           ),
         );
 

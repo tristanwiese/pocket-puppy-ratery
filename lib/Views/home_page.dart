@@ -110,7 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
           bottomNavigationBar: myBottomNavBar(),
           body: PageView(
             controller: _pageController,
-            onPageChanged: (value) => setState(() {
+            onPageChanged: (value) => (() {
               bottomVanIndex = value;
               switch (value) {
                 case 0:
@@ -1161,6 +1161,7 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               ElevatedButton(
                 onPressed: () async {
+                  FocusManager.instance.primaryFocus?.unfocus();
                   showDialog(
                       context: context,
                       builder: (context) => const Center(
