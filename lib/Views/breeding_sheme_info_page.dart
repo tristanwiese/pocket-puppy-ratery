@@ -360,6 +360,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
             child: Column(
               children: [
                 TextField(
+                  textInputAction: TextInputAction.next,
                   controller: titleController,
                   decoration: const InputDecoration(
                     hintText: "Title",
@@ -373,6 +374,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                       border: Border.all(color: Colors.black45),
                       borderRadius: BorderRadius.circular(5)),
                   child: TextField(
+                    textInputAction: TextInputAction.done,
                     decoration: const InputDecoration(
                         hintText: "Note",
                         border: InputBorder.none,
