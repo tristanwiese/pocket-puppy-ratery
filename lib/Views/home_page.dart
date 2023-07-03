@@ -1176,7 +1176,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           "title": titleController.text.trim(),
                           "area": areaController.text.trim(),
                           "description": descriptionController.text.trim(),
-                          "state": "lowPriority"
+                          "state": "highPriority"
                         })
                       : await FirebaseFirestore.instance
                           .collection("improvements")
@@ -1186,7 +1186,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           "title": titleController.text.trim(),
                           "area": areaController.text.trim(),
                           "description": descriptionController.text.trim(),
-                          "state": "lowPriority"
+                          "state": "highPriority"
                         });
                   navPop(context);
                   navPop(context);

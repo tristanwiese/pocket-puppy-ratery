@@ -1,4 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
@@ -397,10 +399,26 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
     );
   }
 
-  void addWeightEntry({int weight = 100, DateTime? date, int? index}) {
+  void addWeightEntry({int weight = 300, DateTime? date, int? index}) {
     showDialog(
       context: context,
       builder: (context) {
+        decreaseWeight() {
+          if (weight > 100) {
+            weight -= 100;
+          } else {
+            weight = 0;
+          }
+        }
+
+        increaseWeight() {
+          if (weight < 900) {
+            weight += 100;
+          } else {
+            weight = 1000;
+          }
+        }
+
         return StatefulBuilder(
           builder: (context, setState) {
             date ??= DateTime.now();
@@ -475,7 +493,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                   NumberPicker(
                     axis: Axis.horizontal,
                     minValue: 0,
-                    maxValue: 300,
+                    maxValue: 1000,
                     value: weight,
                     onChanged: (value) {
                       weight = value;
@@ -493,7 +511,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                         children: [
                           IconButton(
                             onPressed: () {
-                              weight -= 20;
+                              decreaseWeight();
                               setState(
                                 () {},
                               );
@@ -502,10 +520,10 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                               (Icons.remove),
                             ),
                           ),
-                          const Text("Increment: 20"),
+                          const Text("Increment: 100"),
                           IconButton(
                             onPressed: () {
-                              weight += 20;
+                              increaseWeight();
                               setState(
                                 () {},
                               );
