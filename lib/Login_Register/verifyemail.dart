@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Views/home_page.dart';
 
+import '../Services/custom_widgets.dart';
+
 class VerifyEmail extends StatefulWidget {
   const VerifyEmail({super.key});
 

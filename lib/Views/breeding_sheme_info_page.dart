@@ -7,7 +7,9 @@ import 'package:numberpicker/numberpicker.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Views/breeding_scheme.dart';
-import 'package:pocket_puppy_rattery/Views/rat_info.dart';
+import 'package:pocket_puppy_rattery/Views/pups.dart';
+
+import '../Services/custom_widgets.dart';
 
 class BreedingShcemeInfoPage extends StatefulWidget {
   const BreedingShcemeInfoPage(
@@ -65,227 +67,319 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
   }
 
   Widget breedingSchemeInfoBody() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Container(),
+          Column(
+            children: [
+              dates(),
+              parentDetails(),
+              weightTracker(),
+              schemeNotes(),
+              pups()
+            ],
+          ),
+          editButton()
+        ],
+      ),
+    );
+  }
+
+  Row editButton() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Container(),
-        Column(
-          children: [
-            MyInfoCard(
-              title: "Date of Breeding",
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "${scheme["dateOfMating"][0]}/${scheme["dateOfMating"][1]}/${scheme["dateOfMating"][2]}",
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 10),
+          width: 150,
+          height: 40,
+          child: ElevatedButton(
+            onPressed: () {
+              navPush(
+                context,
+                BreedingScheme(
+                  schemeCount: 0,
+                  rats: widget.rats!,
+                  chosenRats: [scheme["male"], scheme["female"]],
+                  date: DateTime(scheme["dateOfMating"][0],
+                      scheme["dateOfMating"][1], scheme["dateOfMating"][2]),
+                  isCustomRats: scheme["isCustomRats"],
+                  name: scheme["name"],
+                  id: scheme.id,
+                ),
+              );
+            },
+            style: MyElevatedButtonStyle.buttonStyle,
+            child: const Text('Edit'),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 10),
+          width: 150,
+          height: 40,
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      const Pups(),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    const begin = Offset(0.0, 1.0);
+                    const end = Offset.zero;
+                    final tween = Tween(begin: begin, end: end);
+                    final offsetAnimation = animation.drive(tween);
+                    return SlideTransition(
+                      position: offsetAnimation,
+                      child: child,
+                    );
+                  },
+                ),
+              );
+            },
+            style: MyElevatedButtonStyle.buttonStyle,
+            child: const Text('Pups'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  MyInfoCard schemeNotes() {
+    return MyInfoCard(
+      title: "Notes",
+      child: Column(
+        children: [
+          notes.isNotEmpty
+              ? SizedBox(
+                  height: notes.length > 10 ? 200 : notes.length * 20,
+                  child: ListView.builder(
+                    itemCount: notes.length,
+                    itemBuilder: (context, index) => Text(
+                        "- ${notes[index]["title"]}: ${notes[index]["note"]}"),
                   ),
-                ],
+                )
+              : const Text("No notes"),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton.icon(
+                label: const Text("Add Note"),
+                onPressed: () {
+                  addNote();
+                },
+                style: MyElevatedButtonStyle.buttonStyle,
+                icon: const Icon(
+                  Icons.add,
+                  color: Colors.green,
+                ),
               ),
-            ),
-            MyInfoCard(
-              title: "Parent Details",
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text("Male: ${scheme["male"]}"),
-                  Text("Female: ${scheme["female"]}"),
-                ],
-              ),
-            ),
-            MyInfoCard(
-              title: "Weight Tracker",
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  weights.isNotEmpty
-                      ? SizedBox(
-                          height:
-                              weights.length > 10 ? 200 : weights.length * 20,
-                          child: ListView.builder(
-                            itemCount: weights.length,
-                            itemBuilder: (context, index) {
-                              return Text(
-                                  "- ${weights[index]["date"][0]}/${weights[index]["date"][1]}/${weights[index]["date"][2]} : ${weights[index]["weight"]}g");
+              const SizedBox(width: 10),
+              ElevatedButton.icon(
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => StatefulBuilder(
+                      builder: (context, setState) {
+                        const Widget title = Text("Edit Notes");
+
+                        final List<Widget> actions = [
+                          ElevatedButton(
+                            onPressed: () {
+                              customSetState();
+                              navPop(context);
                             },
+                            child: const Text("Done"),
                           ),
-                        )
-                      : const Text("No Weights Recorded"),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton.icon(
-                        label: const Text("Add Entry"),
-                        style: MyElevatedButtonStyle.buttonStyle,
-                        onPressed: () {
-                          addWeightEntry();
-                        },
-                        icon: const Icon(Icons.add, color: Colors.green),
-                      ),
-                      const SizedBox(width: 10),
-                      ElevatedButton.icon(
-                        label: const Text("Edit Entries"),
-                        style: MyElevatedButtonStyle.buttonStyle,
-                        onPressed: () {
-                          editWeightEntries();
-                        },
-                        icon: const Icon(Icons.edit),
-                      )
-                    ],
-                  )
-                ],
-              ),
-            ),
-            MyInfoCard(
-              title: "Notes",
-              child: Column(
-                children: [
-                  notes.isNotEmpty
-                      ? SizedBox(
-                          height: notes.length > 10 ? 200 : notes.length * 20,
+                        ];
+
+                        final Widget content = SizedBox(
+                          height: 300,
                           child: ListView.builder(
                             itemCount: notes.length,
-                            itemBuilder: (context, index) => Text(
-                                "- ${notes[index]["title"]}: ${notes[index]["note"]}"),
-                          ),
-                        )
-                      : const Text("No notes"),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ElevatedButton.icon(
-                        label: const Text("Add Note"),
-                        onPressed: () {
-                          addNote();
-                        },
-                        style: MyElevatedButtonStyle.buttonStyle,
-                        icon: const Icon(
-                          Icons.add,
-                          color: Colors.green,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      ElevatedButton.icon(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => StatefulBuilder(
-                              builder: (context, setState) {
-                                const Widget title = Text("Edit Notes");
-
-                                final List<Widget> actions = [
-                                  ElevatedButton(
+                            itemBuilder: (context, index) {
+                              return Card(
+                                elevation: 10,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: ListTile(
+                                  onTap: () => addNote(
+                                      index: index,
+                                      note: notes[index]["note"],
+                                      noteTitle: notes[index]["title"]),
+                                  title: Text(notes[index]['title']),
+                                  trailing: IconButton(
                                     onPressed: () {
+                                      FirebaseSchemes.doc(scheme.id).update({
+                                        "notes": FieldValue.arrayRemove(
+                                          [notes[index]],
+                                        )
+                                      });
                                       customSetState();
-                                      navPop(context);
+                                      setState(() {
+                                        notes.removeAt(index);
+                                      });
                                     },
-                                    child: const Text("Done"),
+                                    icon: Icon(
+                                      Icons.delete,
+                                      color: Colors.red[300],
+                                    ),
                                   ),
-                                ];
+                                ),
+                              );
+                            },
+                          ),
+                        );
 
-                                final Widget content = SizedBox(
-                                  height: 300,
-                                  child: ListView.builder(
-                                    itemCount: notes.length,
-                                    itemBuilder: (context, index) {
-                                      return Card(
-                                        elevation: 10,
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10)),
-                                        child: ListTile(
-                                          onTap: () => addNote(
-                                              index: index,
-                                              note: notes[index]["note"],
-                                              noteTitle: notes[index]["title"]),
-                                          title: Text(notes[index]['title']),
-                                          trailing: IconButton(
-                                            onPressed: () {
-                                              FirebaseSchemes.doc(scheme.id)
-                                                  .update({
-                                                "notes": FieldValue.arrayRemove(
-                                                  [notes[index]],
-                                                )
-                                              });
-                                              customSetState();
-                                              setState(() {
-                                                notes.removeAt(index);
-                                              });
-                                            },
-                                            icon: Icon(
-                                              Icons.delete,
-                                              color: Colors.red[300],
-                                            ),
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                );
-
-                                return AlertDialog(
-                                  title: title,
-                                  actions: actions,
-                                  content: content,
-                                );
-                              },
-                            ),
-                          );
-                        },
-                        label: const Text("Edit Notes"),
-                        icon: const Icon(Icons.edit),
-                        style: MyElevatedButtonStyle.buttonStyle,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              margin: const EdgeInsets.symmetric(vertical: 10),
-              width: 150,
-              height: 40,
-              child: ElevatedButton(
-                onPressed: () {
-                  navPush(
-                    context,
-                    BreedingScheme(
-                      schemeCount: 0,
-                      rats: widget.rats!,
-                      chosenRats: [scheme["male"], scheme["female"]],
-                      date: DateTime(scheme["dateOfMating"][0],
-                          scheme["dateOfMating"][1], scheme["dateOfMating"][2]),
-                      isCustomRats: scheme["isCustomRats"],
-                      name: scheme["name"],
-                      id: scheme.id,
+                        return AlertDialog(
+                          title: title,
+                          actions: actions,
+                          content: content,
+                        );
+                      },
                     ),
                   );
                 },
+                label: const Text("Edit Notes"),
+                icon: const Icon(Icons.edit),
                 style: MyElevatedButtonStyle.buttonStyle,
-                child: const Text('Edit'),
               ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  MyInfoCard pups() {
+    return MyInfoCard(
+      title: "Pups",
+      child: Column(
+        children: [
+          scheme["pups"].isNotEmpty
+              ? SizedBox(
+                  height: listContainerHeight(
+                      itemLenght: scheme["pups"].length, custoSizePerLine: 60),
+                  child: ListView.builder(
+                    itemCount: scheme["pups"].length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        elevation: 10,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: BorderSide(color: secondaryThemeColor)),
+                        child: ListTile(
+                          title: Text(scheme["pups"][index]),
+                        ),
+                      );
+                    },
+                  ),
+                )
+              : const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("No Pups"),
+                  ],
+                ),
+          // const SizedBox(height: 10),
+          // ElevatedButton.icon(
+          //   onPressed: () {},
+          //   icon: const Icon(
+          //     Icons.add,
+          //     color: Colors.green,
+          //   ),
+          //   style: MyElevatedButtonStyle.buttonStyle,
+          //   label: const Text("Add Pups"),
+          // ),
+        ],
+      ),
+    );
+  }
+
+  MyInfoCard weightTracker() {
+    return MyInfoCard(
+      title: "Weight Tracker",
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          weights.isNotEmpty
+              ? SizedBox(
+                  height: weights.length > 10 ? 200 : weights.length * 20,
+                  child: ListView.builder(
+                    itemCount: weights.length,
+                    itemBuilder: (context, index) {
+                      return Text(
+                          "- ${weights[index]["date"][0]}/${weights[index]["date"][1]}/${weights[index]["date"][2]} : ${weights[index]["weight"]}g");
+                    },
+                  ),
+                )
+              : const Text("No Weights Recorded"),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton.icon(
+                label: const Text("Add Entry"),
+                style: MyElevatedButtonStyle.buttonStyle,
+                onPressed: () {
+                  addWeightEntry();
+                },
+                icon: const Icon(Icons.add, color: Colors.green),
+              ),
+              const SizedBox(width: 10),
+              ElevatedButton.icon(
+                label: const Text("Edit Entries"),
+                style: MyElevatedButtonStyle.buttonStyle,
+                onPressed: () {
+                  editWeightEntries();
+                },
+                icon: const Icon(Icons.edit),
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  MyInfoCard parentDetails() {
+    return MyInfoCard(
+      title: "Parent Details",
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Text("Male: ${scheme["male"]}"),
+          Text("Female: ${scheme["female"]}"),
+        ],
+      ),
+    );
+  }
+
+  MyInfoCard dates() {
+    return MyInfoCard(
+      title: "Dates",
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Text(
+                  "Breeding: ${scheme["dateOfMating"][0]}/${scheme["dateOfMating"][1]}/${scheme["dateOfMating"][2]}",
+                ),
+                Text(scheme["pups"].isNotEmpty
+                    ? "Birth: ${scheme["dateOfMating"][0]}/${scheme["dateOfMating"][1]}/${scheme["dateOfMating"][2]}"
+                    : "Birth: Not set"),
+              ],
             ),
-            // Container(
-            //   margin: const EdgeInsets.symmetric(vertical: 10),
-            //   width: 150,
-            //   height: 40,
-            //   child: ElevatedButton(
-            //     onPressed: () {
-            //       setState(() {});
-            //     },
-            //     style: MyElevatedButtonStyle.buttonStyle,
-            //     child: const Text('Refresh'),
-            //   ),
-            // ),
-          ],
-        )
-      ],
+          ),
+        ],
+      ),
     );
   }
 

@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
-import 'package:pocket_puppy_rattery/Views/add_rat.dart';
+import '../Services/custom_widgets.dart';
 
 class BreedingScheme extends StatefulWidget {
   const BreedingScheme({
@@ -299,6 +299,7 @@ class _BreedingSchemeState extends State<BreedingScheme> {
           final rat = widget.rats[index];
           return Card(
             elevation: 10,
+            color: chosenRatsList.contains(rat) ? primaryThemeColor : null,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(10),
                 side: BorderSide(color: secondaryThemeColor)),
@@ -359,7 +360,8 @@ class _BreedingSchemeState extends State<BreedingScheme> {
         ],
         "isCustomRats": showCustomRatScreen ? true : false,
         "notes": [],
-        "weightTracker": []
+        "weightTracker": [],
+        "pups": []
       });
     } else {
       FirebaseSchemes.doc(widget.id).update({
@@ -376,28 +378,5 @@ class _BreedingSchemeState extends State<BreedingScheme> {
     }
 
     Navigator.popUntil(context, (route) => route.isFirst);
-  }
-}
-
-class DirectiveText extends StatelessWidget {
-  const DirectiveText({super.key, required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 10),
-          child: Text(
-            text,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ],
-    );
   }
 }

@@ -11,6 +11,8 @@ import 'package:pocket_puppy_rattery/Functions/utils.dart';
 
 import 'package:pocket_puppy_rattery/Models/user.dart';
 
+import '../Services/custom_widgets.dart';
+
 class Authenticate extends StatefulWidget {
   const Authenticate({super.key});
 
@@ -21,10 +23,8 @@ class Authenticate extends StatefulWidget {
 class _AuthenticateState extends State<Authenticate> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _emailController =
-      TextEditingController();
-  final TextEditingController _passwordController =
-      TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
 
   @override
@@ -210,7 +210,7 @@ class ForgotPasswordPage extends StatelessWidget {
                       hintText: "Email", border: OutlineInputBorder()),
                   controller: _emailController,
                   validator: (value) {
-                    if (value == null || value.isEmpty){
+                    if (value == null || value.isEmpty) {
                       return "Required";
                     }
                     return null;
@@ -222,18 +222,20 @@ class ForgotPasswordPage extends StatelessWidget {
                 width: 150,
                 height: 40,
                 child: ElevatedButton(
-                  onPressed: () async{
+                  onPressed: () async {
                     if (_formKey.currentState!.validate()) {
-                      showDialog(context: context, builder: (context) => const Center(child: CircularProgressIndicator()));
-                      await FirebaseAuth.instance.sendPasswordResetEmail(email: _emailController.text.trim());
+                      showDialog(
+                          context: context,
+                          builder: (context) =>
+                              const Center(child: CircularProgressIndicator()));
+                      await FirebaseAuth.instance.sendPasswordResetEmail(
+                          email: _emailController.text.trim());
                       navPop(context);
-                      scaffoldKey.currentState!.showSnackBar(
-                         SnackBar(
-                          backgroundColor: primaryThemeColor,
-                          duration: const Duration(seconds: 3),
-                          content: const Text("Email sent! Please check inbox"),
-                          )
-                      );
+                      scaffoldKey.currentState!.showSnackBar(SnackBar(
+                        backgroundColor: primaryThemeColor,
+                        duration: const Duration(seconds: 3),
+                        content: const Text("Email sent! Please check inbox"),
+                      ));
                       return;
                     }
                   },

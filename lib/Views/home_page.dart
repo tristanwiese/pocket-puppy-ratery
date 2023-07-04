@@ -22,6 +22,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../Dev/dev_page.dart';
 import 'package:provider/provider.dart';
 
+import '../Services/custom_widgets.dart';
 import 'breeding_scheme.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -111,7 +112,12 @@ class _MyHomePageState extends State<MyHomePage> {
           body: PageView(
             controller: _pageController,
             onPageChanged: (value) => (() {
-              bottomVanIndex = value;
+              print(bottomVanIndex);
+              setState(() {
+                bottomVanIndex = value;
+              });
+              print(bottomVanIndex);
+
               switch (value) {
                 case 0:
                   appBarTitle = "Your Rats";
@@ -183,7 +189,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     navPush(context, RatInfo(info: rat));
                                   },
                                   child: Card(
-                                    elevation: 10,
+                                    elevation: 3,
                                     shadowColor:
                                         (AgeCalculator.age(birthdate).years >=
                                                 3)
@@ -192,9 +198,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 : Colors.black
                                             : Colors.black,
                                     shape: BeveledRectangleBorder(
-                                        side: BorderSide(
-                                            width: 1,
-                                            color: secondaryThemeColor),
+                                        // side: BorderSide(
+                                        //     width: 1,
+                                        //     color: secondaryThemeColor),
                                         borderRadius: const BorderRadius.all(
                                             Radius.circular(15))),
                                     color:
@@ -553,10 +559,10 @@ class _MyHomePageState extends State<MyHomePage> {
                           return Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Card(
-                              elevation: 10,
+                              elevation: 3,
                               shape: BeveledRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
-                                side: BorderSide(color: secondaryThemeColor),
+                                // side: BorderSide(color: secondaryThemeColor),
                               ),
                               child: ListTile(
                                 title: Text(scheme["name"]),
@@ -904,7 +910,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   double getSize() {
     if (MediaQuery.of(context).size.width < 435) {
-      return MediaQuery.of(context).size.width / 1.3;
+      return MediaQuery.of(context).size.width / 1;
     } else {
       return MediaQuery.of(context).size.width / 1.3;
     }
@@ -933,26 +939,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   myDrawer() {
-    Card drawerCard(
-        {required VoidCallback onTap,
-        required String title,
-        required IconData icon}) {
-      return Card(
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: BorderSide(width: 1.5, color: secondaryThemeColor)),
-        elevation: 10,
-        margin: const EdgeInsets.all(10),
-        child: ListTile(
-            title: Text(
-              title,
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-            ),
-            trailing: Icon(icon, color: secondaryThemeColor),
-            onTap: onTap),
-      );
-    }
-
     return Drawer(
       child: SafeArea(
         child: Column(
@@ -965,22 +951,22 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 child: Column(
                   children: [
-                    drawerCard(
-                      icon: Icons.person,
+                    DrawerCard(
+                      iconData: Icons.person,
                       title: "Profile",
                       onTap: () {
                         navPush(context, const ProfilePage());
                         _key.currentState!.closeDrawer();
                       },
                     ),
-                    drawerCard(
+                    DrawerCard(
                       onTap: () {
                         navPush(context, const SettingsPage());
                       },
                       title: "Settings",
-                      icon: Icons.settings,
+                      iconData: Icons.settings,
                     ),
-                    drawerCard(
+                    DrawerCard(
                       onTap: () {
                         showDialog(
                           context: context,
@@ -994,7 +980,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     child: const Text("Cancel"))
                               ],
                               content: SizedBox(
-                                height: 200,
+                                height: 150,
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -1043,7 +1029,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         );
                       },
                       title: "Bug Reports/Improvements",
-                      icon: Icons.bug_report,
+                      iconData: Icons.bug_report,
                     )
                   ],
                 ),
@@ -1176,7 +1162,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           "title": titleController.text.trim(),
                           "area": areaController.text.trim(),
                           "description": descriptionController.text.trim(),
-                          "state": "highPriority"
+                          "state": "new",
+                          "date": DateTime.now()
                         })
                       : await FirebaseFirestore.instance
                           .collection("improvements")
@@ -1186,7 +1173,8 @@ class _MyHomePageState extends State<MyHomePage> {
                           "title": titleController.text.trim(),
                           "area": areaController.text.trim(),
                           "description": descriptionController.text.trim(),
-                          "state": "highPriority"
+                          "state": "new",
+                          "date": DateTime.now()
                         });
                   navPop(context);
                   navPop(context);

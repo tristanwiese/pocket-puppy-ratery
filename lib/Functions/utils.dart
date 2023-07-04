@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-var primaryThemeColor = const Color.fromARGB(255, 120, 224, 199);
+var primaryThemeColor = Color.fromARGB(255, 185, 235, 223);
 
 var secondaryThemeColor = const Color.fromARGB(255, 181, 144, 185);
 
@@ -19,36 +19,6 @@ CollectionReference FirebaseRats = FirebaseFirestore.instance
     .collection("rats");
 
 late SharedPreferences prefs;
-
-class MyElevatedButtonStyle {
-  static final buttonStyle = ElevatedButton.styleFrom(
-    backgroundColor: Colors.white,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(10),
-      side: BorderSide(color: secondaryThemeColor),
-    ),
-  );
-
-  static final activeButtonStyle = ElevatedButton.styleFrom(
-    backgroundColor: secondaryThemeColor,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(10),
-      side: BorderSide(color: secondaryThemeColor),
-    ),
-  );
-  static final doneButtonStyle = ElevatedButton.styleFrom(
-      fixedSize: const Size(100, 40),
-      shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(20))));
-  static final cancelButtonStyle = ElevatedButton.styleFrom(
-      backgroundColor: Colors.white,
-      fixedSize: const Size(100, 40),
-      shape: RoundedRectangleBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(20)),
-          side: BorderSide(color: secondaryThemeColor)));
-
-  static const textStyle = TextStyle(color: Colors.black87);
-}
 
 final GlobalKey<ScaffoldMessengerState> scaffoldKey =
     GlobalKey<ScaffoldMessengerState>();
@@ -141,4 +111,14 @@ stringReplace(
           currentIndex: 1);
     }
   }
+}
+
+double listContainerHeight({required itemLenght, custoSizePerLine = 20}) {
+  //Compensate for title size
+  const int headerSize = 5;
+
+  //Size to give for each item in list
+  int sizePerLine = custoSizePerLine;
+
+  return (headerSize + itemLenght * sizePerLine).toDouble();
 }

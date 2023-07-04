@@ -12,6 +12,7 @@ import 'package:pocket_puppy_rattery/Services/constants.dart';
 import 'package:pocket_puppy_rattery/Views/add_rat.dart';
 
 import '../Models/rat.dart';
+import '../Services/custom_widgets.dart';
 
 class RatInfo extends StatefulWidget {
   const RatInfo({
@@ -234,7 +235,7 @@ class _RatInfoState extends State<RatInfo> {
 
   ageViewSelector(DateTime birthdate) {
     return Card(
-      elevation: 10,
+      elevation: 3,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
           side: BorderSide(color: secondaryThemeColor)),
@@ -276,16 +277,6 @@ class _RatInfoState extends State<RatInfo> {
         title: Text("Rat: ${widget.info["name"]}"),
       );
 
-  double listContainerHeight({required itemLenght}) {
-    //Compensate for title size
-    const int headerSize = 5;
-
-    //Size to give for each item in list
-    const sizePerLine = 20;
-
-    return (headerSize + itemLenght * sizePerLine).toDouble();
-  }
-
   String birthdayView({required DateTime data}) {
     return "${data.year}/${data.month}/${data.day}";
   }
@@ -311,42 +302,5 @@ class _RatInfoState extends State<RatInfo> {
     rat.colorCode = info["colorCode"];
 
     return rat;
-  }
-}
-
-class MyInfoCard extends StatelessWidget {
-  const MyInfoCard({
-    super.key,
-    required this.title,
-    required this.child,
-  });
-
-  final String title;
-  final Widget child;
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 10,
-      shape: RoundedRectangleBorder(
-          side: BorderSide(
-            color: secondaryThemeColor,
-            width: 1.4,
-          ),
-          borderRadius: BorderRadius.circular(10)),
-      margin: const EdgeInsets.all(10),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Text(
-              title,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            child
-          ],
-        ),
-      ),
-    );
   }
 }

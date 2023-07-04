@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
-import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Services/senior_rat_watcher.dart';
 import 'package:pocket_puppy_rattery/Views/home_page.dart';
-import 'package:pocket_puppy_rattery/Views/rat_info.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../Services/custom_widgets.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -85,7 +85,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                     onPressed: () {
                                       prefs.setInt(
                                           "seniorColor", seniorColour.value);
-                                      context.read<SeniorRatWatcher>().changeColor(seniorColour.value);
+                                      context
+                                          .read<SeniorRatWatcher>()
+                                          .changeColor(seniorColour.value);
                                       navPop(context);
                                     },
                                     style: MyElevatedButtonStyle.buttonStyle,
@@ -120,7 +122,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                       onChanged: (value) {
                                         seniorColorBool = value;
                                         prefs.setBool("seniorColorBool", value);
-                                        context.read<SeniorRatWatcher>().changeState(value);
+                                        context
+                                            .read<SeniorRatWatcher>()
+                                            .changeState(value);
                                         setState(() {});
                                       },
                                     )
