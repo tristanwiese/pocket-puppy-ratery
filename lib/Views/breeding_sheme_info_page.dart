@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
+import 'package:pocket_puppy_rattery/Models/breeding_scheme_model.dart';
 import 'package:pocket_puppy_rattery/Views/breeding_scheme.dart';
 import 'package:pocket_puppy_rattery/Views/pups.dart';
 
@@ -23,35 +24,26 @@ class BreedingShcemeInfoPage extends StatefulWidget {
 }
 
 class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
-  late final scheme;
+  late BreedingSchemeModel scheme;
 
   // TextEditingController name = TextEditingController();
   // TextEditingController male = TextEditingController();
   // TextEditingController female = TextEditingController();
 
-  bool editAble = false;
-  List<Map> notes = [];
-  List<Map> weights = [];
+  // bool editAble = false;
+  List<dynamic> notes = [];
+  List<dynamic> weights = [];
 
   customSetState() => setState(() {});
 
-  updateScheme() async => FirebaseSchemes.doc(scheme.id)
-      .get()
-      .then((value) => scheme = value.data());
+  // updateScheme() async => FirebaseSchemes.doc(scheme.id).get().then(
+  //     (value) => scheme = BreedingSchemeModel.fromDb(dbScheme: value.data()));
 
   @override
   void initState() {
-    scheme = widget.scheme;
-    // // name = TextEditingController(text: scheme["name"]);
-    // male = TextEditingController(text: scheme["male"]);
-    // female = TextEditingController(text: scheme["female"]);
-
-    for (int i = 0; i < scheme["notes"].length; i++) {
-      notes.add(scheme["notes"][i]);
-    }
-    for (int i = 0; i < scheme["weightTracker"].length; i++) {
-      weights.add(scheme["weightTracker"][i]);
-    }
+    scheme = BreedingSchemeModel.fromDb(dbScheme: widget.scheme);
+    notes = scheme.notes;
+    weights = scheme.weightTracker;
 
     super.initState();
   }
@@ -60,7 +52,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(scheme["name"]),
+        title: Text(scheme.name),
       ),
       body: breedingSchemeInfoBody(),
     );
@@ -102,11 +94,10 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                 BreedingScheme(
                   schemeCount: 0,
                   rats: widget.rats!,
-                  chosenRats: [scheme["male"], scheme["female"]],
-                  date: DateTime(scheme["dateOfMating"][0],
-                      scheme["dateOfMating"][1], scheme["dateOfMating"][2]),
-                  isCustomRats: scheme["isCustomRats"],
-                  name: scheme["name"],
+                  chosenRats: [scheme.male, scheme.female],
+                  date: scheme.date,
+                  isCustomRats: scheme.isCustomRats,
+                  name: scheme.name,
                   id: scheme.id,
                 ),
               );
@@ -128,7 +119,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                       const Pups(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
-                    const begin = Offset(0.0, 1.0);
+                    const begin = Offset(1.0, 0.0);
                     const end = Offset.zero;
                     final tween = Tween(begin: begin, end: end);
                     final offsetAnimation = animation.drive(tween);
@@ -260,12 +251,12 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
       title: "Pups",
       child: Column(
         children: [
-          scheme["pups"].isNotEmpty
+          scheme.pups.isNotEmpty
               ? SizedBox(
                   height: listContainerHeight(
-                      itemLenght: scheme["pups"].length, custoSizePerLine: 60),
+                      itemLenght: scheme.pups.length, custoSizePerLine: 60),
                   child: ListView.builder(
-                    itemCount: scheme["pups"].length,
+                    itemCount: scheme.pups.length,
                     itemBuilder: (context, index) {
                       return Card(
                         elevation: 10,
@@ -273,7 +264,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                             borderRadius: BorderRadius.circular(10),
                             side: BorderSide(color: secondaryThemeColor)),
                         child: ListTile(
-                          title: Text(scheme["pups"][index]),
+                          title: Text(scheme.pups[index]),
                         ),
                       );
                     },
@@ -352,8 +343,8 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Text("Male: ${scheme["male"]}"),
-          Text("Female: ${scheme["female"]}"),
+          Text("Male: ${scheme.male}"),
+          Text("Female: ${scheme.female}"),
         ],
       ),
     );
@@ -370,10 +361,10 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text(
-                  "Breeding: ${scheme["dateOfMating"][0]}/${scheme["dateOfMating"][1]}/${scheme["dateOfMating"][2]}",
+                  "Breeding: ${scheme.date.year}/${scheme.date.month}/${scheme.date.day}",
                 ),
-                Text(scheme["pups"].isNotEmpty
-                    ? "Birth: ${scheme["dateOfMating"][0]}/${scheme["dateOfMating"][1]}/${scheme["dateOfMating"][2]}"
+                Text(scheme.pups.isNotEmpty
+                    ? "Birth: ${scheme.date.year}/${scheme.date.month}/${scheme.date.day}"
                     : "Birth: Not set"),
               ],
             ),

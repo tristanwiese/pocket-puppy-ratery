@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
+import 'package:pocket_puppy_rattery/Models/breeding_scheme_model.dart';
 import '../Services/custom_widgets.dart';
 
 class BreedingScheme extends StatefulWidget {
@@ -345,36 +346,26 @@ class _BreedingSchemeState extends State<BreedingScheme> {
     );
 
     if (widget.name == null) {
+      final scheme = BreedingSchemeModel(
+        male: male,
+        female: female,
+        name: name,
+        isCustomRats: showCustomRatScreen,
+        date: dateOfBreeding,
+      );
       await FirebaseFirestore.instance
           .collection("users")
           .doc(FirebaseAuth.instance.currentUser!.uid)
           .collection("breedingSchemes")
-          .add({
-        "male": male,
-        "female": female,
-        "name": name,
-        "dateOfMating": [
-          dateOfBreeding.year,
-          dateOfBreeding.month,
-          dateOfBreeding.day
-        ],
-        "isCustomRats": showCustomRatScreen ? true : false,
-        "notes": [],
-        "weightTracker": [],
-        "pups": []
-      });
+          .add(scheme.toDB());
     } else {
-      FirebaseSchemes.doc(widget.id).update({
-        "male": male,
-        "female": female,
-        "name": name,
-        "dateOfMating": [
-          dateOfBreeding.year,
-          dateOfBreeding.month,
-          dateOfBreeding.day
-        ],
-        "isCustomRats": showCustomRatScreen ? true : false,
-      });
+      final scheme = BreedingSchemeModel(
+          male: male,
+          female: female,
+          name: name,
+          isCustomRats: showCustomRatScreen,
+          date: dateOfBreeding);
+      FirebaseSchemes.doc(widget.id).update(scheme.toDB());
     }
 
     Navigator.popUntil(context, (route) => route.isFirst);

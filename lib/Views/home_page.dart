@@ -33,7 +33,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final PageController _pageController = PageController(initialPage: 0);
+  final PageController _pageController = PageController(initialPage: 2);
 
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
@@ -197,11 +197,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 ? Color(seniorColor)
                                                 : Colors.black
                                             : Colors.black,
-                                    shape: BeveledRectangleBorder(
+                                    shape: const BeveledRectangleBorder(
                                         // side: BorderSide(
                                         //     width: 1,
                                         //     color: secondaryThemeColor),
-                                        borderRadius: const BorderRadius.all(
+                                        borderRadius: BorderRadius.all(
                                             Radius.circular(15))),
                                     color:
                                         (AgeCalculator.age(birthdate).years >=

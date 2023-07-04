@@ -12,7 +12,7 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-runApp(const MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatefulWidget {
@@ -22,15 +22,13 @@ class MyApp extends StatefulWidget {
   State<MyApp> createState() => _MyAppState();
 }
 
-class _MyAppState extends State<MyApp>{
-
-  getPrefs() async{
+class _MyAppState extends State<MyApp> {
+  getPrefs() async {
     prefs = await SharedPreferences.getInstance();
   }
 
   @override
   void initState() {
-
     getPrefs();
 
     super.initState();
@@ -46,8 +44,19 @@ class _MyAppState extends State<MyApp>{
         scaffoldMessengerKey: scaffoldKey,
         theme: ThemeData(
           appBarTheme: AppBarTheme(color: primaryThemeColor),
-          colorScheme: ColorScheme(brightness: Brightness.light, primary: primaryThemeColor, onPrimary: Colors.black87, secondary: secondaryThemeColor, onSecondary: Colors.black54, error: Colors.red[300]!, onError: Colors.white, background: Colors.white, onBackground: Colors.black87, surface: Colors.white, onSurface: Colors.black87)
-          
+          colorScheme: ColorScheme(
+              brightness: Brightness.light,
+              primary: primaryThemeColor,
+              onPrimary: Colors.black87,
+              secondary: secondaryThemeColor,
+              onSecondary: Colors.black54,
+              error: Colors.red[300]!,
+              onError: Colors.white,
+              background: Colors.white,
+              onBackground: Colors.black87,
+              surface: Colors.white,
+              onSurface: Colors.black87),
+          fontFamily: "PT Sans",
         ),
         home: const AuthState(),
       ),
