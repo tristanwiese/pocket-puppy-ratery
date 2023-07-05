@@ -9,8 +9,10 @@ class BreedingSchemeModel {
     required this.date,
     this.weightTracker = const [],
     this.notes = const [],
-    this.pups = const [],
+    this.pups = const ["notSet"],
     this.id = '',
+    this.numberOfPups,
+    this.dateOfLabour,
   });
 
   String id;
@@ -22,6 +24,8 @@ class BreedingSchemeModel {
   List<dynamic> notes;
   List<dynamic> weightTracker;
   List pups;
+  int? numberOfPups;
+  dynamic dateOfLabour;
 
   toDB() {
     Map<String, dynamic> scheme = {
@@ -32,7 +36,9 @@ class BreedingSchemeModel {
       "isCustomRats": isCustomRats,
       "notes": notes,
       "weightTracker": weightTracker,
-      "pups": pups
+      "pups": pups,
+      "numberOfPups": numberOfPups,
+      "dateOfLabour": dateOfLabour
     };
 
     return scheme;
@@ -50,6 +56,8 @@ class BreedingSchemeModel {
       pups: dbScheme["pups"],
       weightTracker: dbScheme["weightTracker"],
       id: dbScheme.id,
+      numberOfPups: dbScheme["numberOfPups"],
+      dateOfLabour: dbScheme["dateOfLabour"],
     );
   }
 }

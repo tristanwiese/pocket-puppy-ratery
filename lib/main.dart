@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
-import 'package:pocket_puppy_rattery/Services/senior_rat_watcher.dart';
+import 'package:pocket_puppy_rattery/Services/settings_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Login_Register/auth_state.dart';

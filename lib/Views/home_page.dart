@@ -9,12 +9,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_launcher_icons/main.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
+import 'package:pocket_puppy_rattery/Models/breeding_scheme_model.dart';
 import 'package:pocket_puppy_rattery/Models/genes.dart';
 import 'package:pocket_puppy_rattery/Models/rat.dart';
+import 'package:pocket_puppy_rattery/Services/breeding_scheme_provider.dart';
 import 'package:pocket_puppy_rattery/Services/constants.dart';
-import 'package:pocket_puppy_rattery/Services/senior_rat_watcher.dart';
+import 'package:pocket_puppy_rattery/Services/settings_provider.dart';
 import 'package:pocket_puppy_rattery/Views/add_rat.dart';
-import 'package:pocket_puppy_rattery/Views/breeding_sheme_info_page.dart';
+import 'package:pocket_puppy_rattery/Views/Breeding%20Scheme/breeding_sheme_info_page.dart';
 import 'package:pocket_puppy_rattery/Views/profile_page.dart';
 import 'package:pocket_puppy_rattery/Views/rat_info.dart';
 import 'package:pocket_puppy_rattery/Views/settings_page.dart';
@@ -23,7 +25,7 @@ import '../Dev/dev_page.dart';
 import 'package:provider/provider.dart';
 
 import '../Services/custom_widgets.dart';
-import 'breeding_scheme.dart';
+import 'Breeding Scheme/breeding_scheme.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -79,32 +81,25 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext ctx) {
     return showLoad
         ? const LoadScreen()
-        : Container(
-            decoration: const BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage("asstes/images/Paws.jpg"))),
-            child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection("users")
-                    .doc(FirebaseAuth.instance.currentUser!.uid)
-                    .collection("rats")
-                    .snapshots(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    rats = snapshot.data!.docs;
-                    return myBody(rats, ctx);
-                  }
+        : StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance
+                .collection("users")
+                .doc(FirebaseAuth.instance.currentUser!.uid)
+                .collection("rats")
+                .snapshots(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                rats = snapshot.data!.docs;
+                return myBody(rats, ctx);
+              }
 
-                  return const LoadScreen();
-                }),
-          );
+              return const LoadScreen();
+            });
   }
 
   myBody(List<QueryDocumentSnapshot<Object?>> rats, BuildContext ctx) =>
       Scaffold(
           key: _key,
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.miniCenterFloat,
           appBar: myAppBar(context),
           drawer: myDrawer(),
           endDrawer: myEndDrawer(),
@@ -573,11 +568,19 @@ class _MyHomePageState extends State<MyHomePage> {
                                     item: scheme, itemType: "scheme"),
                                 onTap: () {
                                   navPush(
-                                      context,
-                                      BreedingShcemeInfoPage(
+                                    context,
+                                    ChangeNotifierProvider(
+                                      create: (context) =>
+                                          BreedingSchemeProvider(
+                                        scheme: BreedingSchemeModel.fromDb(
+                                            dbScheme: scheme),
+                                      ),
+                                      child: BreedingShcemeInfoPage(
                                         scheme: scheme,
                                         rats: rats,
-                                      ));
+                                      ),
+                                    ),
+                                  );
                                 },
                               ),
                             ),

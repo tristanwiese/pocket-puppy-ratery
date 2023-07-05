@@ -7,10 +7,12 @@ import 'package:numberpicker/numberpicker.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Models/breeding_scheme_model.dart';
-import 'package:pocket_puppy_rattery/Views/breeding_scheme.dart';
-import 'package:pocket_puppy_rattery/Views/pups.dart';
+import 'package:pocket_puppy_rattery/Services/breeding_scheme_provider.dart';
+import 'package:pocket_puppy_rattery/Views/Breeding%20Scheme/pups.dart';
+import 'package:provider/provider.dart';
 
-import '../Services/custom_widgets.dart';
+import '../../Services/custom_widgets.dart';
+import 'breeding_scheme.dart';
 
 class BreedingShcemeInfoPage extends StatefulWidget {
   const BreedingShcemeInfoPage(
@@ -33,6 +35,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
   // bool editAble = false;
   List<dynamic> notes = [];
   List<dynamic> weights = [];
+  late var testScheme;
 
   customSetState() => setState(() {});
 
@@ -44,6 +47,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
     scheme = BreedingSchemeModel.fromDb(dbScheme: widget.scheme);
     notes = scheme.notes;
     weights = scheme.weightTracker;
+    // testScheme = Provider.of<BreedingSchemeProvider>(context);
 
     super.initState();
   }
@@ -113,23 +117,24 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
           height: 40,
           child: ElevatedButton(
             onPressed: () {
-              Navigator.of(context).push(
-                PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) =>
-                      const Pups(),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    const begin = Offset(1.0, 0.0);
-                    const end = Offset.zero;
-                    final tween = Tween(begin: begin, end: end);
-                    final offsetAnimation = animation.drive(tween);
-                    return SlideTransition(
-                      position: offsetAnimation,
-                      child: child,
-                    );
-                  },
-                ),
-              );
+              updateScheme(value: "Bob", area: "name");
+              // Navigator.of(context).push(
+              //   PageRouteBuilder(
+              //     pageBuilder: (context, animation, secondaryAnimation) =>
+              //         Pups(scheme: scheme),
+              //     transitionsBuilder:
+              //         (context, animation, secondaryAnimation, child) {
+              //       const begin = Offset(1.0, 0.0);
+              //       const end = Offset.zero;
+              //       final tween = Tween(begin: begin, end: end);
+              //       final offsetAnimation = animation.drive(tween);
+              //       return SlideTransition(
+              //         position: offsetAnimation,
+              //         child: child,
+              //       );
+              //     },
+              //   ),
+              // );
             },
             style: MyElevatedButtonStyle.buttonStyle,
             child: const Text('Pups'),
@@ -251,7 +256,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
       title: "Pups",
       child: Column(
         children: [
-          scheme.pups.isNotEmpty
+          scheme.pups.isNotEmpty && !scheme.pups.contains("notSet")
               ? SizedBox(
                   height: listContainerHeight(
                       itemLenght: scheme.pups.length, custoSizePerLine: 60),
@@ -264,7 +269,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                             borderRadius: BorderRadius.circular(10),
                             side: BorderSide(color: secondaryThemeColor)),
                         child: ListTile(
-                          title: Text(scheme.pups[index]),
+                          title: Text(scheme.pups[index]["name"]),
                         ),
                       );
                     },
@@ -343,7 +348,15 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Text("Male: ${scheme.male}"),
+          Consumer<BreedingSchemeProvider>(
+            builder: (
+              context,
+              value,
+              child,
+            ) {
+              return Text("Male: ${value.getScheme.male}");
+            },
+          ),
           Text("Female: ${scheme.female}"),
         ],
       ),
@@ -704,5 +717,10 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
         },
       ),
     );
+  }
+
+  void updateScheme({required String value, required String area}) {
+    final scheme = Provider.of<BreedingSchemeProvider>(context, listen: false);
+    scheme.changeMale(name: value);
   }
 }

@@ -4,8 +4,6 @@ import 'package:pocket_puppy_rattery/Functions/utils.dart';
 
 import '../Services/constants.dart';
 
-
-
 class Rat {
   Rat({
     required this.name,
@@ -29,66 +27,83 @@ class Rat {
   final DateTime birthday;
   String colorCode = "none";
 
-  static hLocusToList(){
+  static hLocusToList() {
     const markingsList = H_Locus.values;
     final List<String> markingsName = [];
 
-   for (var element in markingsList){
-      markingsName.add(stringReplace(string: element.name.toString(), searchElement: ["_"], replacementElement: " "));
-   }
-    return markingsName;   
-  }
-
-  static cLocusToList(){
-    const markingsList = C_Locus.values;
-    final List<String> markingsName = [];
-
-    for (var element in markingsList){
-      markingsName.add(stringReplace(string: element.name.toString(), searchElement: ["_"], replacementElement: " "));
-   }
+    for (var element in markingsList) {
+      markingsName.add(stringReplace(
+          string: element.name.toString(),
+          searchElement: ["_"],
+          replacementElement: " "));
+    }
     return markingsName;
   }
 
-  static coatsToList(){
+  static cLocusToList() {
+    const markingsList = C_Locus.values;
+    final List<String> markingsName = [];
+
+    for (var element in markingsList) {
+      markingsName.add(stringReplace(
+          string: element.name.toString(),
+          searchElement: ["_"],
+          replacementElement: " "));
+    }
+    return markingsName;
+  }
+
+  static coatsToList() {
     const elementList = Coats.values;
     final List<String> elementsName = [];
 
-    for (var element in elementList){
-      elementsName.add(stringReplace(string: element.name.toString(), searchElement: ["_"], replacementElement: " "));
-   }
+    for (var element in elementList) {
+      elementsName.add(stringReplace(
+          string: element.name.toString(),
+          searchElement: ["_"],
+          replacementElement: " "));
+    }
     return elementsName;
   }
 
-  static colorsToList(){
+  static colorsToList() {
     const elementList = Colours.values;
     final List<String> elementsName = [];
 
-    for (var element in elementList){
-      elementsName.add(stringReplace(string: element.name.toString(), searchElement: ["_"], replacementElement: " "));
-   }
+    for (var element in elementList) {
+      elementsName.add(stringReplace(
+          string: element.name.toString(),
+          searchElement: ["_"],
+          replacementElement: " "));
+    }
     return elementsName;
   }
 
-  static genderToList(){
+  static genderToList() {
     const elementList = Gender.values;
     final List<String> elementsName = [];
 
-    for (var element in elementList){
-      elementsName.add(stringReplace(string: element.name.toString(), searchElement: ["_"], replacementElement: " "));
-   }
+    for (var element in elementList) {
+      elementsName.add(stringReplace(
+          string: element.name.toString(),
+          searchElement: ["_"],
+          replacementElement: " "));
+    }
     return elementsName;
   }
 
-  static List<String>earsToList(){
+  static List<String> earsToList() {
     const elementList = Ears.values;
     final List<String> elementsName = [];
 
-    for (var element in elementList){
-      elementsName.add(stringReplace(string: element.name.toString(), searchElement: ["_"], replacementElement: " "));
-   }
+    for (var element in elementList) {
+      elementsName.add(stringReplace(
+          string: element.name.toString(),
+          searchElement: ["_"],
+          replacementElement: " "));
+    }
     return elementsName;
   }
-
 
   toDb() {
     final Map<String, dynamic> rat = {

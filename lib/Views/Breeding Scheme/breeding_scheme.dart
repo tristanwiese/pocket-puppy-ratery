@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Models/breeding_scheme_model.dart';
-import '../Services/custom_widgets.dart';
+import '../../Services/custom_widgets.dart';
 
 class BreedingScheme extends StatefulWidget {
   const BreedingScheme({

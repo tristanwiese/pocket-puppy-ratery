@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
-import 'package:pocket_puppy_rattery/Services/senior_rat_watcher.dart';
+import 'package:pocket_puppy_rattery/Services/settings_provider.dart';
 import 'package:pocket_puppy_rattery/Views/home_page.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
