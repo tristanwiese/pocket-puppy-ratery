@@ -1183,10 +1183,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     backgroundColor: primaryThemeColor,
                   ));
                 },
-                style: ElevatedButton.styleFrom(
-                    fixedSize: const Size(120, 40),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20))),
+                style: MyElevatedButtonStyle.doneButtonStyle,
                 child: const Text("Send Report"),
               ),
             ];
