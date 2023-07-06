@@ -113,12 +113,18 @@ stringReplace(
   }
 }
 
-double listContainerHeight({required itemLenght, custoSizePerLine = 20}) {
+double listContainerHeight(
+    {required itemLenght, custoSizePerLine = 20, double? limmit}) {
   //Compensate for title size
   const int headerSize = 5;
 
   //Size to give for each item in list
   int sizePerLine = custoSizePerLine;
+
+  if (limmit != null) {
+    double size = (headerSize + itemLenght * sizePerLine).toDouble();
+    return size > limmit ? limmit : size;
+  }
 
   return (headerSize + itemLenght * sizePerLine).toDouble();
 }

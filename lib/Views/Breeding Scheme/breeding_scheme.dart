@@ -187,6 +187,7 @@ class _BreedingSchemeState extends State<BreedingScheme> {
                     height: 40,
                     child: ElevatedButton(
                       onPressed: () {
+                        print("fired!");
                         if (_nameKey.currentState!.validate()) {
                           if (showCustomRatScreen) {
                             if (_formKey.currentState!.validate()) {
@@ -341,6 +342,8 @@ class _BreedingSchemeState extends State<BreedingScheme> {
     required String name,
     required DateTime dateOfBreeding,
   }) async {
+    BreedingSchemeProvider provider =
+        Provider.of<BreedingSchemeProvider>(context, listen: false);
     showDialog(
       context: context,
       builder: (context) => const Center(
@@ -367,10 +370,14 @@ class _BreedingSchemeState extends State<BreedingScheme> {
           female: female,
           name: name,
           isCustomRats: showCustomRatScreen,
-          date: dateOfBreeding);
+          date: dateOfBreeding,
+          dateOfLabour: provider.getScheme.dateOfLabour,
+          notes: provider.getScheme.notes,
+          numberOfPups: provider.getScheme.numberOfPups,
+          weightTracker: provider.getScheme.weightTracker,
+          pups: provider.getScheme.pups);
       FirebaseSchemes.doc(widget.id).update(scheme.toDB());
-      BreedingSchemeProvider provider =
-          Provider.of<BreedingSchemeProvider>(context, listen: false);
+
       provider.updateScheme(scheme);
     }
     navPop(context);

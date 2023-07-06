@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
+import 'package:pocket_puppy_rattery/Services/breeding_scheme_provider.dart';
 import 'package:pocket_puppy_rattery/Services/settings_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -36,8 +37,11 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => SeniorRatWatcher(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => SeniorRatWatcher()),
+        ChangeNotifierProvider(create: (context) => BreedingSchemeProvider())
+      ],
       child: MaterialApp(
         title: 'Pocket Puppy Ratery',
         debugShowCheckedModeBanner: false,

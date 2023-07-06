@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Models/breeding_scheme_model.dart';
 import 'package:pocket_puppy_rattery/Models/pup_model.dart';
+import 'package:pocket_puppy_rattery/Services/breeding_scheme_provider.dart';
+import 'package:provider/provider.dart';
 import '../../Functions/utils.dart';
 import '../../Models/rat.dart';
 import '../../Services/constants.dart';
@@ -87,6 +89,14 @@ class _AddPupState extends State<AddPup> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8.0),
+                        child: Text(
+                          "Enter Pup Details",
+                          style: TextStyle(
+                              fontSize: 30, fontWeight: FontWeight.bold),
+                        ),
+                      ),
                       MyInputText(
                         controller: nameController,
                         hintText: 'Name',
@@ -182,10 +192,11 @@ class _AddPupState extends State<AddPup> {
               coat: Coats.values[
                   coatsList.indexWhere((element) => element == coatController)],
             );
-            widget.scheme.pups.add(pup);
             await FirebaseSchemes.doc(widget.scheme.id).update({
               "pups": FieldValue.arrayUnion([pup.toDb()])
             });
+            Provider.of<BreedingSchemeProvider>(context, listen: false)
+                .editPups(action: "add", pup: pup.toDb());
             navPop(context);
             navPop(context);
           },

@@ -1,44 +1,52 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Models/breeding_scheme_model.dart';
+import 'package:pocket_puppy_rattery/Models/pup_model.dart';
+import 'package:pocket_puppy_rattery/Services/breeding_scheme_provider.dart';
 import 'package:pocket_puppy_rattery/Services/custom_widgets.dart';
 import 'package:pocket_puppy_rattery/Views/Breeding%20Scheme/add_pup.dart';
+import 'package:provider/provider.dart';
 
 class Pups extends StatefulWidget {
-  const Pups({super.key, required this.scheme});
-
-  final BreedingSchemeModel scheme;
+  const Pups({
+    super.key,
+  });
 
   @override
   State<Pups> createState() => _PupsState();
 }
 
 class _PupsState extends State<Pups> {
-  late final BreedingSchemeModel scheme;
+  late BreedingSchemeModel scheme;
+  late List pups;
   DateTime? date = DateTime.now();
   int numberOfPups = 0;
+  late BreedingSchemeProvider provider;
 
   @override
   void initState() {
-    scheme = widget.scheme;
-
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text("Pups"),
-        ),
-        body: (scheme.dateOfLabour == null) ? addLabour() : body());
+    return Consumer<BreedingSchemeProvider>(builder: (context, value, child) {
+      scheme = value.getScheme;
+      pups = scheme.pups;
+      provider = Provider.of<BreedingSchemeProvider>(context);
+      return Scaffold(
+          appBar: AppBar(
+            title: const Text("Pups"),
+          ),
+          body: (scheme.dateOfLabour == null) ? addLabour() : body());
+    });
   }
 
   Widget body() {
-    final DateTime dateOfLabour = scheme.dateOfLabour.toDate();
-
+    final DateTime dateOfLabour = scheme.dateOfLabour!.toDate();
     return Center(
       child: Center(
         child: Column(
@@ -46,9 +54,13 @@ class _PupsState extends State<Pups> {
             Expanded(
               child: Column(
                 children: [
-                  const Text(
-                    "All Pups",
-                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 8.0),
+                    child: Text(
+                      "All Pups",
+                      style:
+                          TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                    ),
                   ),
                   MyInfoCard(
                     title: "Labour Details",
@@ -72,18 +84,89 @@ class _PupsState extends State<Pups> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  scheme.pups.isEmpty
+                  scheme.numberOfPups! != pups.length
+                      ? scheme.numberOfPups! > pups.length
+                          ? DirectiveText(
+                              text:
+                                  "Litter Size is ${scheme.numberOfPups}, but only ${pups.length} pups were added:",
+                              italic: true,
+                            )
+                          : DirectiveText(
+                              text:
+                                  "Litter Size is ${scheme.numberOfPups}, but ${pups.length} pups were added:",
+                              italic: true,
+                            )
+                      : Container(),
+                  pups.isEmpty
                       ? const Text("No Pups")
                       : SizedBox(
                           height: 400,
                           child: ListView.builder(
-                            itemCount: scheme.pups.length,
+                            itemCount: pups.length,
                             itemBuilder: (context, index) {
+                              final Pup pup = Pup.fromDb(dbPup: pups[index]);
                               return Card(
                                 elevation: 5,
-                                shape: const RoundedRectangleBorder(),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
                                 child: ListTile(
-                                  title: Text(scheme.pups[index]["name"]),
+                                  trailing: IconButton(
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            title: Text("Delete ${pup.name}"),
+                                            actions: [
+                                              ElevatedButton(
+                                                onPressed: () =>
+                                                    navPop(context),
+                                                style: MyElevatedButtonStyle
+                                                    .cancelButtonStyle,
+                                                child: const Text("Cancel"),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  FirebaseSchemes.doc(scheme.id)
+                                                      .update({
+                                                    "pups":
+                                                        FieldValue.arrayRemove(
+                                                            [pups[index]])
+                                                  });
+                                                  provider.editPups(
+                                                      action: "remove",
+                                                      index: index);
+                                                  navPop(context);
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        Colors.red[200]),
+                                                child: const Text("Delete"),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
+                                    icon: const DeleteIcon(),
+                                  ),
+                                  leading: Text("${index + 1}",
+                                      style: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold)),
+                                  title: Row(
+                                    children: [
+                                      const DirectiveText(text: "Name:"),
+                                      Text(pup.name),
+                                    ],
+                                  ),
+                                  subtitle: Row(
+                                    children: [
+                                      const DirectiveText(
+                                          text: "Registered name:"),
+                                      Text(pup.name)
+                                    ],
+                                  ),
                                 ),
                               );
                             },
@@ -195,7 +278,7 @@ class _PupsState extends State<Pups> {
               width: 150,
               child: ElevatedButton(
                   onPressed: () {
-                    scheme.dateOfLabour = date;
+                    scheme.dateOfLabour = Timestamp.fromDate(date!);
                     scheme.numberOfPups = numberOfPups;
                     scheme.pups.clear();
 

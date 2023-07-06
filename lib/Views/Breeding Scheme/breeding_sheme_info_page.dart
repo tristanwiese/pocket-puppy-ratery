@@ -7,6 +7,7 @@ import 'package:numberpicker/numberpicker.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Models/breeding_scheme_model.dart';
+import 'package:pocket_puppy_rattery/Models/pup_model.dart';
 import 'package:pocket_puppy_rattery/Services/breeding_scheme_provider.dart';
 import 'package:pocket_puppy_rattery/Views/Breeding%20Scheme/pups.dart';
 import 'package:provider/provider.dart';
@@ -101,7 +102,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
               Navigator.of(context).push(
                 PageRouteBuilder(
                   pageBuilder: (context, animation, secondaryAnimation) =>
-                      Pups(scheme: scheme),
+                      const Pups(),
                   transitionsBuilder:
                       (context, animation, secondaryAnimation, child) {
                     const begin = Offset(1.0, 0.0);
@@ -169,6 +170,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                             onPressed: () {
                               navPop(context);
                             },
+                            style: MyElevatedButtonStyle.doneButtonStyle,
                             child: const Text("Done"),
                           ),
                         ];
@@ -189,24 +191,20 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                                       noteTitle: scheme.notes[index]["title"]),
                                   title: Text(scheme.notes[index]['title']),
                                   trailing: IconButton(
-                                    onPressed: () {
-                                      FirebaseSchemes.doc(scheme.id).update({
-                                        "notes": FieldValue.arrayRemove(
-                                          [scheme.notes[index]],
-                                        )
-                                      });
+                                      onPressed: () {
+                                        FirebaseSchemes.doc(scheme.id).update({
+                                          "notes": FieldValue.arrayRemove(
+                                            [scheme.notes[index]],
+                                          )
+                                        });
 
-                                      provider.editNotes(
-                                          action: "remove", index: index);
-                                      setState(
-                                        () {},
-                                      );
-                                    },
-                                    icon: Icon(
-                                      Icons.delete,
-                                      color: Colors.red[300],
-                                    ),
-                                  ),
+                                        provider.editNotes(
+                                            action: "remove", index: index);
+                                        setState(
+                                          () {},
+                                        );
+                                      },
+                                      icon: const DeleteIcon()),
                                 ),
                               );
                             },
@@ -241,17 +239,20 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
           scheme.pups.isNotEmpty && !scheme.pups.contains("notSet")
               ? SizedBox(
                   height: listContainerHeight(
-                      itemLenght: scheme.pups.length, custoSizePerLine: 60),
+                    itemLenght: scheme.pups.length,
+                    custoSizePerLine: 60,
+                  ),
                   child: ListView.builder(
                     itemCount: scheme.pups.length,
                     itemBuilder: (context, index) {
+                      final Pup pup = Pup.fromDb(dbPup: scheme.pups[index]);
                       return Card(
-                        elevation: 10,
+                        elevation: 5,
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                             side: BorderSide(color: secondaryThemeColor)),
                         child: ListTile(
-                          title: Text(scheme.pups[index]["name"]),
+                          title: Text(pup.name),
                         ),
                       );
                     },
@@ -638,6 +639,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
               onPressed: () {
                 navPop(context);
               },
+              style: MyElevatedButtonStyle.doneButtonStyle,
               child: const Text("Done"),
             ),
           ];
@@ -662,23 +664,19 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                     title: Text(
                         "- ${scheme.weightTracker[index]["date"][0]}/${scheme.weightTracker[index]["date"][1]}/${scheme.weightTracker[index]["date"][2]} : ${scheme.weightTracker[index]["weight"]}g"),
                     trailing: IconButton(
-                      onPressed: () {
-                        FirebaseSchemes.doc(scheme.id).update({
-                          "weightTracker": FieldValue.arrayRemove(
-                            [scheme.weightTracker[index]],
-                          )
-                        });
+                        onPressed: () {
+                          FirebaseSchemes.doc(scheme.id).update({
+                            "weightTracker": FieldValue.arrayRemove(
+                              [scheme.weightTracker[index]],
+                            )
+                          });
 
-                        provider.editweights(action: "remove", index: index);
-                        setState(
-                          () {},
-                        );
-                      },
-                      icon: Icon(
-                        Icons.delete,
-                        color: Colors.red[300],
-                      ),
-                    ),
+                          provider.editweights(action: "remove", index: index);
+                          setState(
+                            () {},
+                          );
+                        },
+                        icon: const DeleteIcon()),
                   ),
                 );
               },

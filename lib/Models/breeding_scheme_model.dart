@@ -25,7 +25,7 @@ class BreedingSchemeModel {
   List<dynamic> weightTracker;
   List pups;
   int? numberOfPups;
-  dynamic dateOfLabour;
+  Timestamp? dateOfLabour;
 
   toDB() {
     Map<String, dynamic> scheme = {

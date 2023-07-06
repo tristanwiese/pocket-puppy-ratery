@@ -567,18 +567,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                 trailing: myIconButton(
                                     item: scheme, itemType: "scheme"),
                                 onTap: () {
+                                  context
+                                      .read<BreedingSchemeProvider>()
+                                      .updateScheme(BreedingSchemeModel.fromDb(
+                                          dbScheme: scheme));
                                   navPush(
                                     context,
-                                    ChangeNotifierProvider(
-                                      builder: (context, child) {
-                                        return BreedingShcemeInfoPage(
-                                          rats: rats,
-                                        );
-                                      },
-                                      create: (_) => BreedingSchemeProvider(
-                                        scheme: BreedingSchemeModel.fromDb(
-                                            dbScheme: scheme),
-                                      ),
+                                    BreedingShcemeInfoPage(
+                                      rats: rats,
                                     ),
                                   );
                                 },
@@ -694,7 +690,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             );
           },
-          icon: Icon(Icons.delete, color: Colors.red[200]));
+          icon: DeleteIcon());
 
   AppBar myAppBar(BuildContext context) {
     AppBar appBar = AppBar();
@@ -1257,84 +1253,6 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         );
       },
-    );
-  }
-}
-
-class LoadScreen extends StatefulWidget {
-  const LoadScreen({super.key});
-
-  @override
-  State<LoadScreen> createState() => _LoadScreenState();
-}
-
-class _LoadScreenState extends State<LoadScreen>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  dynamic home;
-
-  @override
-  void initState() {
-    super.initState;
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 5000),
-      vsync: this,
-    );
-
-    createHome();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  createHome() {
-    _controller.forward();
-    home = Scaffold(
-      body: Center(
-          child: Column(
-        children: [
-          RotationTransition(
-              turns: Tween(begin: 0.0, end: 1.0).animate(_controller),
-              child: Image.asset('asstes/images/Image.png', height: 500)),
-          const SizedBox(height: 10),
-          const Text(
-            'Getting the Ratties out of their cages!',
-            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center,
-          )
-        ],
-      )),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return home;
-  }
-}
-
-class NoRatScreen extends StatelessWidget {
-  const NoRatScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-        // Todo: Add Image Asset
-        Image.asset(
-          "asstes/images/Rat.png",
-          height: 400,
-          errorBuilder: (context, error, stackTrace) => const Icon(Icons.image),
-        ),
-        const Text(
-          'Oh, no! We will have to get you some rats!',
-          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-          textAlign: TextAlign.center,
-        ),
-      ]),
     );
   }
 }
