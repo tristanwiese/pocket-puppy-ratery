@@ -15,10 +15,8 @@ import '../../Services/custom_widgets.dart';
 import 'breeding_scheme.dart';
 
 class BreedingShcemeInfoPage extends StatefulWidget {
-  const BreedingShcemeInfoPage(
-      {super.key, required this.scheme, required this.rats});
+  const BreedingShcemeInfoPage({super.key, required this.rats});
 
-  final QueryDocumentSnapshot<Object?> scheme;
   final List<QueryDocumentSnapshot<Object?>>? rats;
 
   @override
@@ -27,38 +25,21 @@ class BreedingShcemeInfoPage extends StatefulWidget {
 
 class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
   late BreedingSchemeModel scheme;
-
-  // TextEditingController name = TextEditingController();
-  // TextEditingController male = TextEditingController();
-  // TextEditingController female = TextEditingController();
-
-  // bool editAble = false;
-  List<dynamic> notes = [];
-  List<dynamic> weights = [];
-  late var testScheme;
-
-  customSetState() => setState(() {});
-
-  // updateScheme() async => FirebaseSchemes.doc(scheme.id).get().then(
-  //     (value) => scheme = BreedingSchemeModel.fromDb(dbScheme: value.data()));
-
-  @override
-  void initState() {
-    scheme = BreedingSchemeModel.fromDb(dbScheme: widget.scheme);
-    notes = scheme.notes;
-    weights = scheme.weightTracker;
-    // testScheme = Provider.of<BreedingSchemeProvider>(context);
-
-    super.initState();
-  }
+  late BreedingSchemeProvider provider;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(scheme.name),
-      ),
-      body: breedingSchemeInfoBody(),
+    provider = Provider.of<BreedingSchemeProvider>(context, listen: false);
+    return Consumer<BreedingSchemeProvider>(
+      builder: (context, value, child) {
+        scheme = value.getScheme;
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(scheme.name),
+          ),
+          body: breedingSchemeInfoBody(),
+        );
+      },
     );
   }
 
@@ -117,24 +98,23 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
           height: 40,
           child: ElevatedButton(
             onPressed: () {
-              updateScheme(value: "Bob", area: "name");
-              // Navigator.of(context).push(
-              //   PageRouteBuilder(
-              //     pageBuilder: (context, animation, secondaryAnimation) =>
-              //         Pups(scheme: scheme),
-              //     transitionsBuilder:
-              //         (context, animation, secondaryAnimation, child) {
-              //       const begin = Offset(1.0, 0.0);
-              //       const end = Offset.zero;
-              //       final tween = Tween(begin: begin, end: end);
-              //       final offsetAnimation = animation.drive(tween);
-              //       return SlideTransition(
-              //         position: offsetAnimation,
-              //         child: child,
-              //       );
-              //     },
-              //   ),
-              // );
+              Navigator.of(context).push(
+                PageRouteBuilder(
+                  pageBuilder: (context, animation, secondaryAnimation) =>
+                      Pups(scheme: scheme),
+                  transitionsBuilder:
+                      (context, animation, secondaryAnimation, child) {
+                    const begin = Offset(1.0, 0.0);
+                    const end = Offset.zero;
+                    final tween = Tween(begin: begin, end: end);
+                    final offsetAnimation = animation.drive(tween);
+                    return SlideTransition(
+                      position: offsetAnimation,
+                      child: child,
+                    );
+                  },
+                ),
+              );
             },
             style: MyElevatedButtonStyle.buttonStyle,
             child: const Text('Pups'),
@@ -149,13 +129,14 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
       title: "Notes",
       child: Column(
         children: [
-          notes.isNotEmpty
+          scheme.notes.isNotEmpty
               ? SizedBox(
-                  height: notes.length > 10 ? 200 : notes.length * 20,
+                  height:
+                      scheme.notes.length > 10 ? 200 : scheme.notes.length * 20,
                   child: ListView.builder(
-                    itemCount: notes.length,
+                    itemCount: scheme.notes.length,
                     itemBuilder: (context, index) => Text(
-                        "- ${notes[index]["title"]}: ${notes[index]["note"]}"),
+                        "- ${scheme.notes[index]["title"]}: ${scheme.notes[index]["note"]}"),
                   ),
                 )
               : const Text("No notes"),
@@ -186,7 +167,6 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                         final List<Widget> actions = [
                           ElevatedButton(
                             onPressed: () {
-                              customSetState();
                               navPop(context);
                             },
                             child: const Text("Done"),
@@ -196,7 +176,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                         final Widget content = SizedBox(
                           height: 300,
                           child: ListView.builder(
-                            itemCount: notes.length,
+                            itemCount: scheme.notes.length,
                             itemBuilder: (context, index) {
                               return Card(
                                 elevation: 10,
@@ -205,20 +185,22 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                                 child: ListTile(
                                   onTap: () => addNote(
                                       index: index,
-                                      note: notes[index]["note"],
-                                      noteTitle: notes[index]["title"]),
-                                  title: Text(notes[index]['title']),
+                                      note: scheme.notes[index]["note"],
+                                      noteTitle: scheme.notes[index]["title"]),
+                                  title: Text(scheme.notes[index]['title']),
                                   trailing: IconButton(
                                     onPressed: () {
                                       FirebaseSchemes.doc(scheme.id).update({
                                         "notes": FieldValue.arrayRemove(
-                                          [notes[index]],
+                                          [scheme.notes[index]],
                                         )
                                       });
-                                      customSetState();
-                                      setState(() {
-                                        notes.removeAt(index);
-                                      });
+
+                                      provider.editNotes(
+                                          action: "remove", index: index);
+                                      setState(
+                                        () {},
+                                      );
                                     },
                                     icon: Icon(
                                       Icons.delete,
@@ -302,14 +284,16 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          weights.isNotEmpty
+          scheme.weightTracker.isNotEmpty
               ? SizedBox(
-                  height: weights.length > 10 ? 200 : weights.length * 20,
+                  height: scheme.weightTracker.length > 10
+                      ? 200
+                      : scheme.weightTracker.length * 20,
                   child: ListView.builder(
-                    itemCount: weights.length,
+                    itemCount: scheme.weightTracker.length,
                     itemBuilder: (context, index) {
                       return Text(
-                          "- ${weights[index]["date"][0]}/${weights[index]["date"][1]}/${weights[index]["date"][2]} : ${weights[index]["weight"]}g");
+                          "- ${scheme.weightTracker[index]["date"][0]}/${scheme.weightTracker[index]["date"][1]}/${scheme.weightTracker[index]["date"][2]} : ${scheme.weightTracker[index]["weight"]}g");
                     },
                   ),
                 )
@@ -348,15 +332,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Consumer<BreedingSchemeProvider>(
-            builder: (
-              context,
-              value,
-              child,
-            ) {
-              return Text("Male: ${value.getScheme.male}");
-            },
-          ),
+          Text("Male: ${scheme.male}"),
           Text("Female: ${scheme.female}"),
         ],
       ),
@@ -411,12 +387,12 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
             onPressed: () {
               if (note != '' || noteTitle != "") {
                 FirebaseSchemes.doc(scheme.id).update({
-                  "notes": FieldValue.arrayRemove([notes[index!]]),
+                  "notes": FieldValue.arrayRemove([scheme.notes[index!]]),
                 });
-                notes[index] = {
+                provider.editNotes(action: "update", index: index, note: {
                   "title": titleController.text.trim(),
                   "note": noteController.text.trim()
-                };
+                });
                 FirebaseSchemes.doc(scheme.id).update({
                   "notes": FieldValue.arrayUnion([
                     {
@@ -425,17 +401,14 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                     }
                   ]),
                 });
-                setState(() {});
-
                 navPop(context);
                 navPop(context);
                 return;
               }
-              notes.add({
+              provider.editNotes(action: "add", note: {
                 "title": titleController.text.trim(),
                 "note": noteController.text.trim()
               });
-              customSetState();
               FirebaseSchemes.doc(scheme.id).update({
                 "notes": FieldValue.arrayUnion([
                   {
@@ -497,7 +470,11 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
     );
   }
 
-  void addWeightEntry({int weight = 300, DateTime? date, int? index}) {
+  void addWeightEntry({
+    int weight = 300,
+    DateTime? date,
+    int? index,
+  }) {
     showDialog(
       context: context,
       builder: (context) {
@@ -537,19 +514,19 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                   };
                   if (index != null) {
                     FirebaseSchemes.doc(scheme.id).update({
-                      "weightTracker": FieldValue.arrayRemove([weights[index]]),
+                      "weightTracker":
+                          FieldValue.arrayRemove([scheme.weightTracker[index]]),
                     });
-                    weights[index] = entry;
+                    provider.editweights(
+                        action: "update", index: index, weight: entry);
                     FirebaseSchemes.doc(scheme.id).update({
                       "weightTracker": FieldValue.arrayUnion([entry]),
                     });
-                    customSetState();
                     navPop(context);
                     navPop(context);
                     return;
                   }
-                  weights.add(entry);
-                  customSetState();
+                  provider.editweights(action: "add", weight: entry);
                   FirebaseSchemes.doc(scheme.id).update({
                     "weightTracker": FieldValue.arrayUnion([entry])
                   });
@@ -659,7 +636,6 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
           final List<Widget> actions = [
             ElevatedButton(
               onPressed: () {
-                customSetState();
                 navPop(context);
               },
               child: const Text("Done"),
@@ -669,7 +645,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
           final Widget content = SizedBox(
             height: 300,
             child: ListView.builder(
-              itemCount: weights.length,
+              itemCount: scheme.weightTracker.length,
               itemBuilder: (context, index) {
                 return Card(
                   elevation: 10,
@@ -678,25 +654,25 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                   child: ListTile(
                     onTap: () => addWeightEntry(
                         date: DateTime(
-                            weights[index]["date"][0],
-                            weights[index]["date"][1],
-                            weights[index]["date"][2]),
-                        weight: weights[index]["weight"],
+                            scheme.weightTracker[index]["date"][0],
+                            scheme.weightTracker[index]["date"][1],
+                            scheme.weightTracker[index]["date"][2]),
+                        weight: scheme.weightTracker[index]["weight"],
                         index: index),
                     title: Text(
-                        "- ${weights[index]["date"][0]}/${weights[index]["date"][1]}/${weights[index]["date"][2]} : ${weights[index]["weight"]}g"),
+                        "- ${scheme.weightTracker[index]["date"][0]}/${scheme.weightTracker[index]["date"][1]}/${scheme.weightTracker[index]["date"][2]} : ${scheme.weightTracker[index]["weight"]}g"),
                     trailing: IconButton(
                       onPressed: () {
                         FirebaseSchemes.doc(scheme.id).update({
                           "weightTracker": FieldValue.arrayRemove(
-                            [weights[index]],
+                            [scheme.weightTracker[index]],
                           )
                         });
 
-                        setState(() {
-                          weights.removeAt(index);
-                        });
-                        customSetState();
+                        provider.editweights(action: "remove", index: index);
+                        setState(
+                          () {},
+                        );
                       },
                       icon: Icon(
                         Icons.delete,
@@ -717,10 +693,5 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
         },
       ),
     );
-  }
-
-  void updateScheme({required String value, required String area}) {
-    final scheme = Provider.of<BreedingSchemeProvider>(context, listen: false);
-    scheme.changeMale(name: value);
   }
 }

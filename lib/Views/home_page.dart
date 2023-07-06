@@ -570,14 +570,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                   navPush(
                                     context,
                                     ChangeNotifierProvider(
-                                      create: (context) =>
-                                          BreedingSchemeProvider(
+                                      builder: (context, child) {
+                                        return BreedingShcemeInfoPage(
+                                          rats: rats,
+                                        );
+                                      },
+                                      create: (_) => BreedingSchemeProvider(
                                         scheme: BreedingSchemeModel.fromDb(
                                             dbScheme: scheme),
-                                      ),
-                                      child: BreedingShcemeInfoPage(
-                                        scheme: scheme,
-                                        rats: rats,
                                       ),
                                     ),
                                   );

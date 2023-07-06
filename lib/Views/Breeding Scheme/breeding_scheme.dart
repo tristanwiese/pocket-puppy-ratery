@@ -3,8 +3,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Models/breeding_scheme_model.dart';
+import 'package:pocket_puppy_rattery/Services/breeding_scheme_provider.dart';
+import 'package:provider/provider.dart';
 import '../../Services/custom_widgets.dart';
 
 class BreedingScheme extends StatefulWidget {
@@ -366,8 +369,10 @@ class _BreedingSchemeState extends State<BreedingScheme> {
           isCustomRats: showCustomRatScreen,
           date: dateOfBreeding);
       FirebaseSchemes.doc(widget.id).update(scheme.toDB());
+      BreedingSchemeProvider provider =
+          Provider.of<BreedingSchemeProvider>(context, listen: false);
+      provider.updateScheme(scheme);
     }
-
-    Navigator.popUntil(context, (route) => route.isFirst);
+    navPop(context);
   }
 }
