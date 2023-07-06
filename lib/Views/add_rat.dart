@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
+import 'package:pocket_puppy_rattery/Services/rats_provider.dart';
+import 'package:provider/provider.dart';
 import '../Functions/utils.dart';
 import '../Models/rat.dart';
 import '../Services/constants.dart';
@@ -230,13 +232,13 @@ class _AddRatState extends State<AddRat> {
             );
             if (widget.rat != null) {
               rat.colorCode = widget.rat!.colorCode;
-              await FirebaseFirestore.instance
+              FirebaseFirestore.instance
                   .collection("users")
                   .doc(FirebaseAuth.instance.currentUser!.uid)
                   .collection("rats")
                   .doc(widget.id)
                   .update(rat.toDb());
-
+              Provider.of<RatsProvider>(context, listen: false).updateRat(rat);
               navPop(context);
               return;
             }

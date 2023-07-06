@@ -14,7 +14,9 @@ import 'package:pocket_puppy_rattery/Models/genes.dart';
 import 'package:pocket_puppy_rattery/Models/rat.dart';
 import 'package:pocket_puppy_rattery/Services/breeding_scheme_provider.dart';
 import 'package:pocket_puppy_rattery/Services/constants.dart';
-import 'package:pocket_puppy_rattery/Services/settings_provider.dart';
+import 'package:pocket_puppy_rattery/Services/controller_provider.dart';
+import 'package:pocket_puppy_rattery/Services/card_controller.dart';
+import 'package:pocket_puppy_rattery/Services/rats_provider.dart';
 import 'package:pocket_puppy_rattery/Views/add_rat.dart';
 import 'package:pocket_puppy_rattery/Views/Breeding%20Scheme/breeding_sheme_info_page.dart';
 import 'package:pocket_puppy_rattery/Views/profile_page.dart';
@@ -35,7 +37,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final PageController _pageController = PageController(initialPage: 2);
+  final PageController _pageController = PageController();
+  late ControllerProvider controllerProvider;
 
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
@@ -64,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   late Timer timer;
 
-  mySetState() => setState(() {});
+  // mySetState() => setState(() {});
 
   getPrefs() async {
     prefs = await SharedPreferences.getInstance();
@@ -79,6 +82,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext ctx) {
+    controllerProvider =
+        Provider.of<ControllerProvider>(context, listen: false);
     return showLoad
         ? const LoadScreen()
         : StreamBuilder<QuerySnapshot>(
@@ -106,13 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
           bottomNavigationBar: myBottomNavBar(),
           body: PageView(
             controller: _pageController,
-            onPageChanged: (value) => (() {
-              print(bottomVanIndex);
-              setState(() {
-                bottomVanIndex = value;
-              });
-              print(bottomVanIndex);
-
+            onPageChanged: (value) {
               switch (value) {
                 case 0:
                   appBarTitle = "Your Rats";
@@ -123,14 +122,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 default:
                   appBarTitle = "Breeding Tracker";
               }
-            }),
+              controllerProvider.changeBottomNavIndex(index: value);
+            },
             children: [ratPage(ctx), geneCal(rats), breedTracker()],
           ));
 
   Widget ratPage(BuildContext ctx) {
-    int seniorColor = ctx.watch<SeniorRatWatcher>().color;
-    bool seniorState = ctx.watch<SeniorRatWatcher>().state;
-
     return Center(
       child: Column(
         children: [
@@ -150,14 +147,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ? rats.length
                                 : filteredRats.length,
                             itemBuilder: (BuildContext context, i) {
-                              final buildItem =
-                                  activeFilters.isEmpty ? rats : filteredRats;
-                              DateTime birthdate = DateTime(
-                                  buildItem[i]["birthday"][0],
-                                  buildItem[i]["birthday"][1],
-                                  buildItem[i]["birthday"][2]);
+                              final QueryDocumentSnapshot buildItem =
+                                  activeFilters.isEmpty
+                                      ? rats[i]
+                                      : filteredRats[i];
+                              final Rat rat = Rat.fromDB(dbRat: buildItem);
+                              DateTime birthdate = rat.birthday;
                               Color? colorCode;
-                              switch (buildItem[i]["colorCode"]) {
+                              switch (rat.colorCode) {
                                 case "green":
                                   colorCode = Colors.green[300];
                                 case "blue":
@@ -177,65 +174,74 @@ class _MyHomePageState extends State<MyHomePage> {
                                     );
                                   },
                                   onTap: () {
-                                    QueryDocumentSnapshot rat =
-                                        activeFilters.isEmpty
-                                            ? rats[i]
-                                            : filteredRats[i];
-                                    navPush(context, RatInfo(info: rat));
+                                    rat.id = buildItem.id;
+                                    context.read<RatsProvider>().setRats(rat);
+                                    navPush(context, Consumer<RatsProvider>(
+                                      builder: (context, value, child) {
+                                        return RatInfo(
+                                          rat: value.rat,
+                                        );
+                                      },
+                                    ));
                                   },
-                                  child: Card(
-                                    elevation: 3,
-                                    shadowColor:
-                                        (AgeCalculator.age(birthdate).years >=
-                                                3)
-                                            ? seniorState
-                                                ? Color(seniorColor)
-                                                : Colors.black
-                                            : Colors.black,
-                                    shape: const BeveledRectangleBorder(
-                                        // side: BorderSide(
-                                        //     width: 1,
-                                        //     color: secondaryThemeColor),
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(15))),
-                                    color:
-                                        (AgeCalculator.age(birthdate).years >=
-                                                3)
-                                            ? seniorState
-                                                ? Color(seniorColor)
-                                                : null
-                                            : null,
-                                    child: ListTile(
-                                      isThreeLine: true,
-                                      leading: SizedBox(
-                                        width: 70,
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Icon(
-                                              Icons.square_rounded,
-                                              color: colorCode,
-                                            ),
-                                            Image.asset(
-                                              "asstes/images/logo.png",
-                                              width: 30,
-                                              errorBuilder: (context, error,
-                                                      stackTrace) =>
-                                                  const Icon(Icons.image),
-                                            )
-                                          ],
+                                  child: Consumer<CardController>(
+                                      builder: (context, value, child) {
+                                    value.setRat = rat;
+                                    return Card(
+                                      elevation: 3,
+                                      shadowColor:
+                                          (AgeCalculator.age(birthdate).years >=
+                                                  3)
+                                              ? value.state
+                                                  ? Color(value.color)
+                                                  : Colors.black
+                                              : Colors.black,
+                                      shape: const BeveledRectangleBorder(
+                                          // side: BorderSide(
+                                          //     width: 1,
+                                          //     color: secondaryThemeColor),
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(15))),
+                                      color:
+                                          (AgeCalculator.age(birthdate).years >=
+                                                  3)
+                                              ? value.state
+                                                  ? Color(value.color)
+                                                  : null
+                                              : null,
+                                      child: ListTile(
+                                        isThreeLine: true,
+                                        leading: SizedBox(
+                                          width: 70,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Icon(
+                                                Icons.square_rounded,
+                                                color: colorCode,
+                                              ),
+                                              Image.asset(
+                                                "asstes/images/logo.png",
+                                                width: 30,
+                                                errorBuilder: (context, error,
+                                                        stackTrace) =>
+                                                    const Icon(Icons.image),
+                                              )
+                                            ],
+                                          ),
                                         ),
+                                        trailing: myIconButton(
+                                            item: buildItem, itemType: "rat"),
+                                        title: Text(rat.name),
+                                        subtitle: Text("${rat.gender}"
+                                            "\n"
+                                            "Age: ${defaultAgeCalculator(birthdate)}"),
+                                        contentPadding:
+                                            const EdgeInsets.all(10),
                                       ),
-                                      trailing: myIconButton(
-                                          item: buildItem[i], itemType: "rat"),
-                                      title: Text(buildItem[i]['name']),
-                                      subtitle: Text(buildItem[i]['gender'] +
-                                          "\n" +
-                                          "Age: ${defaultAgeCalculator(birthdate)}"),
-                                      contentPadding: const EdgeInsets.all(10),
-                                    ),
-                                  ),
+                                    );
+                                  }),
                                 ),
                               );
                             }),
@@ -519,6 +525,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget breedTracker() {
+    print("Schemes!!!!!");
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection("users")
@@ -627,25 +634,25 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget myBottomNavBar() {
-    return BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: bottomVanIndex,
-        onTap: (index) {
-          setState(() {
-            bottomVanIndex = index;
+    return Consumer<ControllerProvider>(builder: (context, value, child) {
+      return BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          currentIndex: value.bottomNavIndex,
+          onTap: (index) {
+            controllerProvider.changeBottomNavIndex(index: index);
             _pageController.animateToPage(index,
                 duration: const Duration(milliseconds: 700),
                 curve: Curves.decelerate);
-          });
-        },
-        items: const [
-          BottomNavigationBarItem(
-              icon: Icon(Icons.line_style_outlined), label: 'Rats'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.calculate_outlined), label: 'Gene Calculator'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.bed_rounded), label: "Breeding Tracker")
-        ]);
+          },
+          items: const [
+            BottomNavigationBarItem(
+                icon: Icon(Icons.line_style_outlined), label: 'Rats'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.calculate_outlined), label: 'Gene Calculator'),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.bed_rounded), label: "Breeding Tracker")
+          ]);
+    });
   }
 
   IconButton myIconButton(
@@ -690,23 +697,29 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             );
           },
-          icon: DeleteIcon());
+          icon: const DeleteIcon());
 
-  AppBar myAppBar(BuildContext context) {
+  myAppBar(BuildContext context) {
     AppBar appBar = AppBar();
 
-    switch (bottomVanIndex) {
-      case 0:
-        appBar = ratScreenAppBar();
-        break;
-      case 1:
-        appBar = geneCalAppBar();
-        break;
-      case 2:
-        appBar = breedTrackerAppBar();
-        break;
-    }
-    return appBar;
+    return PreferredSize(
+        preferredSize: const Size.fromHeight(60),
+        child: Consumer<ControllerProvider>(
+          builder: (context, value, child) {
+            switch (value.bottomNavIndex) {
+              case 0:
+                appBar = ratScreenAppBar();
+                break;
+              case 1:
+                appBar = geneCalAppBar();
+                break;
+              case 2:
+                appBar = breedTrackerAppBar();
+                break;
+            }
+            return appBar;
+          },
+        ));
   }
 
   ratScreenAppBar() {

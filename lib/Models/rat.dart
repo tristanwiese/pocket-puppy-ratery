@@ -1,5 +1,6 @@
 // ignore_for_file: constant_identifier_names, camel_case_types
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 
 import '../Services/constants.dart';
@@ -26,6 +27,7 @@ class Rat {
   final Coats coat;
   final DateTime birthday;
   String colorCode = "none";
+  String? id;
 
   static hLocusToList() {
     const markingsList = H_Locus.values;
@@ -116,14 +118,28 @@ class Rat {
       "mother": parents.mom,
       "father": parents.dad,
       "coat": coat.name.toString(),
-      "birthday": [
-        birthday.year.toInt(),
-        birthday.month.toInt(),
-        birthday.day.toInt()
-      ],
+      "birthday": birthday,
       "colorCode": colorCode
     };
     return rat;
+  }
+
+  static fromDB({required QueryDocumentSnapshot dbRat}) {
+    final Timestamp birthdate = dbRat["birthday"];
+
+    return Rat(
+        name: dbRat["name"],
+        registeredName: dbRat["registeredName"],
+        colours: dbRat["colours"],
+        ears: Ears
+            .values[earsList.indexWhere((element) => element == dbRat["ears"])],
+        gender: Gender.values[
+            genderList.indexWhere((element) => element == dbRat["gender"])],
+        markings: dbRat["markings"],
+        parents: Parents(dad: dbRat["father"], mom: dbRat["mother"]),
+        coat: Coats.values[
+            coatsList.indexWhere((element) => element == dbRat["coat"])],
+        birthday: birthdate.toDate());
   }
 }
 

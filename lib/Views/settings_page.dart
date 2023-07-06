@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
-import 'package:pocket_puppy_rattery/Services/settings_provider.dart';
+import 'package:pocket_puppy_rattery/Services/card_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -85,7 +85,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                       prefs.setInt(
                                           "seniorColor", seniorColour.value);
                                       context
-                                          .read<SeniorRatWatcher>()
+                                          .read<CardController>()
                                           .changeColor(seniorColour.value);
                                       navPop(context);
                                     },
@@ -122,7 +122,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                         seniorColorBool = value;
                                         prefs.setBool("seniorColorBool", value);
                                         context
-                                            .read<SeniorRatWatcher>()
+                                            .read<CardController>()
                                             .changeState(value);
                                         setState(() {});
                                       },

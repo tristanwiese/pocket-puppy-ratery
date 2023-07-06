@@ -1,35 +1,30 @@
 // ignore_for_file: no_logic_in_create_state
 
 // ignore: unused_import
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
-import 'package:pocket_puppy_rattery/Services/constants.dart';
 import 'package:pocket_puppy_rattery/Views/add_rat.dart';
-
 import '../Models/rat.dart';
 import '../Services/custom_widgets.dart';
 
 class RatInfo extends StatefulWidget {
   const RatInfo({
     super.key,
-    required this.info,
+    required this.rat,
   });
 
-  final QueryDocumentSnapshot info;
+  final Rat rat;
 
   @override
-  State<RatInfo> createState() => _RatInfoState(info: info);
+  State<RatInfo> createState() => _RatInfoState();
 }
 
 class _RatInfoState extends State<RatInfo> {
-  _RatInfoState({required this.info});
+  _RatInfoState();
 
-  final dynamic info;
+  late Rat rat;
 
   // Age to be displayed, dynamically calculated by ageCalculator
   String age = '';
@@ -43,80 +38,54 @@ class _RatInfoState extends State<RatInfo> {
   }
 
   Widget myBody() {
-    return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-      stream: FirebaseFirestore.instance
-          .collection("users")
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .collection("rats")
-          .doc(widget.info.id)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
-            child: Text(
-              "Catching ${widget.info["name"]}....",
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+    rat = widget.rat;
+    if (_dropDownValue == null) {
+      age = defaultAgeCalculator(rat.birthday);
+    }
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Column(
+        children: [
+          details(),
+          ageContainer(),
+          parents(),
+          coat(),
+          makrings(),
+          colors(),
+          SizedBox(
+            height: 40,
+            width: 100,
+            child: ElevatedButton(
+              onPressed: () {
+                navPush(
+                    context,
+                    AddRat(
+                      id: rat.id,
+                      rat: rat,
+                    ));
+              },
+              style: MyElevatedButtonStyle.buttonStyle,
+              child: const Text("Edit"),
             ),
-          );
-        }
-        if (!snapshot.hasData) {
-          return Center(
-            child: Text(
-                'Sorry, something went wrong while fetching ${widget.info["name"]}!'),
-          );
-        }
-        final info = snapshot.data!.data();
-        final ratInfo = infoToModel(info: info!);
-
-        if (_dropDownValue == null) {
-          age = defaultAgeCalculator(ratInfo.birthday);
-        }
-        return SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: Column(
-            children: [
-              details(ratInfo),
-              ageContainer(ratInfo),
-              parents(ratInfo),
-              coat(ratInfo),
-              makrings(ratInfo),
-              colors(ratInfo),
-              SizedBox(
-                height: 40,
-                width: 100,
-                child: ElevatedButton(
-                  onPressed: () {
-                    navPush(
-                        context,
-                        AddRat(
-                          id: widget.info.id,
-                          rat: ratInfo,
-                        ));
-                  },
-                  style: MyElevatedButtonStyle.buttonStyle,
-                  child: const Text("Edit"),
-                ),
-              ),
-            ],
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 
-  Row colors(Rat ratInfo) {
+  Row colors() {
     return Row(
       children: [
         Expanded(
           child: MyInfoCard(
             title: "Colours",
             child: SizedBox(
-              height: listContainerHeight(itemLenght: ratInfo.colours.length),
+              height: listContainerHeight(itemLenght: rat.colours.length),
               child: ListView.builder(
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: ratInfo.colours.length,
+                itemCount: rat.colours.length,
                 itemBuilder: (context, index) {
-                  return Text("- ${ratInfo.colours[index]}");
+                  return Text("- ${rat.colours[index]}");
                 },
               ),
             ),
@@ -126,19 +95,19 @@ class _RatInfoState extends State<RatInfo> {
     );
   }
 
-  Row makrings(Rat ratInfo) {
+  Row makrings() {
     return Row(
       children: [
         Expanded(
           child: MyInfoCard(
             title: "Markings",
             child: SizedBox(
-              height: listContainerHeight(itemLenght: ratInfo.markings.length),
+              height: listContainerHeight(itemLenght: rat.markings.length),
               child: ListView.builder(
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: ratInfo.markings.length,
+                itemCount: rat.markings.length,
                 itemBuilder: (context, index) {
-                  return Text("- ${ratInfo.markings[index]}");
+                  return Text("- ${rat.markings[index]}");
                 },
               ),
             ),
@@ -148,7 +117,7 @@ class _RatInfoState extends State<RatInfo> {
     );
   }
 
-  Row parents(Rat ratInfo) {
+  Row parents() {
     return Row(
       children: [
         Expanded(
@@ -159,13 +128,13 @@ class _RatInfoState extends State<RatInfo> {
                 Expanded(
                   child: MyInfoCard(
                     title: "Mother",
-                    child: Text(ratInfo.parents.mom),
+                    child: Text(rat.parents.mom),
                   ),
                 ),
                 Expanded(
                   child: MyInfoCard(
                     title: "Father",
-                    child: Text(ratInfo.parents.dad),
+                    child: Text(rat.parents.dad),
                   ),
                 )
               ],
@@ -176,23 +145,23 @@ class _RatInfoState extends State<RatInfo> {
     );
   }
 
-  Row coat(Rat ratInfo) {
+  Row coat() {
     return Row(
       children: [
         Expanded(
           child: MyInfoCard(
             title: "Coat",
-            child: Text("Coat: ${ratInfo.coat.name}"),
+            child: Text("Coat: ${rat.coat.name}"),
           ),
         ),
         Expanded(
             child: MyInfoCard(
-                title: "Ears", child: Text("Ears: ${ratInfo.ears.name}")))
+                title: "Ears", child: Text("Ears: ${rat.ears.name}")))
       ],
     );
   }
 
-  Row ageContainer(Rat ratInfo) {
+  Row ageContainer() {
     return Row(
       children: [
         Expanded(
@@ -200,10 +169,10 @@ class _RatInfoState extends State<RatInfo> {
             title: "Age",
             child: Column(
               children: [
-                Text("Birthday: ${birthdayView(data: ratInfo.birthday)}"),
+                Text("Birthday: ${birthdayView(data: rat.birthday)}"),
                 Text('Age: $age'),
                 const SizedBox(height: 10),
-                ageViewSelector(ratInfo.birthday)
+                ageViewSelector(rat.birthday)
               ],
             ),
           ),
@@ -212,7 +181,7 @@ class _RatInfoState extends State<RatInfo> {
     );
   }
 
-  Row details(Rat ratInfo) {
+  Row details() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
@@ -222,9 +191,9 @@ class _RatInfoState extends State<RatInfo> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text("Name: ${ratInfo.name}"),
-                Text("Regestered Name: ${ratInfo.registeredName}"),
-                Text("Gender: ${ratInfo.gender.name}"),
+                Text("Name: ${rat.name}"),
+                Text("Regestered Name: ${rat.registeredName}"),
+                Text("Gender: ${rat.gender.name}"),
               ],
             ),
           ),
@@ -274,33 +243,10 @@ class _RatInfoState extends State<RatInfo> {
   }
 
   AppBar myAppBar() => AppBar(
-        title: Text("Rat: ${widget.info["name"]}"),
+        title: Text("Rat: ${widget.rat.name}"),
       );
 
   String birthdayView({required DateTime data}) {
     return "${data.year}/${data.month}/${data.day}";
-  }
-
-  Rat infoToModel({required info}) {
-    DateTime birthday =
-        DateTime(info["birthday"][0], info["birthday"][1], info["birthday"][2]);
-
-    final rat = Rat(
-      name: info["name"],
-      registeredName: info["registeredName"],
-      colours: info["colours"],
-      ears: Ears.values[
-          Rat.earsToList().indexWhere((element) => element == info["ears"])],
-      gender: Gender.values[Rat.genderToList()
-          .indexWhere((element) => element == info["gender"])],
-      markings: info["markings"],
-      parents: Parents(dad: info["father"], mom: info["mother"]),
-      coat: Coats.values[
-          Rat.coatsToList().indexWhere((element) => element == info["coat"])],
-      birthday: birthday,
-    );
-    rat.colorCode = info["colorCode"];
-
-    return rat;
   }
 }

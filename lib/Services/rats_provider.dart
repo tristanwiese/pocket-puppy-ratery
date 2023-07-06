@@ -1,12 +1,19 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:pocket_puppy_rattery/Models/rat.dart';
 
 class RatsProvider extends ChangeNotifier {
-  RatsProvider({
-    required List<QueryDocumentSnapshot> rats,
-  }) : _rats = rats;
+  Rat? _rat;
 
-  final List<QueryDocumentSnapshot> _rats;
+  Rat get rat => _rat!;
 
-  List<QueryDocumentSnapshot> get getRats => _rats;
+  setRats(Rat rat) {
+    _rat = rat;
+    print(rat.name);
+  }
+
+  updateRat(Rat rat) {
+    _rat = rat;
+    print(rat.name);
+    notifyListeners();
+  }
 }

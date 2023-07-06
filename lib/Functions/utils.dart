@@ -1,10 +1,12 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:age_calculator/age_calculator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-var primaryThemeColor = Color.fromARGB(255, 185, 235, 223);
+var primaryThemeColor = const Color.fromARGB(255, 185, 235, 223);
 
 var secondaryThemeColor = const Color.fromARGB(255, 181, 144, 185);
 

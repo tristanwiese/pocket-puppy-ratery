@@ -187,7 +187,6 @@ class _BreedingSchemeState extends State<BreedingScheme> {
                     height: 40,
                     child: ElevatedButton(
                       onPressed: () {
-                        print("fired!");
                         if (_nameKey.currentState!.validate()) {
                           if (showCustomRatScreen) {
                             if (_formKey.currentState!.validate()) {
