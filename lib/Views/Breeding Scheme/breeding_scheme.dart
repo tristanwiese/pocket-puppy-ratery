@@ -186,17 +186,20 @@ class _BreedingSchemeState extends State<BreedingScheme> {
                     width: 150,
                     height: 40,
                     child: ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (_nameKey.currentState!.validate()) {
                           if (showCustomRatScreen) {
                             if (_formKey.currentState!.validate()) {
-                              addScheme(
-                                  dateOfBreeding: (customDate == null)
-                                      ? DateTime.now()
-                                      : customDate!,
-                                  male: _maleController.text.trim(),
-                                  female: _femaleController.text.trim(),
-                                  name: _nameController.text.trim());
+                              await addScheme(
+                                dateOfBreeding: (customDate == null)
+                                    ? DateTime.now()
+                                    : customDate!,
+                                male: _maleController.text.trim(),
+                                female: _femaleController.text.trim(),
+                                name: _nameController.text.trim(),
+                              );
+
+                              navPop(context);
                             }
                             return;
                           }
@@ -229,7 +232,7 @@ class _BreedingSchemeState extends State<BreedingScheme> {
                               chosenRatsList.indexWhere(
                                   (element) => element["gender"] == "Female")];
 
-                          addScheme(
+                          await addScheme(
                             male: male["name"],
                             female: female["name"],
                             name: _nameController.text.trim(),
@@ -237,6 +240,7 @@ class _BreedingSchemeState extends State<BreedingScheme> {
                                 ? DateTime.now()
                                 : customDate!,
                           );
+                          navPop(context);
                         }
                       },
                       style: MyElevatedButtonStyle.buttonStyle,
@@ -335,7 +339,7 @@ class _BreedingSchemeState extends State<BreedingScheme> {
     );
   }
 
-  void addScheme({
+  Future addScheme({
     required String male,
     required String female,
     required String name,

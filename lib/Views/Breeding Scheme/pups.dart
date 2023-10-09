@@ -48,165 +48,172 @@ class _PupsState extends State<Pups> {
   Widget body() {
     final DateTime dateOfLabour = scheme.dateOfLabour!.toDate();
     return Center(
-      child: Center(
-        child: Column(
-          children: [
-            Expanded(
-              child: Column(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(top: 8.0),
-                    child: Text(
-                      "All Pups",
-                      style:
-                          TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-                    ),
+      child: Column(
+        children: [
+          Expanded(
+            child: Column(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(top: 8.0),
+                  child: Text(
+                    "All Pups",
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                   ),
-                  MyInfoCard(
-                    title: "Labour Details",
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Row(
-                          children: [
-                            const DirectiveText(text: "Date:"),
-                            Text(
-                                "${dateOfLabour.year}/${dateOfLabour.month}/${dateOfLabour.day}"),
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            const DirectiveText(text: "Litter Size:"),
-                            Text(scheme.numberOfPups.toString())
-                          ],
-                        )
-                      ],
-                    ),
+                ),
+                MyInfoCard(
+                  title: "Labour Details",
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Row(
+                        children: [
+                          const DirectiveText(text: "Date:"),
+                          Text(
+                              "${dateOfLabour.year}/${dateOfLabour.month}/${dateOfLabour.day}"),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          const DirectiveText(text: "Litter Size:"),
+                          Text(scheme.numberOfPups.toString())
+                        ],
+                      )
+                    ],
                   ),
-                  const SizedBox(height: 20),
-                  scheme.numberOfPups! != pups.length
-                      ? scheme.numberOfPups! > pups.length
-                          ? DirectiveText(
-                              text:
-                                  "Litter Size is ${scheme.numberOfPups}, but only ${pups.length} pups were added:",
-                              italic: true,
-                            )
-                          : DirectiveText(
-                              text:
-                                  "Litter Size is ${scheme.numberOfPups}, but ${pups.length} pups were added:",
-                              italic: true,
-                            )
-                      : Container(),
-                  pups.isEmpty
-                      ? const Text("No Pups")
-                      : SizedBox(
-                          height: 400,
-                          child: ListView.builder(
-                            itemCount: pups.length,
-                            itemBuilder: (context, index) {
-                              final Pup pup = Pup.fromDb(dbPup: pups[index]);
-                              return Card(
-                                elevation: 5,
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: ListTile(
-                                  trailing: IconButton(
-                                    onPressed: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return AlertDialog(
-                                            title: Text("Delete ${pup.name}"),
-                                            actions: [
-                                              ElevatedButton(
-                                                onPressed: () =>
-                                                    navPop(context),
-                                                style: MyElevatedButtonStyle
-                                                    .cancelButtonStyle,
-                                                child: const Text("Cancel"),
-                                              ),
-                                              ElevatedButton(
-                                                onPressed: () {
-                                                  FirebaseSchemes.doc(scheme.id)
-                                                      .update({
-                                                    "pups":
-                                                        FieldValue.arrayRemove(
-                                                            [pups[index]])
-                                                  });
-                                                  provider.editPups(
-                                                      action: "remove",
-                                                      index: index);
-                                                  navPop(context);
-                                                },
-                                                style: ElevatedButton.styleFrom(
-                                                    backgroundColor:
-                                                        Colors.red[200]),
-                                                child: const Text("Delete"),
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      );
-                                    },
-                                    icon: const DeleteIcon(),
-                                  ),
-                                  leading: Text("${index + 1}",
-                                      style: const TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold)),
-                                  title: Row(
-                                    children: [
-                                      const DirectiveText(text: "Name:"),
-                                      Text(pup.name),
-                                    ],
-                                  ),
-                                  subtitle: Row(
-                                    children: [
-                                      const DirectiveText(
-                                          text: "Registered name:"),
-                                      Text(pup.name)
-                                    ],
-                                  ),
+                ),
+                const SizedBox(height: 20),
+                scheme.numberOfPups! != pups.length
+                    ? scheme.numberOfPups! > pups.length
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              DirectiveText(
+                                text:
+                                    "Litter Size is ${scheme.numberOfPups}, but only ${pups.length} pups were added:",
+                                italic: true,
+                              ),
+                            ],
+                          )
+                        : Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              DirectiveText(
+                                text:
+                                    "Litter Size is ${scheme.numberOfPups}, but ${pups.length} pups were added:",
+                                italic: true,
+                              ),
+                            ],
+                          )
+                    : Container(),
+                const SizedBox(height: 10),
+                pups.isEmpty
+                    ? const Text("No Pups")
+                    : SizedBox(
+                        height: 300,
+                        child: ListView.builder(
+                          itemCount: pups.length,
+                          itemBuilder: (context, index) {
+                            final Pup pup = Pup.fromDb(dbPup: pups[index]);
+                            return Card(
+                              elevation: 5,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: ListTile(
+                                trailing: IconButton(
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: Text("Delete ${pup.name}"),
+                                          actions: [
+                                            ElevatedButton(
+                                              onPressed: () => navPop(context),
+                                              style: MyElevatedButtonStyle
+                                                  .cancelButtonStyle,
+                                              child: const Text("Cancel"),
+                                            ),
+                                            ElevatedButton(
+                                              onPressed: () {
+                                                FirebaseSchemes.doc(scheme.id)
+                                                    .update({
+                                                  "pups":
+                                                      FieldValue.arrayRemove(
+                                                          [pups[index]])
+                                                });
+                                                provider.editPups(
+                                                    action: "remove",
+                                                    index: index);
+                                                navPop(context);
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                  backgroundColor:
+                                                      Colors.red[200]),
+                                              child: const Text("Delete"),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                  icon: const DeleteIcon(),
                                 ),
-                              );
-                            },
-                          ),
+                                leading: Text("${index + 1}",
+                                    style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold)),
+                                title: Row(
+                                  children: [
+                                    const DirectiveText(text: "Name:"),
+                                    Text(pup.name),
+                                  ],
+                                ),
+                                subtitle: Row(
+                                  children: [
+                                    const DirectiveText(
+                                        text: "Registered name:"),
+                                    Text(pup.name)
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
                         ),
-                ],
+                      ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: SizedBox(
+              height: 40,
+              width: 150,
+              child: ElevatedButton(
+                style: MyElevatedButtonStyle.buttonStyle,
+                onPressed: () {
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          AddPup(scheme: scheme),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(1.0, 0.0);
+                        const end = Offset.zero;
+                        final tween = Tween(begin: begin, end: end);
+                        final offsetAnimation = animation.drive(tween);
+                        return SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
+                },
+                child: const Text("Add Pup"),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: SizedBox(
-                height: 40,
-                width: 150,
-                child: ElevatedButton(
-                  style: MyElevatedButtonStyle.buttonStyle,
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) =>
-                            AddPup(scheme: scheme),
-                        transitionsBuilder:
-                            (context, animation, secondaryAnimation, child) {
-                          const begin = Offset(1.0, 0.0);
-                          const end = Offset.zero;
-                          final tween = Tween(begin: begin, end: end);
-                          final offsetAnimation = animation.drive(tween);
-                          return SlideTransition(
-                            position: offsetAnimation,
-                            child: child,
-                          );
-                        },
-                      ),
-                    );
-                  },
-                  child: const Text("Add Pup"),
-                ),
-              ),
-            )
-          ],
-        ),
+          )
+        ],
       ),
     );
   }

@@ -282,7 +282,7 @@ class _AddRatState extends State<AddRat> {
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10),
               side: BorderSide(color: secondaryThemeColor))),
-      child: const Text('Brithday', style: TextStyle(color: Colors.black87)),
+      child: const Text('Birthday', style: TextStyle(color: Colors.black87)),
     );
   }
 

@@ -18,6 +18,7 @@ enum Gender { Male, Female }
 enum Ears { Dumbo, Standard }
 
 enum H_Locus {
+  Berkshire,
   Unmarked,
   English_Irish,
   Irish_American,
@@ -36,6 +37,7 @@ enum H_Locus {
 }
 
 enum C_Locus {
+  Siamese,
   French_Siamese,
   Black_Eyed_Siamese,
   Sable_Siamese,

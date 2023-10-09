@@ -177,6 +177,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
 
                         final Widget content = SizedBox(
                           height: 300,
+                          width: double.maxFinite,
                           child: ListView.builder(
                             itemCount: scheme.notes.length,
                             itemBuilder: (context, index) {
@@ -211,10 +212,13 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                           ),
                         );
 
-                        return AlertDialog(
-                          title: title,
-                          actions: actions,
-                          content: content,
+                        return SizedBox(
+                          height: 400,
+                          child: AlertDialog(
+                            title: title,
+                            actions: actions,
+                            content: content,
+                          ),
                         );
                       },
                     ),
@@ -646,13 +650,16 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
 
           final Widget content = SizedBox(
             height: 300,
+            width: double.maxFinite,
             child: ListView.builder(
+              shrinkWrap: true,
               itemCount: scheme.weightTracker.length,
               itemBuilder: (context, index) {
                 return Card(
                   elevation: 10,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10)),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   child: ListTile(
                     onTap: () => addWeightEntry(
                         date: DateTime(

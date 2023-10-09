@@ -68,6 +68,7 @@ class _RatInfoState extends State<RatInfo> {
               child: const Text("Edit"),
             ),
           ),
+          const SizedBox(height: 10),
         ],
       ),
     );
@@ -192,7 +193,7 @@ class _RatInfoState extends State<RatInfo> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("Name: ${rat.name}"),
-                Text("Regestered Name: ${rat.registeredName}"),
+                Text("Registered Name: ${rat.registeredName}"),
                 Text("Gender: ${rat.gender.name}"),
               ],
             ),
