@@ -525,7 +525,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget breedTracker() {
-    print("Schemes!!!!!");
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
           .collection("users")

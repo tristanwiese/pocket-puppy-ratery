@@ -8,12 +8,10 @@ class RatsProvider extends ChangeNotifier {
 
   setRats(Rat rat) {
     _rat = rat;
-    print(rat.name);
   }
 
   updateRat(Rat rat) {
     _rat = rat;
-    print(rat.name);
     notifyListeners();
   }
 }
