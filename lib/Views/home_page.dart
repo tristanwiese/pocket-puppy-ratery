@@ -154,6 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               final Rat rat = Rat.fromDB(dbRat: buildItem);
                               DateTime birthdate = rat.birthday;
                               Color? colorCode;
+                              print(buildItem.data());
                               switch (rat.colorCode) {
                                 case "green":
                                   colorCode = Colors.green[300];

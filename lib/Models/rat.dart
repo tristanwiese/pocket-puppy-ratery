@@ -6,17 +6,17 @@ import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import '../Services/constants.dart';
 
 class Rat {
-  Rat({
-    required this.name,
-    required this.registeredName,
-    required this.colours,
-    required this.ears,
-    required this.gender,
-    required this.markings,
-    required this.parents,
-    required this.coat,
-    required this.birthday,
-  });
+  Rat(
+      {required this.name,
+      required this.registeredName,
+      required this.colours,
+      required this.ears,
+      required this.gender,
+      required this.markings,
+      required this.parents,
+      required this.coat,
+      required this.birthday,
+      this.colorCode = "none"});
   final String name;
   final String registeredName;
   final Gender gender;
@@ -26,7 +26,7 @@ class Rat {
   final Parents parents;
   final Coats coat;
   final DateTime birthday;
-  String colorCode = "none";
+  String colorCode;
   String? id;
 
   static hLocusToList() {
@@ -128,18 +128,20 @@ class Rat {
     final Timestamp birthdate = dbRat["birthday"];
 
     return Rat(
-        name: dbRat["name"],
-        registeredName: dbRat["registeredName"],
-        colours: dbRat["colours"],
-        ears: Ears
-            .values[earsList.indexWhere((element) => element == dbRat["ears"])],
-        gender: Gender.values[
-            genderList.indexWhere((element) => element == dbRat["gender"])],
-        markings: dbRat["markings"],
-        parents: Parents(dad: dbRat["father"], mom: dbRat["mother"]),
-        coat: Coats.values[
-            coatsList.indexWhere((element) => element == dbRat["coat"])],
-        birthday: birthdate.toDate());
+      name: dbRat["name"],
+      registeredName: dbRat["registeredName"],
+      colours: dbRat["colours"],
+      ears: Ears
+          .values[earsList.indexWhere((element) => element == dbRat["ears"])],
+      gender: Gender.values[
+          genderList.indexWhere((element) => element == dbRat["gender"])],
+      markings: dbRat["markings"],
+      parents: Parents(dad: dbRat["father"], mom: dbRat["mother"]),
+      coat: Coats
+          .values[coatsList.indexWhere((element) => element == dbRat["coat"])],
+      birthday: birthdate.toDate(),
+      colorCode: dbRat['colorCode'],
+    );
   }
 }
 
