@@ -364,11 +364,7 @@ class _AddPupState extends State<AddPup> {
   }
 
   showError(String errorVal) {
-    scaffoldKey.currentState!.showSnackBar(SnackBar(
-      content: Text("$errorVal not set!"),
-      duration: const Duration(seconds: 5),
-      backgroundColor: primaryThemeColor,
-    ));
+    alert(text: "$errorVal not set!", duration: 5);
   }
 
   Widget showListButton(

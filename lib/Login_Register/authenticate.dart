@@ -139,11 +139,7 @@ class _AuthenticateState extends State<Authenticate> {
         eMessage = "Email already in use";
       }
 
-      scaffoldKey.currentState!.showSnackBar(SnackBar(
-        content: Text(eMessage),
-        duration: const Duration(seconds: 3),
-        backgroundColor: primaryThemeColor,
-      ));
+      alert(text: eMessage);
       navPop(context);
       return;
     }
@@ -162,11 +158,7 @@ class _AuthenticateState extends State<Authenticate> {
         eMessage = "Email or password incorrect!";
       }
 
-      scaffoldKey.currentState!.showSnackBar(SnackBar(
-        content: Text(eMessage),
-        duration: const Duration(seconds: 3),
-        backgroundColor: primaryThemeColor,
-      ));
+      alert(text: eMessage);
     }
   }
 
@@ -231,11 +223,7 @@ class ForgotPasswordPage extends StatelessWidget {
                       await FirebaseAuth.instance.sendPasswordResetEmail(
                           email: _emailController.text.trim());
                       navPop(context);
-                      scaffoldKey.currentState!.showSnackBar(SnackBar(
-                        backgroundColor: primaryThemeColor,
-                        duration: const Duration(seconds: 3),
-                        content: const Text("Email sent! Please check inbox"),
-                      ));
+                      alert(text: "Email sent! Please check inbox");
                       return;
                     }
                   },

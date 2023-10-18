@@ -90,8 +90,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
     try {
       await FirebaseAuth.instance.currentUser!.sendEmailVerification();
     } on FirebaseAuthException catch (e) {
-      scaffoldKey.currentState!
-          .showSnackBar(SnackBar(content: Text(e.toString())));
+      alert(text: e.toString());
     }
   }
 

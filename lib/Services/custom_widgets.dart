@@ -3,6 +3,12 @@ import 'package:flutter/material.dart';
 import '../Functions/utils.dart';
 
 class MyElevatedButtonStyle {
+  MyElevatedButtonStyle({
+    this.size,
+  });
+
+  final Size? size;
+
   static final buttonStyle = ElevatedButton.styleFrom(
     backgroundColor: Colors.white,
     shape: RoundedRectangleBorder(
@@ -251,6 +257,91 @@ class NoRatScreen extends StatelessWidget {
           textAlign: TextAlign.center,
         ),
       ]),
+    );
+  }
+}
+
+class DrawerTitle extends StatelessWidget {
+  const DrawerTitle({
+    required this.text,
+    this.reversed,
+    this.onPressReverse,
+    super.key,
+  });
+
+  final String text;
+  final bool? reversed;
+  final VoidCallback? onPressReverse;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(color: secondaryThemeColor),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 15, top: 10, bottom: 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    text,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
+                    ),
+                  ),
+                  reversed != null
+                      ? SizedBox(
+                          height: 20,
+                          child: IconButton(
+                              onPressed: onPressReverse,
+                              highlightColor:
+                                  Color.fromARGB(178, 136, 136, 136),
+                              splashRadius: 20,
+                              padding: EdgeInsets.zero,
+                              icon: Icon(reversed!
+                                  ? Icons.arrow_circle_up
+                                  : Icons.arrow_circle_down)),
+                        )
+                      : Container()
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class MyDrawerButton extends StatelessWidget {
+  const MyDrawerButton(
+      {super.key,
+      required this.text,
+      required this.onPressed,
+      required this.style});
+
+  final ButtonStyle style;
+  final String text;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: SizedBox(
+        width: 130,
+        child: ElevatedButton(
+          onPressed: onPressed,
+          style: style,
+          child: Text(
+            text,
+            style: MyElevatedButtonStyle.textStyle,
+          ),
+        ),
+      ),
     );
   }
 }

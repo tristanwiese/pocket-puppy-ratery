@@ -205,25 +205,14 @@ class _BreedingSchemeState extends State<BreedingScheme> {
                           }
 
                           if (chosenRatsList.length != 2) {
-                            scaffoldKey.currentState!.showSnackBar(
-                              const SnackBar(
-                                duration: Duration(seconds: 2),
-                                backgroundColor: Colors.green,
-                                content: Text("Please choose two rats"),
-                              ),
-                            );
+                            alert(text: "Please choose two rats");
                             return;
                           }
                           if (chosenRatsList[0]["gender"] ==
                               chosenRatsList[1]["gender"]) {
-                            scaffoldKey.currentState!.showSnackBar(
-                              SnackBar(
-                                duration: const Duration(seconds: 2),
-                                backgroundColor: primaryThemeColor,
-                                content: const Text(
-                                    "Cannot choose 2 rats with the same gender"),
-                              ),
-                            );
+                            alert(
+                                text:
+                                    "Cannot choose 2 rats with the same gender");
                             return;
                           }
                           final male = chosenRatsList[chosenRatsList.indexWhere(

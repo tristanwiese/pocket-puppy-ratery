@@ -232,13 +232,14 @@ class _AddRatState extends State<AddRat> {
             );
             if (widget.rat != null) {
               rat.colorCode = widget.rat!.colorCode;
-              FirebaseFirestore.instance
+              await FirebaseFirestore.instance
                   .collection("users")
                   .doc(FirebaseAuth.instance.currentUser!.uid)
                   .collection("rats")
                   .doc(widget.id)
                   .update(rat.toDb());
               Provider.of<RatsProvider>(context, listen: false).updateRat(rat);
+              alert(text: "Saved!");
               navPop(context);
               return;
             }
@@ -470,11 +471,7 @@ class _AddRatState extends State<AddRat> {
   }
 
   showError(String errorVal) {
-    scaffoldKey.currentState!.showSnackBar(SnackBar(
-      content: Text("$errorVal not set!"),
-      duration: const Duration(seconds: 5),
-      backgroundColor: primaryThemeColor,
-    ));
+    alert(text: "$errorVal not set!", duration: 5);
   }
 
   Widget showListButton(

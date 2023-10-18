@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Services/breeding_scheme_provider.dart';
 import 'package:pocket_puppy_rattery/Services/card_controller.dart';
+import 'package:pocket_puppy_rattery/Services/filter_provider.dart';
 import 'package:pocket_puppy_rattery/Services/rats_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -45,6 +46,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (context) => BreedingSchemeProvider()),
         ChangeNotifierProvider(create: (context) => ControllerProvider()),
         ChangeNotifierProvider(create: (context) => RatsProvider()),
+        ChangeNotifierProvider(create: (context) => FilterProvider()),
       ],
       child: MaterialApp(
         title: 'Pocket Puppy Ratery',

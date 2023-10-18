@@ -130,3 +130,11 @@ double listContainerHeight(
 
   return (headerSize + itemLenght * sizePerLine).toDouble();
 }
+
+alert({required String text, int duration = 3}) {
+  scaffoldKey.currentState!.showSnackBar(SnackBar(
+    content: Text(text),
+    backgroundColor: primaryThemeColor,
+    duration: Duration(seconds: duration),
+  ));
+}

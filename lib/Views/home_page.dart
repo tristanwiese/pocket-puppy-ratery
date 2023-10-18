@@ -16,6 +16,8 @@ import 'package:pocket_puppy_rattery/Services/breeding_scheme_provider.dart';
 import 'package:pocket_puppy_rattery/Services/constants.dart';
 import 'package:pocket_puppy_rattery/Services/controller_provider.dart';
 import 'package:pocket_puppy_rattery/Services/card_controller.dart';
+import 'package:pocket_puppy_rattery/Services/custom_widgets.dart';
+import 'package:pocket_puppy_rattery/Services/filter_provider.dart';
 import 'package:pocket_puppy_rattery/Services/rats_provider.dart';
 import 'package:pocket_puppy_rattery/Views/add_rat.dart';
 import 'package:pocket_puppy_rattery/Views/Breeding%20Scheme/breeding_sheme_info_page.dart';
@@ -25,8 +27,6 @@ import 'package:pocket_puppy_rattery/Views/settings_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Dev/dev_page.dart';
 import 'package:provider/provider.dart';
-
-import '../Services/custom_widgets.dart';
 import 'Breeding Scheme/breeding_scheme.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -54,10 +54,6 @@ class _MyHomePageState extends State<MyHomePage> {
     {"Rat": null, "Position": ""},
     {"Rat": null, "Position": ""}
   ];
-
-  List<String> filters = ["Gender"];
-  List<QueryDocumentSnapshot> filteredRats = [];
-  String activeFilters = "";
 
   String appBarTitle = "Your Rats";
 
@@ -129,176 +125,180 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget ratPage(BuildContext ctx) {
     return Center(
-      child: Column(
-        children: [
-          rats.isEmpty
-              ? const Expanded(child: NoRatScreen())
-              : (activeFilters.isNotEmpty && filteredRats.isEmpty)
-                  ? const Expanded(
-                      child: Center(
-                        child: Text("No rats match current filters..."),
-                      ),
-                    )
-                  : Expanded(
-                      child: ConstrainedBox(
-                        constraints: BoxConstraints(maxWidth: getSize()),
-                        child: ListView.builder(
-                            itemCount: activeFilters.isEmpty
-                                ? rats.length
-                                : filteredRats.length,
-                            itemBuilder: (BuildContext context, i) {
-                              final QueryDocumentSnapshot buildItem =
-                                  activeFilters.isEmpty
-                                      ? rats[i]
-                                      : filteredRats[i];
-                              final Rat rat = Rat.fromDB(dbRat: buildItem);
-                              DateTime birthdate = rat.birthday;
-                              Color? colorCode;
-                              print(buildItem.data());
-                              switch (rat.colorCode) {
-                                case "green":
-                                  colorCode = Colors.green[300];
-                                case "blue":
-                                  colorCode = Colors.blue[300];
-                                case "red":
-                                  colorCode = Colors.red[300];
-                              }
-                              return Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: InkWell(
-                                  onLongPress: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return colorCodePicker(i);
-                                      },
-                                    );
-                                  },
-                                  onTap: () {
-                                    rat.id = buildItem.id;
-                                    context.read<RatsProvider>().setRats(rat);
-                                    navPush(context, Consumer<RatsProvider>(
-                                      builder: (context, value, child) {
-                                        return RatInfo(
-                                          rat: value.rat,
-                                        );
-                                      },
-                                    ));
-                                  },
-                                  child: Consumer<CardController>(
-                                      builder: (context, value, child) {
-                                    value.setRat = rat;
-                                    return Card(
-                                      elevation: 3,
-                                      shadowColor:
-                                          (AgeCalculator.age(birthdate).years >=
-                                                  3)
-                                              ? value.state
-                                                  ? Color(value.color)
-                                                  : Colors.black
-                                              : Colors.black,
-                                      shape: const BeveledRectangleBorder(
-                                          // side: BorderSide(
-                                          //     width: 1,
-                                          //     color: secondaryThemeColor),
-                                          borderRadius: BorderRadius.all(
-                                              Radius.circular(15))),
-                                      color:
-                                          (AgeCalculator.age(birthdate).years >=
-                                                  3)
-                                              ? value.state
-                                                  ? Color(value.color)
-                                                  : null
-                                              : null,
-                                      child: ListTile(
-                                        isThreeLine: true,
-                                        leading: SizedBox(
-                                          width: 70,
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceBetween,
-                                            children: [
-                                              Icon(
-                                                Icons.square_rounded,
-                                                color: colorCode,
-                                              ),
-                                              Image.asset(
-                                                "asstes/images/logo.png",
-                                                width: 30,
-                                                errorBuilder: (context, error,
-                                                        stackTrace) =>
-                                                    const Icon(Icons.image),
-                                              )
-                                            ],
+      child: Consumer<FilterProvider>(builder: (context, value, child) {
+        return Column(
+          children: [
+            rats.isEmpty
+                ? const Expanded(child: NoRatScreen())
+                : (value.activeFilters.isNotEmpty && value.filteredRats.isEmpty)
+                    ? const Expanded(
+                        child: Center(
+                          child: Text("No rats match current filters..."),
+                        ),
+                      )
+                    : Expanded(
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(maxWidth: getSize()),
+                          child: ListView.builder(
+                              itemCount: value.activeFilters.isEmpty
+                                  ? rats.length
+                                  : value.filteredRats.length,
+                              itemBuilder: (BuildContext context, i) {
+                                final QueryDocumentSnapshot buildItem =
+                                    !value.activeFilters.isEmpty ||
+                                            !value.activeSort.isEmpty
+                                        ? value.filteredRats[i]
+                                        : rats[i];
+                                final Rat rat = Rat.fromDB(dbRat: buildItem);
+                                DateTime birthdate = rat.birthday;
+                                Color? colorCode;
+                                switch (rat.colorCode) {
+                                  case "green":
+                                    colorCode = Colors.green[300];
+                                  case "blue":
+                                    colorCode = Colors.blue[300];
+                                  case "red":
+                                    colorCode = Colors.red[300];
+                                }
+                                return Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: InkWell(
+                                    onLongPress: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return colorCodePicker(i);
+                                        },
+                                      );
+                                    },
+                                    onTap: () {
+                                      rat.id = buildItem.id;
+                                      context.read<RatsProvider>().setRats(rat);
+                                      navPush(context, Consumer<RatsProvider>(
+                                        builder: (context, value, child) {
+                                          return RatInfo(
+                                            rat: value.rat,
+                                          );
+                                        },
+                                      ));
+                                    },
+                                    child: Consumer<CardController>(
+                                        builder: (context, value, child) {
+                                      value.setRat = rat;
+                                      return Card(
+                                        elevation: 3,
+                                        shadowColor:
+                                            (AgeCalculator.age(birthdate)
+                                                        .years >=
+                                                    3)
+                                                ? value.state
+                                                    ? Color(value.color)
+                                                    : Colors.black
+                                                : Colors.black,
+                                        shape: const BeveledRectangleBorder(
+                                            // side: BorderSide(
+                                            //     width: 1,
+                                            //     color: secondaryThemeColor),
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(15))),
+                                        color: (AgeCalculator.age(birthdate)
+                                                    .years >=
+                                                3)
+                                            ? value.state
+                                                ? Color(value.color)
+                                                : null
+                                            : null,
+                                        child: ListTile(
+                                          isThreeLine: true,
+                                          leading: SizedBox(
+                                            width: 70,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: [
+                                                Icon(
+                                                  Icons.square_rounded,
+                                                  color: colorCode,
+                                                ),
+                                                Image.asset(
+                                                  "asstes/images/logo.png",
+                                                  width: 30,
+                                                  errorBuilder: (context, error,
+                                                          stackTrace) =>
+                                                      const Icon(Icons.image),
+                                                )
+                                              ],
+                                            ),
                                           ),
+                                          trailing: myIconButton(
+                                              item: buildItem, itemType: "rat"),
+                                          title: Text(rat.name),
+                                          subtitle: Text("${rat.gender}"
+                                              "\n"
+                                              "Age: ${defaultAgeCalculator(birthdate)}"),
+                                          contentPadding:
+                                              const EdgeInsets.all(10),
                                         ),
-                                        trailing: myIconButton(
-                                            item: buildItem, itemType: "rat"),
-                                        title: Text(rat.name),
-                                        subtitle: Text("${rat.gender}"
-                                            "\n"
-                                            "Age: ${defaultAgeCalculator(birthdate)}"),
-                                        contentPadding:
-                                            const EdgeInsets.all(10),
-                                      ),
-                                    );
-                                  }),
-                                ),
-                              );
-                            }),
+                                      );
+                                    }),
+                                  ),
+                                );
+                              }),
+                        ),
                       ),
-                    ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Container(
-                height: 35,
-                margin: const EdgeInsets.only(bottom: 10),
-                child: Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: ElevatedButton.icon(
-                    label: const Text("Add Rat",
-                        style: TextStyle(color: Colors.black87)),
-                    icon: Icon(
-                      Icons.add,
-                      color: secondaryThemeColor,
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        side: BorderSide(color: secondaryThemeColor),
-                      ),
-                    ),
-                    onPressed: () => navPush(context, const AddRat()),
-                  ),
-                ),
-              ),
-              Container(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
                   height: 35,
                   margin: const EdgeInsets.only(bottom: 10),
                   child: Directionality(
                     textDirection: TextDirection.rtl,
                     child: ElevatedButton.icon(
-                        label: const Text("Filter",
-                            style: TextStyle(color: Colors.black87)),
-                        icon:
-                            Icon(Icons.filter_list, color: secondaryThemeColor),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            side: BorderSide(color: secondaryThemeColor),
-                          ),
+                      label: const Text("Add Rat",
+                          style: TextStyle(color: Colors.black87)),
+                      icon: Icon(
+                        Icons.add,
+                        color: secondaryThemeColor,
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          side: BorderSide(color: secondaryThemeColor),
                         ),
-                        onPressed: () {
-                          _key.currentState!.openEndDrawer();
-                        }),
-                  )),
-            ],
-          )
-        ],
-      ),
+                      ),
+                      onPressed: () => navPush(context, const AddRat()),
+                    ),
+                  ),
+                ),
+                Container(
+                    height: 35,
+                    margin: const EdgeInsets.only(bottom: 10),
+                    child: Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: ElevatedButton.icon(
+                          label: const Text("Filter",
+                              style: TextStyle(color: Colors.black87)),
+                          icon: Icon(Icons.filter_list,
+                              color: secondaryThemeColor),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              side: BorderSide(color: secondaryThemeColor),
+                            ),
+                          ),
+                          onPressed: () {
+                            _key.currentState!.openEndDrawer();
+                          }),
+                    )),
+              ],
+            )
+          ],
+        );
+      }),
     );
   }
 
@@ -313,100 +313,106 @@ class _MyHomePageState extends State<MyHomePage> {
               child: const Text("Done")),
         )
       ],
-      content: Column(
-        children: [
-          ListTile(
-            title: const Text("Red"),
-            leading: const Icon(
-              Icons.square,
-              color: Colors.red,
+      content: Consumer<FilterProvider>(builder: (context, value, child) {
+        return Column(
+          children: [
+            ListTile(
+              title: const Text("Red"),
+              leading: const Icon(
+                Icons.square,
+                color: Colors.red,
+              ),
+              onTap: () {
+                QueryDocumentSnapshot rat = value.activeFilters.isEmpty
+                    ? rats[i]
+                    : value.filteredRats[i];
+                FirebaseFirestore.instance
+                    .collection("users")
+                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                    .collection("rats")
+                    .doc(rat.id)
+                    .update({"colorCode": "red"});
+                setState(() {});
+                navPop(context);
+              },
+              shape: RoundedRectangleBorder(
+                  side: const BorderSide(),
+                  borderRadius: BorderRadius.circular(10)),
             ),
-            onTap: () {
-              QueryDocumentSnapshot rat =
-                  activeFilters.isEmpty ? rats[i] : filteredRats[i];
-              FirebaseFirestore.instance
-                  .collection("users")
-                  .doc(FirebaseAuth.instance.currentUser!.uid)
-                  .collection("rats")
-                  .doc(rat.id)
-                  .update({"colorCode": "red"});
-              setState(() {});
-              navPop(context);
-            },
-            shape: RoundedRectangleBorder(
-                side: const BorderSide(),
-                borderRadius: BorderRadius.circular(10)),
-          ),
-          const SizedBox(height: 10),
-          ListTile(
-            title: const Text("Blue"),
-            leading: const Icon(
-              Icons.square,
-              color: Colors.blue,
+            const SizedBox(height: 10),
+            ListTile(
+              title: const Text("Blue"),
+              leading: const Icon(
+                Icons.square,
+                color: Colors.blue,
+              ),
+              onTap: () {
+                QueryDocumentSnapshot rat = value.activeFilters.isEmpty
+                    ? rats[i]
+                    : value.filteredRats[i];
+                FirebaseFirestore.instance
+                    .collection("users")
+                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                    .collection("rats")
+                    .doc(rat.id)
+                    .update({"colorCode": "blue"});
+                setState(() {});
+                navPop(context);
+              },
+              shape: RoundedRectangleBorder(
+                  side: const BorderSide(),
+                  borderRadius: BorderRadius.circular(10)),
             ),
-            onTap: () {
-              QueryDocumentSnapshot rat =
-                  activeFilters.isEmpty ? rats[i] : filteredRats[i];
-              FirebaseFirestore.instance
-                  .collection("users")
-                  .doc(FirebaseAuth.instance.currentUser!.uid)
-                  .collection("rats")
-                  .doc(rat.id)
-                  .update({"colorCode": "blue"});
-              setState(() {});
-              navPop(context);
-            },
-            shape: RoundedRectangleBorder(
-                side: const BorderSide(),
-                borderRadius: BorderRadius.circular(10)),
-          ),
-          const SizedBox(height: 10),
-          ListTile(
-            title: const Text("Green"),
-            leading: const Icon(
-              Icons.square,
-              color: Colors.green,
+            const SizedBox(height: 10),
+            ListTile(
+              title: const Text("Green"),
+              leading: const Icon(
+                Icons.square,
+                color: Colors.green,
+              ),
+              onTap: () {
+                QueryDocumentSnapshot rat = value.activeFilters.isEmpty
+                    ? rats[i]
+                    : value.filteredRats[i];
+                FirebaseFirestore.instance
+                    .collection("users")
+                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                    .collection("rats")
+                    .doc(rat.id)
+                    .update({"colorCode": "green"});
+                setState(() {});
+                navPop(context);
+              },
+              shape: RoundedRectangleBorder(
+                  side: const BorderSide(),
+                  borderRadius: BorderRadius.circular(10)),
             ),
-            onTap: () {
-              QueryDocumentSnapshot rat =
-                  activeFilters.isEmpty ? rats[i] : filteredRats[i];
-              FirebaseFirestore.instance
-                  .collection("users")
-                  .doc(FirebaseAuth.instance.currentUser!.uid)
-                  .collection("rats")
-                  .doc(rat.id)
-                  .update({"colorCode": "green"});
-              setState(() {});
-              navPop(context);
-            },
-            shape: RoundedRectangleBorder(
-                side: const BorderSide(),
-                borderRadius: BorderRadius.circular(10)),
-          ),
-          const SizedBox(height: 10),
-          ListTile(
-            title: const Text("None"),
-            leading: const Icon(
-              Icons.square,
-            ),
-            onTap: () {
-              QueryDocumentSnapshot rat =
-                  activeFilters.isEmpty ? rats[i] : filteredRats[i];
-              FirebaseFirestore.instance
-                  .collection("users")
-                  .doc(FirebaseAuth.instance.currentUser!.uid)
-                  .collection("rats")
-                  .doc(rat.id)
-                  .update({"colorCode": "none"});
-              setState(() {});
-              navPop(context);
-            },
-            shape: RoundedRectangleBorder(
-                side: const BorderSide(),
-                borderRadius: BorderRadius.circular(10)),
-          )
-        ],
-      ),
+            const SizedBox(height: 10),
+            ListTile(
+              title: const Text("None"),
+              leading: const Icon(
+                Icons.square,
+              ),
+              onTap: () {
+                QueryDocumentSnapshot rat = value.activeFilters.isEmpty
+                    ? rats[i]
+                    : value.filteredRats[i];
+                FirebaseFirestore.instance
+                    .collection("users")
+                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                    .collection("rats")
+                    .doc(rat.id)
+                    .update({"colorCode": "none"});
+                setState(() {});
+                navPop(context);
+              },
+              shape: RoundedRectangleBorder(
+                  side: const BorderSide(),
+                  borderRadius: BorderRadius.circular(10)),
+            )
+          ],
+        );
+      }),
     );
   }
 
@@ -493,11 +499,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       onPressed: () {
                         for (Map map in chosenRats) {
                           if (map["Rat"] == null) {
-                            scaffoldKey.currentState!.showSnackBar(SnackBar(
-                              content: const Text("Choose 2 rats to match!"),
-                              duration: const Duration(seconds: 4),
-                              backgroundColor: primaryThemeColor,
-                            ));
+                            alert(text: "Choose 2 rats to match!", duration: 4);
                             return;
                           }
                         }
@@ -533,7 +535,7 @@ class _MyHomePageState extends State<MyHomePage> {
           .collection("breedingSchemes")
           .snapshots(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+        if (!snapshot.hasData) {
           return const Center(
             child: Text(
               "Fethcing Schemes..",
@@ -757,63 +759,132 @@ class _MyHomePageState extends State<MyHomePage> {
   myEndDrawer() {
     return Drawer(
       width: 200,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20),
+          bottomLeft: Radius.circular(20),
+        ),
+      ),
       child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
+        child: Consumer<FilterProvider>(builder: (context, value, child) {
+          return Column(
             children: [
-              const Text("Gender"),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      if (activeFilters == "Female") {
-                        activeFilters = "";
-                        setState(() {
-                          activeFilters = "";
-                        });
-                        return;
-                      }
-                      activeFilters = "Female";
-                      filterRats(filter: "Female");
-                      setState(() {});
-                    },
-                    style: (activeFilters != "Female")
-                        ? MyElevatedButtonStyle.buttonStyle
-                        : MyElevatedButtonStyle.activeButtonStyle,
-                    child: const Text(
-                      "Female",
-                      style: MyElevatedButtonStyle.textStyle,
+              const DrawerTitle(text: "Filters"),
+              Padding(
+                padding: const EdgeInsets.only(top: 10, bottom: 10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 80,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (value.activeFilters == "Female") {
+                            value.setActiveFilters(filter: "");
+                            return;
+                          }
+                          value.setActiveFilters(filter: "Female");
+                          filterRats(filter: "Female");
+                        },
+                        style: (value.activeFilters != "Female")
+                            ? MyElevatedButtonStyle.buttonStyle
+                            : MyElevatedButtonStyle.activeButtonStyle,
+                        child: const Text(
+                          "Female",
+                          style: MyElevatedButtonStyle.textStyle,
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  ElevatedButton(
-                    onPressed: () {
-                      if (activeFilters == "Male") {
-                        setState(() {
-                          activeFilters = "";
-                        });
-                        return;
-                      }
-                      activeFilters = "Male";
-                      filterRats(filter: "Male");
-                      setState(() {});
-                    },
-                    style: (activeFilters != "Male")
-                        ? MyElevatedButtonStyle.buttonStyle
-                        : MyElevatedButtonStyle.activeButtonStyle,
-                    child: const Text(
-                      "Male",
-                      style: MyElevatedButtonStyle.textStyle,
+                    const SizedBox(width: 10),
+                    SizedBox(
+                      width: 80,
+                      child: ElevatedButton(
+                        onPressed: () {
+                          if (value.activeFilters == "Male") {
+                            value.setActiveFilters(filter: "");
+                            return;
+                          }
+                          value.setActiveFilters(filter: "Male");
+                          filterRats(filter: "Male");
+                        },
+                        style: (value.activeFilters != "Male")
+                            ? MyElevatedButtonStyle.buttonStyle
+                            : MyElevatedButtonStyle.activeButtonStyle,
+                        child: const Text(
+                          "Male",
+                          style: MyElevatedButtonStyle.textStyle,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
+              ),
+              DrawerTitle(
+                text: "Sort by",
+                reversed: value.reversed,
+                onPressReverse: () {
+                  final List<QueryDocumentSnapshot<Object?>> list =
+                      value.reversed ? rats : List.from(rats.reversed);
+
+                  value.setFilteredRats(rats: list);
+                  value.setReversed();
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 10, bottom: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    MyDrawerButton(
+                      onPressed: () {
+                        rats.sort((a, b) {
+                          value.setActiveSort(sort: 'Age');
+                          final Rat ratA = Rat.fromDB(dbRat: a);
+                          final Rat ratB = Rat.fromDB(dbRat: b);
+
+                          return ageCalculatorDay(ratA.birthday)
+                              .compareTo(ageCalculatorDay(ratB.birthday));
+                        });
+
+                        final List<QueryDocumentSnapshot<Object?>> list =
+                            value.reversed ? List.from(rats.reversed) : rats;
+
+                        value.setFilteredRats(rats: list);
+                      },
+                      text: "Age",
+                      style: value.activeSort == "Age"
+                          ? MyElevatedButtonStyle.activeButtonStyle
+                          : MyElevatedButtonStyle.buttonStyle,
+                    ),
+                    MyDrawerButton(
+                      onPressed: () {
+                        value.setActiveSort(sort: 'Alphabetical');
+
+                        rats.sort(
+                          (a, b) {
+                            final Rat ratA = Rat.fromDB(dbRat: a);
+                            final Rat ratB = Rat.fromDB(dbRat: b);
+
+                            return ratA.name.compareTo(ratB.name);
+                          },
+                        );
+
+                        final List<QueryDocumentSnapshot<Object?>> list =
+                            value.reversed ? List.from(rats.reversed) : rats;
+
+                        value.setFilteredRats(rats: list);
+                      },
+                      text: "Alphabetical",
+                      style: value.activeSort == "Alphabetical"
+                          ? MyElevatedButtonStyle.activeButtonStyle
+                          : MyElevatedButtonStyle.buttonStyle,
+                    ),
+                  ],
+                ),
               )
             ],
-          ),
-        ),
+          );
+        }),
       ),
     );
   }
@@ -917,7 +988,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   filterRats({required String filter}) {
-    filteredRats = rats.where((rat) => rat["gender"] == filter).toList();
+    final prov = Provider.of<FilterProvider>(context, listen: false);
+    final filteredRats = rats.where((rat) => rat["gender"] == filter).toList();
+    prov.setFilteredRats(rats: filteredRats);
   }
 
   double getSize() {
@@ -1190,11 +1263,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         });
                   navPop(context);
                   navPop(context);
-                  scaffoldKey.currentState!.showSnackBar(SnackBar(
-                    content:
-                        const Text("Report sent. Thank you for the feedback!"),
-                    backgroundColor: primaryThemeColor,
-                  ));
+                  alert(text: "Report sent. Thank you for the feedback!");
                 },
                 style: MyElevatedButtonStyle.doneButtonStyle,
                 child: const Text("Send Report"),
@@ -1266,3 +1335,32 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+// class DrawerButton extends StatelessWidget {
+//   const DrawerButton({
+//     super.key,
+//     required this.text,
+//     required this.onPressed,
+//   });
+
+//   final String text;
+//   final VoidCallback onPressed;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Padding(
+//       padding: const EdgeInsets.only(bottom: 10),
+//       child: SizedBox(
+//         width: 130,
+//         child: ElevatedButton(
+//           onPressed: onPressed,
+//           style: MyElevatedButtonStyle.buttonStyle,
+//           child: Text(
+//             text,
+//             style: MyElevatedButtonStyle.textStyle,
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }
