@@ -429,7 +429,7 @@ class _MyHomePageState extends State<MyHomePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Text(
-            "Select 2 Rats to see what the possible outcomes of their babies",
+            "Select 2 Rats to see the possible outcomes of their babies",
             textAlign: TextAlign.center,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
@@ -727,6 +727,7 @@ class _MyHomePageState extends State<MyHomePage> {
   ratScreenAppBar() {
     return AppBar(
       actions: [Container()],
+      centerTitle: true,
       title: Center(
           child:
               Text((rats.isEmpty) ? "Your Rats" : "Your Rats: ${rats.length}")),
@@ -736,6 +737,7 @@ class _MyHomePageState extends State<MyHomePage> {
   breedTrackerAppBar() {
     return AppBar(
       actions: [Container()],
+      centerTitle: true,
       title: const Center(child: Text("Breed Tracker")),
     );
   }
@@ -743,6 +745,7 @@ class _MyHomePageState extends State<MyHomePage> {
   geneCalAppBar() {
     return AppBar(
       actions: [Container()],
+      centerTitle: true,
       title: const Center(child: Text("Gene Calculator")),
     );
   }
