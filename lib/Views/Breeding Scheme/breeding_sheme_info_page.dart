@@ -332,13 +332,23 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
   }
 
   MyInfoCard parentDetails() {
+    dynamic male;
+    dynamic female;
+    if (!scheme.isCustomRats) {
+      male =
+          List.from(widget.rats!.where((element) => element.id == scheme.male));
+      male = male[0].data()['name'];
+      female = List.from(
+          widget.rats!.where((element) => element.id == scheme.female));
+      female = female[0].data()['name'];
+    }
     return MyInfoCard(
       title: "Parent Details",
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Text("Male: ${scheme.male}"),
-          Text("Female: ${scheme.female}"),
+          Text("Male: $male"),
+          Text("Female: $female"),
         ],
       ),
     );
@@ -357,9 +367,9 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                 Text(
                   "Breeding: ${scheme.date.year}/${scheme.date.month}/${scheme.date.day}",
                 ),
-                Text(scheme.pups.isNotEmpty
-                    ? "Birth: ${scheme.date.year}/${scheme.date.month}/${scheme.date.day}"
-                    : "Birth: Not set"),
+                Text(scheme.dateOfLabour != null
+                    ? "Labour: ${scheme.dateOfLabour!.toDate().year}/${scheme.dateOfLabour!.toDate().month}/${scheme.dateOfLabour!.toDate().day}"
+                    : "Labour: Not set"),
               ],
             ),
           ),

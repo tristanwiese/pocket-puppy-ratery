@@ -36,7 +36,7 @@ class MyElevatedButtonStyle {
 
   static final deleteButtonStyle = ElevatedButton.styleFrom(
       backgroundColor: Colors.red[200],
-      fixedSize: const Size(100, 40),
+      // fixedSize: const Size(100, 40),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(10)),
       ));

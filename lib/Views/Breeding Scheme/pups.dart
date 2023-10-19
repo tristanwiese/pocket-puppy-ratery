@@ -283,21 +283,25 @@ class _PupsState extends State<Pups> {
             child: SizedBox(
               height: 40,
               width: 150,
-              child: ElevatedButton(
-                  onPressed: () {
-                    scheme.dateOfLabour = Timestamp.fromDate(date!);
-                    scheme.numberOfPups = numberOfPups;
-                    scheme.pups.clear();
+              child: Consumer<BreedingSchemeProvider>(
+                  builder: (context, value, child) {
+                return ElevatedButton(
+                    onPressed: () {
+                      scheme.dateOfLabour = Timestamp.fromDate(date!);
+                      scheme.numberOfPups = numberOfPups;
+                      scheme.pups.clear();
 
-                    FirebaseSchemes.doc(scheme.id).update({
-                      "pups": FieldValue.arrayRemove(["notSet"]),
-                      "dateOfLabour": date,
-                      "numberOfPups": numberOfPups
-                    });
-                    setState(() {});
-                  },
-                  style: MyElevatedButtonStyle.buttonStyle,
-                  child: const Text("Done")),
+                      value.updateScheme(scheme);
+
+                      FirebaseSchemes.doc(scheme.id).update({
+                        "pups": FieldValue.arrayRemove(["notSet"]),
+                        "dateOfLabour": date,
+                        "numberOfPups": numberOfPups
+                      });
+                    },
+                    style: MyElevatedButtonStyle.buttonStyle,
+                    child: const Text("Done"));
+              }),
             ),
           )
         ],

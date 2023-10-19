@@ -527,6 +527,28 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  // Widget test() {
+  //   return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
+  //       stream: FirebaseFirestore.instance
+  //           .collection("users")
+  //           .doc(FirebaseAuth.instance.currentUser!.uid)
+  //           // .collection("breedingSchemes")
+  //           .snapshots(),
+  //       builder: (context, snapshot) {
+  //         if (!snapshot.hasData) {
+  //           return const Center(
+  //             child: Text(
+  //               "Fethcing Schemes..",
+  //               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+  //             ),
+  //           );
+  //         } else {
+  //           print(snapshot.data!.data());
+  //           return Container();
+  //         }
+  //       });
+  // }
+
   Widget breedTracker() {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance
@@ -542,95 +564,121 @@ class _MyHomePageState extends State<MyHomePage> {
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           );
-        }
-
-        final schemes = snapshot.data!.docs;
-        return Column(
-          children: [
-            schemes.isEmpty
-                ? const Expanded(
-                    child: Center(
-                      child: Text("No Shemes"),
+        } else {
+          final schemes = snapshot.data!.docs;
+          return Column(
+            children: [
+              schemes.isEmpty
+                  ? const Expanded(
+                      child: Center(
+                        child: Text("No Shemes"),
+                      ),
+                    )
+                  : Expanded(
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: getSize()),
+                        child: ListView.builder(
+                          itemCount: schemes.length,
+                          itemBuilder: (context, index) {
+                            final scheme = schemes[index];
+                            dynamic male;
+                            dynamic female;
+                            if (!scheme['isCustomRats']) {
+                              male = List.from(rats.where(
+                                  (element) => element.id == scheme['male']));
+                              male = male[0].data()['name'];
+                              female = List.from(rats.where(
+                                  (element) => element.id == scheme['female']));
+                              female = female[0].data()['name'];
+                            } else {
+                              male = scheme["male"];
+                              female = scheme["female"];
+                            }
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Card(
+                                elevation: 3,
+                                shape: BeveledRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  // side: BorderSide(color: secondaryThemeColor),
+                                ),
+                                child: ListTile(
+                                  title: Text(scheme['isCustomRats']
+                                      ? scheme['name'] + " (custom rats)"
+                                      : scheme["name"]),
+                                  isThreeLine: true,
+                                  subtitle:
+                                      Text("Male: $male \nFemale: $female"),
+                                  trailing: myIconButton(
+                                      item: scheme, itemType: "scheme"),
+                                  onTap: () {
+                                    context
+                                        .read<BreedingSchemeProvider>()
+                                        .updateScheme(
+                                            BreedingSchemeModel.fromDb(
+                                                dbScheme: scheme));
+                                    // if (!scheme['isCustomRats']) {
+                                    //   context
+                                    //       .read<BreedingSchemeProvider>()
+                                    //       .editBreedPair(
+                                    //           name: male, gender: 'male');
+                                    //   context
+                                    //       .read<BreedingSchemeProvider>()
+                                    //       .editBreedPair(
+                                    //           name: female, gender: 'female');
+                                    // }
+                                    navPush(
+                                      context,
+                                      BreedingShcemeInfoPage(
+                                        rats: rats,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     ),
-                  )
-                : Expanded(
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(maxWidth: getSize()),
-                      child: ListView.builder(
-                        itemCount: schemes.length,
-                        itemBuilder: (context, index) {
-                          final scheme = schemes[index];
-                          return Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Card(
-                              elevation: 3,
-                              shape: BeveledRectangleBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                // side: BorderSide(color: secondaryThemeColor),
-                              ),
-                              child: ListTile(
-                                title: Text(scheme["name"]),
-                                isThreeLine: true,
-                                subtitle: Text(
-                                    "Male: ${scheme["male"]} \nFemale: ${scheme["female"]}"),
-                                trailing: myIconButton(
-                                    item: scheme, itemType: "scheme"),
-                                onTap: () {
-                                  context
-                                      .read<BreedingSchemeProvider>()
-                                      .updateScheme(BreedingSchemeModel.fromDb(
-                                          dbScheme: scheme));
-                                  navPush(
-                                    context,
-                                    BreedingShcemeInfoPage(
-                                      rats: rats,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          );
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 35,
+                    margin: const EdgeInsets.only(bottom: 10),
+                    child: Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: ElevatedButton.icon(
+                        label: const Text("Add Scheme",
+                            style: TextStyle(color: Colors.black87)),
+                        icon: Icon(
+                          Icons.add,
+                          color: secondaryThemeColor,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: BorderSide(color: secondaryThemeColor),
+                          ),
+                        ),
+                        onPressed: () {
+                          navPush(
+                              context,
+                              BreedingScheme(
+                                schemeCount: schemes.length,
+                                rats: rats,
+                              ));
                         },
                       ),
                     ),
                   ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  height: 35,
-                  margin: const EdgeInsets.only(bottom: 10),
-                  child: Directionality(
-                    textDirection: TextDirection.rtl,
-                    child: ElevatedButton.icon(
-                      label: const Text("Add Scheme",
-                          style: TextStyle(color: Colors.black87)),
-                      icon: Icon(
-                        Icons.add,
-                        color: secondaryThemeColor,
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          side: BorderSide(color: secondaryThemeColor),
-                        ),
-                      ),
-                      onPressed: () {
-                        navPush(
-                            context,
-                            BreedingScheme(
-                              schemeCount: schemes.length,
-                              rats: rats,
-                            ));
-                      },
-                    ),
-                  ),
-                ),
-              ],
-            )
-          ],
-        );
+                ],
+              )
+            ],
+          );
+        }
       },
     );
   }
@@ -684,11 +732,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     ElevatedButton(
                       onPressed: () => navPop(context),
                       child: const Text('Cancel'),
+                      style: MyElevatedButtonStyle.cancelButtonStyle,
                     ),
                     ElevatedButton(
                       onPressed: () => deleteRat(item.id, itemType),
-                      style:
-                          ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                      style: MyElevatedButtonStyle.deleteButtonStyle,
                       child: const Text("Delete"),
                     ),
                   ],
@@ -1338,32 +1386,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-// class DrawerButton extends StatelessWidget {
-//   const DrawerButton({
-//     super.key,
-//     required this.text,
-//     required this.onPressed,
-//   });
-
-//   final String text;
-//   final VoidCallback onPressed;
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Padding(
-//       padding: const EdgeInsets.only(bottom: 10),
-//       child: SizedBox(
-//         width: 130,
-//         child: ElevatedButton(
-//           onPressed: onPressed,
-//           style: MyElevatedButtonStyle.buttonStyle,
-//           child: Text(
-//             text,
-//             style: MyElevatedButtonStyle.textStyle,
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }

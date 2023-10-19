@@ -59,9 +59,9 @@ class _BreedingSchemeState extends State<BreedingScheme> {
       _nameController = TextEditingController(text: widget.name);
       showCustomRatScreen = true;
       if (!widget.isCustomRats!) {
-        for (String name in widget.chosenRats!) {
-          chosenRatsList.add(widget.rats[
-              widget.rats.indexWhere((element) => element["name"] == name)]);
+        for (String id in widget.chosenRats!) {
+          chosenRatsList.add(widget
+              .rats[widget.rats.indexWhere((element) => element.id == id)]);
         }
         _maleController.clear();
         _femaleController.clear();
@@ -215,15 +215,16 @@ class _BreedingSchemeState extends State<BreedingScheme> {
                                     "Cannot choose 2 rats with the same gender");
                             return;
                           }
-                          final male = chosenRatsList[chosenRatsList.indexWhere(
-                              (element) => element["gender"] == "Male")];
-                          final female = chosenRatsList[
-                              chosenRatsList.indexWhere(
+                          final QueryDocumentSnapshot<Object?> male =
+                              chosenRatsList[chosenRatsList.indexWhere(
+                                  (element) => element["gender"] == "Male")];
+                          final QueryDocumentSnapshot<Object?> female =
+                              chosenRatsList[chosenRatsList.indexWhere(
                                   (element) => element["gender"] == "Female")];
 
                           await addScheme(
-                            male: male["name"],
-                            female: female["name"],
+                            male: male.id,
+                            female: female.id,
                             name: _nameController.text.trim(),
                             dateOfBreeding: (customDate == null)
                                 ? DateTime.now()
