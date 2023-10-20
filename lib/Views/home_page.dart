@@ -147,6 +147,20 @@ class _MyHomePageState extends State<MyHomePage> {
                                             !value.activeSort.isEmpty
                                         ? value.filteredRats[i]
                                         : rats[i];
+                                final bool hasScheme = buildItem
+                                    .data()
+                                    .toString()
+                                    .contains('customParents');
+
+                                if (!hasScheme) {
+                                  FirebaseFirestore.instance
+                                      .collection("users")
+                                      .doc(FirebaseAuth
+                                          .instance.currentUser!.uid)
+                                      .collection("rats")
+                                      .doc(buildItem.id)
+                                      .update({"customParents": true});
+                                }
                                 final Rat rat = Rat.fromDB(dbRat: buildItem);
                                 DateTime birthdate = rat.birthday;
                                 Color? colorCode;
