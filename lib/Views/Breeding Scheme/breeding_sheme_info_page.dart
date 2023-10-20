@@ -341,6 +341,9 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
       female = List.from(
           widget.rats!.where((element) => element.id == scheme.female));
       female = female[0].data()['name'];
+    } else {
+      male = scheme.male;
+      female = scheme.female;
     }
     return MyInfoCard(
       title: "Parent Details",

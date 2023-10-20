@@ -63,8 +63,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   late Timer timer;
 
-  // mySetState() => setState(() {});
-
   getPrefs() async {
     prefs = await SharedPreferences.getInstance();
   }
@@ -196,9 +194,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     : Colors.black
                                                 : Colors.black,
                                         shape: const BeveledRectangleBorder(
-                                            // side: BorderSide(
-                                            //     width: 1,
-                                            //     color: secondaryThemeColor),
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(15))),
                                         color: (AgeCalculator.age(birthdate)
@@ -302,115 +297,122 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  AlertDialog colorCodePicker(int i) {
+  colorCodePicker(int i) {
     return AlertDialog(
       title: const Text("Organise"),
       actions: [
         Center(
-          child: ElevatedButton(
-              style: MyElevatedButtonStyle.doneButtonStyle,
-              onPressed: () => navPop(context),
-              child: const Text("Done")),
+          child: SizedBox(
+            width: 80,
+            height: 30,
+            child: ElevatedButton(
+                style: MyElevatedButtonStyle.buttonStyle,
+                onPressed: () => navPop(context),
+                child: const Text("Done")),
+          ),
         )
       ],
       content: Consumer<FilterProvider>(builder: (context, value, child) {
-        return Column(
-          children: [
-            ListTile(
-              title: const Text("Red"),
-              leading: const Icon(
-                Icons.square,
-                color: Colors.red,
+        return SizedBox(
+          height: 300,
+          child: Column(
+            children: [
+              ListTile(
+                title: const Text("Red"),
+                leading: const Icon(
+                  Icons.square,
+                  color: Colors.red,
+                ),
+                onTap: () {
+                  QueryDocumentSnapshot rat = value.activeFilters.isEmpty
+                      ? rats[i]
+                      : value.filteredRats[i];
+                  FirebaseFirestore.instance
+                      .collection("users")
+                      .doc(FirebaseAuth.instance.currentUser!.uid)
+                      .collection("rats")
+                      .doc(rat.id)
+                      .update({"colorCode": "red"});
+                  setState(() {});
+                  navPop(context);
+                },
+                shape: RoundedRectangleBorder(
+                    side: const BorderSide(),
+                    borderRadius: BorderRadius.circular(10)),
               ),
-              onTap: () {
-                QueryDocumentSnapshot rat = value.activeFilters.isEmpty
-                    ? rats[i]
-                    : value.filteredRats[i];
-                FirebaseFirestore.instance
-                    .collection("users")
-                    .doc(FirebaseAuth.instance.currentUser!.uid)
-                    .collection("rats")
-                    .doc(rat.id)
-                    .update({"colorCode": "red"});
-                setState(() {});
-                navPop(context);
-              },
-              shape: RoundedRectangleBorder(
-                  side: const BorderSide(),
-                  borderRadius: BorderRadius.circular(10)),
-            ),
-            const SizedBox(height: 10),
-            ListTile(
-              title: const Text("Blue"),
-              leading: const Icon(
-                Icons.square,
-                color: Colors.blue,
+              const SizedBox(height: 10),
+              ListTile(
+                title: const Text("Blue"),
+                leading: const Icon(
+                  Icons.square,
+                  color: Colors.blue,
+                ),
+                onTap: () {
+                  QueryDocumentSnapshot rat = value.activeFilters.isEmpty
+                      ? rats[i]
+                      : value.filteredRats[i];
+                  FirebaseFirestore.instance
+                      .collection("users")
+                      .doc(FirebaseAuth.instance.currentUser!.uid)
+                      .collection("rats")
+                      .doc(rat.id)
+                      .update({"colorCode": "blue"});
+                  setState(() {});
+                  navPop(context);
+                },
+                shape: RoundedRectangleBorder(
+                    side: const BorderSide(),
+                    borderRadius: BorderRadius.circular(10)),
               ),
-              onTap: () {
-                QueryDocumentSnapshot rat = value.activeFilters.isEmpty
-                    ? rats[i]
-                    : value.filteredRats[i];
-                FirebaseFirestore.instance
-                    .collection("users")
-                    .doc(FirebaseAuth.instance.currentUser!.uid)
-                    .collection("rats")
-                    .doc(rat.id)
-                    .update({"colorCode": "blue"});
-                setState(() {});
-                navPop(context);
-              },
-              shape: RoundedRectangleBorder(
-                  side: const BorderSide(),
-                  borderRadius: BorderRadius.circular(10)),
-            ),
-            const SizedBox(height: 10),
-            ListTile(
-              title: const Text("Green"),
-              leading: const Icon(
-                Icons.square,
-                color: Colors.green,
+              const SizedBox(height: 10),
+              ListTile(
+                title: const Text("Green"),
+                leading: const Icon(
+                  Icons.square,
+                  color: Colors.green,
+                ),
+                onTap: () {
+                  QueryDocumentSnapshot rat = value.activeFilters.isEmpty
+                      ? rats[i]
+                      : value.filteredRats[i];
+                  FirebaseFirestore.instance
+                      .collection("users")
+                      .doc(FirebaseAuth.instance.currentUser!.uid)
+                      .collection("rats")
+                      .doc(rat.id)
+                      .update({"colorCode": "green"});
+                  setState(() {});
+                  navPop(context);
+                },
+                shape: RoundedRectangleBorder(
+                    side: const BorderSide(),
+                    borderRadius: BorderRadius.circular(10)),
               ),
-              onTap: () {
-                QueryDocumentSnapshot rat = value.activeFilters.isEmpty
-                    ? rats[i]
-                    : value.filteredRats[i];
-                FirebaseFirestore.instance
-                    .collection("users")
-                    .doc(FirebaseAuth.instance.currentUser!.uid)
-                    .collection("rats")
-                    .doc(rat.id)
-                    .update({"colorCode": "green"});
-                setState(() {});
-                navPop(context);
-              },
-              shape: RoundedRectangleBorder(
-                  side: const BorderSide(),
-                  borderRadius: BorderRadius.circular(10)),
-            ),
-            const SizedBox(height: 10),
-            ListTile(
-              title: const Text("None"),
-              leading: const Icon(
-                Icons.square,
-              ),
-              onTap: () {
-                QueryDocumentSnapshot rat = value.activeFilters.isEmpty
-                    ? rats[i]
-                    : value.filteredRats[i];
-                FirebaseFirestore.instance
-                    .collection("users")
-                    .doc(FirebaseAuth.instance.currentUser!.uid)
-                    .collection("rats")
-                    .doc(rat.id)
-                    .update({"colorCode": "none"});
-                setState(() {});
-                navPop(context);
-              },
-              shape: RoundedRectangleBorder(
-                  side: const BorderSide(),
-                  borderRadius: BorderRadius.circular(10)),
-            )
-          ],
+              const SizedBox(height: 10),
+              ListTile(
+                title: const Text("None"),
+                leading: const Icon(
+                  Icons.square,
+                ),
+                onTap: () {
+                  QueryDocumentSnapshot rat = value.activeFilters.isEmpty
+                      ? rats[i]
+                      : value.filteredRats[i];
+                  FirebaseFirestore.instance
+                      .collection("users")
+                      .doc(FirebaseAuth.instance.currentUser!.uid)
+                      .collection("rats")
+                      .doc(rat.id)
+                      .update({"colorCode": "none"});
+                  setState(() {});
+                  navPop(context);
+                },
+                shape: RoundedRectangleBorder(
+                    side: const BorderSide(),
+                    borderRadius: BorderRadius.circular(10)),
+              )
+            ],
+          ),
         );
       }),
     );
@@ -1111,9 +1113,10 @@ class _MyHomePageState extends State<MyHomePage> {
                               title: const Text("Report Bug/Improvement"),
                               actions: [
                                 ElevatedButton(
-                                    onPressed: () => navPop(context),
-                                    style: MyElevatedButtonStyle.buttonStyle,
-                                    child: const Text("Cancel"))
+                                  onPressed: () => navPop(context),
+                                  style: MyElevatedButtonStyle.buttonStyle,
+                                  child: const Text("Cancel"),
+                                )
                               ],
                               content: SizedBox(
                                 height: 150,
@@ -1188,65 +1191,6 @@ class _MyHomePageState extends State<MyHomePage> {
                     trailing: Icon(Icons.logout, color: Colors.red[300]),
                     onTap: () {
                       FirebaseAuth.instance.signOut();
-                    },
-                  ),
-                ),
-                Card(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      side: BorderSide(width: 1.5, color: secondaryThemeColor)),
-                  elevation: 10,
-                  margin: const EdgeInsets.all(10),
-                  child: ListTile(
-                    title: const Text(
-                      "Delete Account",
-                      style:
-                          TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
-                    ),
-                    trailing: Icon(Icons.delete_forever_outlined,
-                        color: Colors.red[300]),
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          final actions = [
-                            ElevatedButton(
-                              onPressed: () {
-                                navPop(context);
-                              },
-                              style: MyElevatedButtonStyle.buttonStyle,
-                              child: const Text("Cancel"),
-                            ),
-                            ElevatedButton(
-                              onPressed: () async {
-                                navPop(context);
-                                setState(() {
-                                  showLoad = true;
-                                });
-                                final user = FirebaseAuth.instance.currentUser!;
-                                await FirebaseFirestore.instance
-                                    .collection("users")
-                                    .doc(user.uid)
-                                    .delete();
-                                user.delete();
-                              },
-                              style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.red,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      side: const BorderSide())),
-                              child: const Text("Delete"),
-                            ),
-                          ];
-
-                          return AlertDialog(
-                            actions: actions,
-                            title: const Text("Warning!"),
-                            content: const Text(
-                                "If you proceed you will loose all your data and account!"),
-                          );
-                        },
-                      );
                     },
                   ),
                 ),

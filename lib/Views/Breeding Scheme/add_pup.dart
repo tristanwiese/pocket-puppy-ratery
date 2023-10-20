@@ -142,71 +142,70 @@ class _AddPupState extends State<AddPup> {
 
   Widget SaveButton(BuildContext context) {
     return Center(
-      child: ElevatedButton(
-          onPressed: () async {
-            if (!_formKey.currentState!.validate()) {
-              return;
-            }
-            showDialog(
-              context: context,
-              builder: (context) {
-                return const Center(child: CircularProgressIndicator());
-              },
-            );
-            if (_pickedGender == null) {
-              showError("Gender");
+      child: SizedBox(
+        width: 130,
+        height: 40,
+        child: ElevatedButton(
+            onPressed: () async {
+              if (!_formKey.currentState!.validate()) {
+                return;
+              }
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return const Center(child: CircularProgressIndicator());
+                },
+              );
+              if (_pickedGender == null) {
+                showError("Gender");
+                navPop(context);
+                return;
+              }
+              if (actvieMarkingsList.isEmpty) {
+                showError("Markings");
+                navPop(context);
+                return;
+              }
+              if (activeColorsList.isEmpty) {
+                showError("Colors");
+                navPop(context);
+                return;
+              }
+              if (earController == null) {
+                showError("Ears");
+                navPop(context);
+                return;
+              }
+              if (coatController == null) {
+                showError("Coat");
+                navPop(context);
+                return;
+              }
+              coatsList.sort();
+              final pup = Pup(
+                name: nameController.text.trim(),
+                registeredName: registeredNameController.text.trim(),
+                colours: activeColorsList,
+                ears: Ears.values[
+                    earsList.indexWhere((element) => element == earController)],
+                gender: _pickedGender!,
+                markings: actvieMarkingsList,
+                parents:
+                    Parents(dad: widget.scheme.male, mom: widget.scheme.female),
+                coat: Coats.values[coatsList
+                    .indexWhere((element) => element == coatController)],
+              );
+              await FirebaseSchemes.doc(widget.scheme.id).update({
+                "pups": FieldValue.arrayUnion([pup.toDb()])
+              });
+              Provider.of<BreedingSchemeProvider>(context, listen: false)
+                  .editPups(action: "add", pup: pup.toDb());
               navPop(context);
-              return;
-            }
-            if (actvieMarkingsList.isEmpty) {
-              showError("Markings");
               navPop(context);
-              return;
-            }
-            if (activeColorsList.isEmpty) {
-              showError("Colors");
-              navPop(context);
-              return;
-            }
-            if (earController == null) {
-              showError("Ears");
-              navPop(context);
-              return;
-            }
-            if (coatController == null) {
-              showError("Coat");
-              navPop(context);
-              return;
-            }
-            coatsList.sort();
-            final pup = Pup(
-              name: nameController.text.trim(),
-              registeredName: registeredNameController.text.trim(),
-              colours: activeColorsList,
-              ears: Ears.values[
-                  earsList.indexWhere((element) => element == earController)],
-              gender: _pickedGender!,
-              markings: actvieMarkingsList,
-              parents:
-                  Parents(dad: widget.scheme.male, mom: widget.scheme.female),
-              coat: Coats.values[
-                  coatsList.indexWhere((element) => element == coatController)],
-            );
-            await FirebaseSchemes.doc(widget.scheme.id).update({
-              "pups": FieldValue.arrayUnion([pup.toDb()])
-            });
-            Provider.of<BreedingSchemeProvider>(context, listen: false)
-                .editPups(action: "add", pup: pup.toDb());
-            navPop(context);
-            navPop(context);
-          },
-          style: ElevatedButton.styleFrom(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(30)),
-              ),
-              minimumSize: const Size(100, 50),
-              backgroundColor: secondaryThemeColor),
-          child: const Text('Save')),
+            },
+            style: MyElevatedButtonStyle.buttonStyle,
+            child: const Text('Save')),
+      ),
     );
   }
 

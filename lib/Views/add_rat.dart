@@ -178,7 +178,11 @@ class _AddRatState extends State<AddRat> {
 
   Widget SaveButton(BuildContext context) {
     return Center(
-      child: ElevatedButton(
+      child: Container(
+        margin: const EdgeInsets.only(top: 20),
+        width: 130,
+        height: 40,
+        child: ElevatedButton(
           onPressed: () async {
             if (!_formKey.currentState!.validate()) {
               return;
@@ -252,13 +256,10 @@ class _AddRatState extends State<AddRat> {
             navPop(context);
             navPop(context);
           },
-          style: ElevatedButton.styleFrom(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(30)),
-              ),
-              minimumSize: const Size(100, 50),
-              backgroundColor: secondaryThemeColor),
-          child: const Text('Save')),
+          style: MyElevatedButtonStyle.buttonStyle,
+          child: const Text('Save'),
+        ),
+      ),
     );
   }
 

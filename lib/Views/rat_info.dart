@@ -3,7 +3,6 @@
 // ignore: unused_import
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Views/add_rat.dart';
 import '../Models/rat.dart';
@@ -57,12 +56,26 @@ class _RatInfoState extends State<RatInfo> {
             width: 100,
             child: ElevatedButton(
               onPressed: () {
-                navPush(
-                    context,
-                    AddRat(
+                Navigator.of(context).push(
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        AddRat(
                       id: rat.id,
                       rat: rat,
-                    ));
+                    ),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      const begin = Offset(1.0, 0.0);
+                      const end = Offset.zero;
+                      final tween = Tween(begin: begin, end: end);
+                      final offsetAnimation = animation.drive(tween);
+                      return SlideTransition(
+                        position: offsetAnimation,
+                        child: child,
+                      );
+                    },
+                  ),
+                );
               },
               style: MyElevatedButtonStyle.buttonStyle,
               child: const Text("Edit"),
