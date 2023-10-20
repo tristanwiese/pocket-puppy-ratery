@@ -4,9 +4,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
-import 'package:pocket_puppy_rattery/Services/rats_provider.dart';
 import 'package:pocket_puppy_rattery/Views/add_rat.dart';
-import 'package:provider/provider.dart';
 import '../Models/rat.dart';
 import '../Services/custom_widgets.dart';
 
