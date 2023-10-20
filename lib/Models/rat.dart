@@ -6,17 +6,19 @@ import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import '../Services/constants.dart';
 
 class Rat {
-  Rat(
-      {required this.name,
-      required this.registeredName,
-      required this.colours,
-      required this.ears,
-      required this.gender,
-      required this.markings,
-      required this.parents,
-      required this.coat,
-      required this.birthday,
-      this.colorCode = "none"});
+  Rat({
+    required this.name,
+    required this.registeredName,
+    required this.colours,
+    required this.ears,
+    required this.gender,
+    required this.markings,
+    required this.parents,
+    required this.coat,
+    required this.birthday,
+    required this.customParents,
+    this.colorCode = "none",
+  });
   final String name;
   final String registeredName;
   final Gender gender;
@@ -28,6 +30,7 @@ class Rat {
   final DateTime birthday;
   String colorCode;
   String? id;
+  bool customParents;
 
   static hLocusToList() {
     const markingsList = H_Locus.values;
@@ -119,7 +122,8 @@ class Rat {
       "father": parents.dad,
       "coat": coat.name.toString(),
       "birthday": birthday,
-      "colorCode": colorCode
+      "colorCode": colorCode,
+      "customParents": customParents,
     };
     return rat;
   }
@@ -128,6 +132,7 @@ class Rat {
     final Timestamp birthdate = dbRat["birthday"];
 
     return Rat(
+      customParents: dbRat['customParents'],
       name: dbRat["name"],
       registeredName: dbRat["registeredName"],
       colours: dbRat["colours"],

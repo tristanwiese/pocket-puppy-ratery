@@ -220,6 +220,7 @@ class _AddRatState extends State<AddRat> {
             }
             coatsList.sort();
             final Rat rat = Rat(
+              customParents: true,
               name: nameController.text.trim(),
               registeredName: registeredNameController.text.trim(),
               colours: activeColorsList,

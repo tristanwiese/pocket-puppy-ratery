@@ -4,7 +4,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
+import 'package:pocket_puppy_rattery/Services/rats_provider.dart';
 import 'package:pocket_puppy_rattery/Views/add_rat.dart';
+import 'package:provider/provider.dart';
 import '../Models/rat.dart';
 import '../Services/custom_widgets.dart';
 
@@ -12,9 +14,11 @@ class RatInfo extends StatefulWidget {
   const RatInfo({
     super.key,
     required this.rat,
+    required this.rats,
   });
 
   final Rat rat;
+  final List<QueryDocumentSnapshot<Object?>> rats;
 
   @override
   State<RatInfo> createState() => _RatInfoState();
@@ -132,6 +136,15 @@ class _RatInfoState extends State<RatInfo> {
   }
 
   Row parents() {
+    print(rat.customParents);
+    dynamic mom = rat.customParents
+        ? rat.parents.mom
+        : List.from(widget.rats
+            .where((element) => element.id == rat.parents.mom))[0]['name'];
+    dynamic dad = rat.customParents
+        ? rat.parents.dad
+        : List.from(widget.rats
+            .where((element) => element.id == rat.parents.dad))[0]['name'];
     return Row(
       children: [
         Expanded(
@@ -142,13 +155,13 @@ class _RatInfoState extends State<RatInfo> {
                 Expanded(
                   child: MyInfoCard(
                     title: "Mother",
-                    child: Text(rat.parents.mom),
+                    child: Text(mom),
                   ),
                 ),
                 Expanded(
                   child: MyInfoCard(
                     title: "Father",
-                    child: Text(rat.parents.dad),
+                    child: Text(dad),
                   ),
                 )
               ],

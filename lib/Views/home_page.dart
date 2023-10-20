@@ -175,8 +175,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       navPush(context, Consumer<RatsProvider>(
                                         builder: (context, value, child) {
                                           return RatInfo(
-                                            rat: value.rat,
-                                          );
+                                              rat: value.rat, rats: rats);
                                         },
                                       ));
                                     },
