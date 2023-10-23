@@ -57,20 +57,21 @@ class _ProfilePageState extends State<ProfilePage> {
             CircleAvatar(
                 radius: 70,
                 backgroundColor: const Color.fromARGB(255, 211, 211, 211),
-                backgroundImage: value.profilePictureUrl != null
-                    ? Image.network(value.profilePictureUrl).image
-                    : value.profilePicture == null
-                        ? null
-                        : kIsWeb
-                            ? Image.network(
-                                File(value.profilePicture.path).path,
-                                fit: BoxFit.contain,
-                              ).image
-                            : Image.file(
-                                File(value.profilePicture.path),
-                                fit: BoxFit.contain,
-                              ).image,
-                child: value.profilePicture == null
+                backgroundImage: value.profilePicture != null
+                    ? kIsWeb
+                        ? Image.network(
+                            File(value.profilePicture.path).path,
+                            fit: BoxFit.contain,
+                          ).image
+                        : Image.file(
+                            File(value.profilePicture.path),
+                            fit: BoxFit.contain,
+                          ).image
+                    : value.profilePictureUrl != null
+                        ? Image.network(value.profilePictureUrl).image
+                        : null,
+                child: value.profilePicture == null &&
+                        value.profilePictureUrl == null
                     ? const Icon(
                         Icons.person_outline_rounded,
                         size: 100,
