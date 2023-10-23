@@ -6,6 +6,7 @@ import 'package:pocket_puppy_rattery/Models/breeding_scheme_model.dart';
 import 'package:pocket_puppy_rattery/Models/pup_model.dart';
 import 'package:pocket_puppy_rattery/Services/breeding_scheme_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 import '../../Functions/utils.dart';
 import '../../Models/rat.dart';
 import '../../Services/constants.dart';
@@ -22,8 +23,14 @@ List<String> coatsList = Rat.coatsToList();
 List<String> genderList = Rat.genderToList();
 
 class AddPup extends StatefulWidget {
-  const AddPup({super.key, required this.scheme});
+  const AddPup({
+    super.key,
+    required this.scheme,
+    this.pup,
+  });
   final BreedingSchemeModel scheme;
+
+  final Pup? pup;
 
   @override
   State<AddPup> createState() => _AddPupState();
@@ -54,6 +61,27 @@ class _AddPupState extends State<AddPup> {
   @override
   void initState() {
     super.initState();
+
+    if (widget.pup != null) {
+      nameController = TextEditingController(text: widget.pup!.name);
+      registeredNameController =
+          TextEditingController(text: widget.pup!.registeredName);
+      earController = widget.pup!.ears.name;
+      coatController = widget.pup!.coat.name;
+      _pickedGender = widget.pup!.gender;
+      genderValue = widget.pup!.gender.name;
+      widget.pup!.gender.name == "Male"
+          ? selectedGender = [true, false]
+          : [false, true];
+
+      activeColorsList = widget.pup!.colours;
+      if (getMarkingtype(widget.pup!.markings) == "hLocus") {
+        selectedMarkings = [false, true];
+      } else {
+        selectedMarkings = [true, false];
+      }
+      actvieMarkingsList = widget.pup!.markings;
+    }
   }
 
   @override
@@ -194,7 +222,26 @@ class _AddPupState extends State<AddPup> {
                     Parents(dad: widget.scheme.male, mom: widget.scheme.female),
                 coat: Coats.values[coatsList
                     .indexWhere((element) => element == coatController)],
+                id: const Uuid().v4(),
               );
+              if (widget.pup != null) {
+                final int index = widget.scheme.pups
+                    .indexWhere((element) => element['id'] == widget.pup!.id);
+
+                await FirebaseSchemes.doc(widget.scheme.id).update({
+                  "pups": FieldValue.arrayRemove([widget.pup!.toDb()])
+                });
+                await FirebaseSchemes.doc(widget.scheme.id).update({
+                  "pups": FieldValue.arrayUnion([pup.toDb()])
+                });
+                Provider.of<BreedingSchemeProvider>(context, listen: false)
+                    .editPups(action: "remove", index: index);
+                Provider.of<BreedingSchemeProvider>(context, listen: false)
+                    .editPups(action: "add", pup: pup.toDb());
+                navPop(context);
+                navPop(context);
+                return;
+              }
               await FirebaseSchemes.doc(widget.scheme.id).update({
                 "pups": FieldValue.arrayUnion([pup.toDb()])
               });

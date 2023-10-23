@@ -121,6 +121,28 @@ class _PupsState extends State<Pups> {
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10)),
                               child: ListTile(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    PageRouteBuilder(
+                                      pageBuilder: (context, animation,
+                                              secondaryAnimation) =>
+                                          AddPup(scheme: scheme, pup: pup),
+                                      transitionsBuilder: (context, animation,
+                                          secondaryAnimation, child) {
+                                        const begin = Offset(1.0, 0.0);
+                                        const end = Offset.zero;
+                                        final tween =
+                                            Tween(begin: begin, end: end);
+                                        final offsetAnimation =
+                                            animation.drive(tween);
+                                        return SlideTransition(
+                                          position: offsetAnimation,
+                                          child: child,
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
                                 trailing: IconButton(
                                   onPressed: () {
                                     showDialog(
@@ -162,7 +184,7 @@ class _PupsState extends State<Pups> {
                                 ),
                                 leading: IconButton(
                                   onPressed: () async {
-                                    print(scheme.isCustomRats);
+                                    // print(scheme.isCustomRats);
                                     final Rat rat = Rat(
                                       name: pup.name,
                                       registeredName: pup.registeredName,
@@ -230,7 +252,12 @@ class _PupsState extends State<Pups> {
                                   children: [
                                     const DirectiveText(
                                         text: "Registered name:"),
-                                    Text(pup.name)
+                                    Flexible(
+                                      child: Text(
+                                        pup.registeredName,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    )
                                   ],
                                 ),
                               ),

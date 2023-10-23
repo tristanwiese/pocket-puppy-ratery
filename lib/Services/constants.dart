@@ -63,6 +63,7 @@ enum Colours {
   Cinnamon_Pearl,
   Chocolate_Agouti,
   Chocolate,
+  Unknown,
 }
 
 enum Coats {

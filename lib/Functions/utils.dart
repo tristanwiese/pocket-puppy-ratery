@@ -4,6 +4,7 @@ import 'package:age_calculator/age_calculator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:pocket_puppy_rattery/Services/constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 var primaryThemeColor = const Color.fromARGB(255, 185, 235, 223);
@@ -137,4 +138,13 @@ alert({required String text, int duration = 3}) {
     backgroundColor: primaryThemeColor,
     duration: Duration(seconds: duration),
   ));
+}
+
+getMarkingtype(List markings) {
+  for (int i = 0; i < cMarkingList.length; i++) {
+    if (markings.contains(cMarkingList[i])) {
+      return "cLocus";
+    }
+  }
+  return "hLocus";
 }

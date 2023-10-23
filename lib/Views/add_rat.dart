@@ -94,15 +94,6 @@ class _AddRatState extends State<AddRat> {
     super.dispose();
   }
 
-  getMarkingtype(List markings) {
-    for (int i = 0; i < cMarkingList.length; i++) {
-      if (markings.contains(cMarkingList[i])) {
-        return "cLocus";
-      }
-    }
-    return "hLocus";
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
