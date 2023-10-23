@@ -89,7 +89,8 @@ class _MyHomePageState extends State<MyHomePage> {
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 rats = snapshot.data!.docs;
-                return myBody(rats, ctx);
+                // return myBody(rats, ctx);
+                return const ProfilePage();
               }
 
               return const LoadScreen();

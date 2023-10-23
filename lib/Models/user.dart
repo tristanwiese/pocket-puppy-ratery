@@ -1,5 +1,4 @@
-class UserModel{
-
+class UserModel {
   UserModel({
     required this.email,
     required this.userName,
@@ -8,11 +7,15 @@ class UserModel{
   final String email;
   final String userName;
 
-  Map<String, dynamic>toDB(){
-    Map<String, dynamic> user = {
-      "userName" : userName,
-      "email": email
-    };
+  Map<String, dynamic> toDB() {
+    Map<String, dynamic> user = {"userName": userName, "email": email};
     return user;
+  }
+
+  static fromDB({required dbUser}) {
+    return UserModel(
+      email: dbUser['email'],
+      userName: dbUser['userName'],
+    );
   }
 }
