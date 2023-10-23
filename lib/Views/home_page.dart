@@ -259,48 +259,54 @@ class _MyHomePageState extends State<MyHomePage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Container(
-                  height: 35,
-                  margin: const EdgeInsets.only(bottom: 10),
+                  // height: 35,
+                  margin: const EdgeInsets.symmetric(vertical: 10),
                   child: Directionality(
                     textDirection: TextDirection.rtl,
-                    child: ElevatedButton.icon(
-                      label: const Text("Add Rat",
-                          style: TextStyle(color: Colors.black87)),
-                      icon: Icon(
-                        Icons.add,
-                        color: secondaryThemeColor,
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          side: BorderSide(color: secondaryThemeColor),
+                    child: SizedBox(
+                      height: 35,
+                      child: ElevatedButton.icon(
+                        label: const Text("Add Rat",
+                            style: TextStyle(color: Colors.black87)),
+                        icon: Icon(
+                          Icons.add,
+                          color: secondaryThemeColor,
                         ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: BorderSide(color: secondaryThemeColor),
+                          ),
+                        ),
+                        onPressed: () => navPush(context, const AddRat()),
                       ),
-                      onPressed: () => navPush(context, const AddRat()),
                     ),
                   ),
                 ),
                 Container(
-                    height: 35,
-                    margin: const EdgeInsets.only(bottom: 10),
+                    // height: 35,
+                    margin: const EdgeInsets.symmetric(vertical: 10),
                     child: Directionality(
                       textDirection: TextDirection.rtl,
-                      child: ElevatedButton.icon(
-                          label: const Text("Filter",
-                              style: TextStyle(color: Colors.black87)),
-                          icon: Icon(Icons.filter_list,
-                              color: secondaryThemeColor),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              side: BorderSide(color: secondaryThemeColor),
+                      child: SizedBox(
+                        height: 35,
+                        child: ElevatedButton.icon(
+                            label: const Text("Filter",
+                                style: TextStyle(color: Colors.black87)),
+                            icon: Icon(Icons.filter_list,
+                                color: secondaryThemeColor),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                side: BorderSide(color: secondaryThemeColor),
+                              ),
                             ),
-                          ),
-                          onPressed: () {
-                            _key.currentState!.openEndDrawer();
-                          }),
+                            onPressed: () {
+                              _key.currentState!.openEndDrawer();
+                            }),
+                      ),
                     )),
               ],
             )

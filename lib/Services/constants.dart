@@ -34,6 +34,7 @@ enum H_Locus {
   Blazed,
   Roan_Husky,
   Down_Under,
+  Unknown,
 }
 
 enum C_Locus {
@@ -42,7 +43,8 @@ enum C_Locus {
   Black_Eyed_Siamese,
   Sable_Siamese,
   Burmese,
-  Pink_Eyed_White
+  Pink_Eyed_White,
+  Unknown,
 }
 
 enum Colours {
