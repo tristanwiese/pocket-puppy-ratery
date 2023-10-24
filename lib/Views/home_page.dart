@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 import 'package:age_calculator/age_calculator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,12 +13,14 @@ import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Models/breeding_scheme_model.dart';
 import 'package:pocket_puppy_rattery/Models/genes.dart';
 import 'package:pocket_puppy_rattery/Models/rat.dart';
+import 'package:pocket_puppy_rattery/Models/user.dart';
 import 'package:pocket_puppy_rattery/Services/breeding_scheme_provider.dart';
 import 'package:pocket_puppy_rattery/Services/constants.dart';
 import 'package:pocket_puppy_rattery/Services/controller_provider.dart';
 import 'package:pocket_puppy_rattery/Services/card_controller.dart';
 import 'package:pocket_puppy_rattery/Services/custom_widgets.dart';
 import 'package:pocket_puppy_rattery/Services/filter_provider.dart';
+import 'package:pocket_puppy_rattery/Services/profile_provider.dart';
 import 'package:pocket_puppy_rattery/Services/rats_provider.dart';
 import 'package:pocket_puppy_rattery/Views/add_rat.dart';
 import 'package:pocket_puppy_rattery/Views/Breeding%20Scheme/breeding_sheme_info_page.dart';
@@ -39,6 +42,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final PageController _pageController = PageController();
   late ControllerProvider controllerProvider;
+  late ProfileProvider userProvider;
 
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
@@ -86,41 +90,56 @@ class _MyHomePageState extends State<MyHomePage> {
                 .doc(FirebaseAuth.instance.currentUser!.uid)
                 .collection("rats")
                 .snapshots(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                rats = snapshot.data!.docs;
-                return myBody(rats, ctx);
-                // return const ProfilePage();
-              }
+            builder: (context, ratSnapshot) {
+              return StreamBuilder(
+                stream: FirebaseFirestore.instance
+                    .collection("users")
+                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                    .snapshots(),
+                builder: (context, userSnapshot) {
+                  if (ratSnapshot.hasData && userSnapshot.hasData) {
+                    final user = userSnapshot.data!;
+                    rats = ratSnapshot.data!.docs;
+                    return myBody(rats, user, ctx);
+                    // return const ProfilePage();
+                  }
 
-              return const LoadScreen();
+                  return const LoadScreen();
+                },
+              );
             });
   }
 
-  myBody(List<QueryDocumentSnapshot<Object?>> rats, BuildContext ctx) =>
-      Scaffold(
-          key: _key,
-          appBar: myAppBar(context),
-          drawer: myDrawer(),
-          endDrawer: myEndDrawer(),
-          bottomNavigationBar: myBottomNavBar(),
-          body: PageView(
-            controller: _pageController,
-            onPageChanged: (value) {
-              switch (value) {
-                case 0:
-                  appBarTitle = "Your Rats";
-                  break;
-                case 1:
-                  appBarTitle = "Gene Calculator";
-                  break;
-                default:
-                  appBarTitle = "Breeding Tracker";
-              }
-              controllerProvider.changeBottomNavIndex(index: value);
-            },
-            children: [ratPage(ctx), geneCal(rats), breedTracker()],
-          ));
+  myBody(List<QueryDocumentSnapshot<Object?>> rats,
+      DocumentSnapshot<Map<String, dynamic>> user, BuildContext ctx) {
+    userProvider = Provider.of<ProfileProvider>(context, listen: false);
+
+    userProvider.updateUser(user: UserModel.fromDB(dbUser: user));
+
+    return Scaffold(
+        key: _key,
+        appBar: myAppBar(context),
+        drawer: myDrawer(),
+        endDrawer: myEndDrawer(),
+        bottomNavigationBar: myBottomNavBar(),
+        body: PageView(
+          controller: _pageController,
+          onPageChanged: (value) {
+            switch (value) {
+              case 0:
+                appBarTitle = "Your Rats";
+                break;
+              case 1:
+                appBarTitle = "Gene Calculator";
+                break;
+              default:
+                appBarTitle = "Breeding Tracker";
+            }
+            controllerProvider.changeBottomNavIndex(index: value);
+          },
+          children: [ratPage(ctx), geneCal(rats), breedTracker()],
+        ));
+  }
 
   Widget ratPage(BuildContext ctx) {
     return Center(
@@ -148,20 +167,32 @@ class _MyHomePageState extends State<MyHomePage> {
                                             !value.activeSort.isEmpty
                                         ? value.filteredRats[i]
                                         : rats[i];
-                                final bool hasScheme = buildItem
-                                    .data()
-                                    .toString()
-                                    .contains('customParents');
 
-                                if (!hasScheme) {
-                                  FirebaseFirestore.instance
-                                      .collection("users")
-                                      .doc(FirebaseAuth
-                                          .instance.currentUser!.uid)
-                                      .collection("rats")
-                                      .doc(buildItem.id)
-                                      .update({"customParents": true});
-                                }
+                                createField(
+                                  boolean: checkDBScheme(
+                                      db: buildItem.data().toString(),
+                                      key: 'photos'),
+                                  buildItem: buildItem,
+                                  data: [],
+                                  key: 'photos',
+                                );
+                                createField(
+                                  boolean: checkDBScheme(
+                                      db: buildItem.data().toString(),
+                                      key: 'customParents'),
+                                  buildItem: buildItem,
+                                  data: true,
+                                  key: 'customParents',
+                                );
+                                createField(
+                                  boolean: checkDBScheme(
+                                      db: buildItem.data().toString(),
+                                      key: 'profilePic'),
+                                  buildItem: buildItem,
+                                  data: '',
+                                  key: 'profilePic',
+                                );
+
                                 final Rat rat = Rat.fromDB(dbRat: buildItem);
                                 DateTime birthdate = rat.birthday;
                                 Color? colorCode;
@@ -753,8 +784,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   actions: [
                     ElevatedButton(
                       onPressed: () => navPop(context),
-                      child: const Text('Cancel'),
                       style: MyElevatedButtonStyle.cancelButtonStyle,
+                      child: const Text('Cancel'),
                     ),
                     ElevatedButton(
                       onPressed: () => deleteRat(item.id, itemType),
@@ -1109,14 +1140,36 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 child: Column(
                   children: [
-                    DrawerCard(
-                      iconData: Icons.person,
-                      title: "Profile",
-                      onTap: () {
-                        navPush(context, const ProfilePage());
-                        _key.currentState!.closeDrawer();
-                      },
-                    ),
+                    Consumer<ProfileProvider>(builder: (context, value, child) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          border: BorderDirectional(
+                              bottom: BorderSide(color: secondaryThemeColor)),
+                        ),
+                        child: ListTile(
+                          title: Text(value.user.userName),
+                          subtitle: Text(value.user.email),
+                          leading: CircleAvatar(
+                            backgroundColor:
+                                const Color.fromARGB(255, 211, 211, 211),
+                            backgroundImage: value.profilePicture != null
+                                ? Image.file(File(value.profilePicture.path))
+                                    .image
+                                : value.user.profilePicUrl != ''
+                                    ? Image.network(value.user.profilePicUrl)
+                                        .image
+                                    : null,
+                            child: value.user.profilePicUrl == ''
+                                ? const Icon(Icons.person_outline)
+                                : null,
+                          ),
+                          onTap: () {
+                            navPush(context, const ProfilePage());
+                            _key.currentState!.closeDrawer();
+                          },
+                        ),
+                      );
+                    }),
                     DrawerCard(
                       onTap: () {
                         navPush(context, const SettingsPage());
@@ -1348,5 +1401,24 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       },
     );
+  }
+
+  bool checkDBScheme({required String db, required String key}) {
+    return db.contains(key);
+  }
+
+  void createField(
+      {required bool boolean,
+      required String key,
+      required dynamic data,
+      required buildItem}) {
+    if (!boolean) {
+      FirebaseFirestore.instance
+          .collection("users")
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .collection("rats")
+          .doc(buildItem.id)
+          .update({key: data});
+    }
   }
 }

@@ -21,13 +21,6 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   @override
-  void initState() {
-    super.initState();
-
-    getProfilePic();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
@@ -67,11 +60,11 @@ class _ProfilePageState extends State<ProfilePage> {
                             File(value.profilePicture.path),
                             fit: BoxFit.contain,
                           ).image
-                    : value.profilePictureUrl != null
-                        ? Image.network(value.profilePictureUrl).image
+                    : value.user.profilePicUrl != ''
+                        ? Image.network(value.user.profilePicUrl).image
                         : null,
                 child: value.profilePicture == null &&
-                        value.profilePictureUrl == null
+                        value.user.profilePicUrl == ''
                     ? const Icon(
                         Icons.person_outline_rounded,
                         size: 100,
@@ -106,18 +99,21 @@ class _ProfilePageState extends State<ProfilePage> {
         .child("${FirebaseAuth.instance.currentUser!.uid}/profile.jpg")
         .getDownloadURL();
 
-    Provider.of<ProfileProvider>(context, listen: false)
-        .updateProfilePictureUrl(profilePic: imageUrl);
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .update({'profilePicUrl': imageUrl});
   }
-}
 
-storeProfilePic({required XFile image}) async {
-  final store = FirebaseStorage.instance.ref();
-  final storeChild =
-      store.child("${FirebaseAuth.instance.currentUser!.uid}/profile.jpg");
-  try {
-    await storeChild.putFile(File(image.path));
-  } on FirebaseException catch (e) {
-    print(e);
+  storeProfilePic({required XFile image}) async {
+    final store = FirebaseStorage.instance.ref();
+    final storeChild =
+        store.child("${FirebaseAuth.instance.currentUser!.uid}/profile.jpg");
+    try {
+      await storeChild.putFile(File(image.path));
+      getProfilePic();
+    } on FirebaseException catch (e) {
+      print(e);
+    }
   }
 }

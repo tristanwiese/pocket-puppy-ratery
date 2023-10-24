@@ -18,6 +18,8 @@ class Rat {
     required this.birthday,
     required this.customParents,
     this.colorCode = "none",
+    this.profilePic,
+    this.photos,
   });
   final String name;
   final String registeredName;
@@ -28,6 +30,8 @@ class Rat {
   final Parents parents;
   final Coats coat;
   final DateTime birthday;
+  List<dynamic>? photos;
+  String? profilePic;
   String colorCode;
   String? id;
   bool customParents;
@@ -124,6 +128,8 @@ class Rat {
       "birthday": birthday,
       "colorCode": colorCode,
       "customParents": customParents,
+      "photos": photos,
+      "profilePic": profilePic,
     };
     return rat;
   }
@@ -146,6 +152,8 @@ class Rat {
           .values[coatsList.indexWhere((element) => element == dbRat["coat"])],
       birthday: birthdate.toDate(),
       colorCode: dbRat['colorCode'],
+      photos: dbRat['photos'],
+      profilePic: dbRat['profilePic'],
     );
   }
 }
