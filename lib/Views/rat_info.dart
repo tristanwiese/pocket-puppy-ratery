@@ -53,35 +53,67 @@ class _RatInfoState extends State<RatInfo> {
           coat(),
           makrings(),
           colors(),
-          SizedBox(
-            height: 40,
-            width: 100,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) =>
-                        AddRat(
-                      id: rat.id,
-                      rat: rat,
-                    ),
-                    transitionsBuilder:
-                        (context, animation, secondaryAnimation, child) {
-                      const begin = Offset(1.0, 0.0);
-                      const end = Offset.zero;
-                      final tween = Tween(begin: begin, end: end);
-                      final offsetAnimation = animation.drive(tween);
-                      return SlideTransition(
-                        position: offsetAnimation,
-                        child: child,
-                      );
-                    },
-                  ),
-                );
-              },
-              style: MyElevatedButtonStyle.buttonStyle,
-              child: const Text("Edit"),
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              SizedBox(
+                height: 40,
+                width: 100,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            AddRat(
+                          id: rat.id,
+                          rat: rat,
+                        ),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          const begin = Offset(1.0, 0.0);
+                          const end = Offset.zero;
+                          final tween = Tween(begin: begin, end: end);
+                          final offsetAnimation = animation.drive(tween);
+                          return SlideTransition(
+                            position: offsetAnimation,
+                            child: child,
+                          );
+                        },
+                      ),
+                    );
+                  },
+                  style: MyElevatedButtonStyle.buttonStyle,
+                  child: const Text("Edit"),
+                ),
+              ),
+              SizedBox(
+                height: 40,
+                width: 100,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            const RatGallery(),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          const begin = Offset(1.0, 0.0);
+                          const end = Offset.zero;
+                          final tween = Tween(begin: begin, end: end);
+                          final offsetAnimation = animation.drive(tween);
+                          return SlideTransition(
+                            position: offsetAnimation,
+                            child: child,
+                          );
+                        },
+                      ),
+                    );
+                  },
+                  style: MyElevatedButtonStyle.buttonStyle,
+                  child: const Text("Images"),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 10),
         ],
@@ -134,7 +166,6 @@ class _RatInfoState extends State<RatInfo> {
   }
 
   Row parents() {
-    print(rat.customParents);
     dynamic mom = rat.customParents
         ? rat.parents.mom
         : List.from(widget.rats
@@ -214,7 +245,6 @@ class _RatInfoState extends State<RatInfo> {
           child: MyInfoCard(
             title: "Details",
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("Name: ${rat.name}"),
                 Text("Registered Name: ${rat.registeredName}"),
@@ -270,8 +300,4 @@ class _RatInfoState extends State<RatInfo> {
   AppBar myAppBar() => AppBar(
         title: Text("Rat: ${widget.rat.name}"),
       );
-
-  String birthdayView({required DateTime data}) {
-    return "${data.year}/${data.month}/${data.day}";
-  }
 }

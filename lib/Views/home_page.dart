@@ -100,6 +100,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   if (ratSnapshot.hasData && userSnapshot.hasData) {
                     final user = userSnapshot.data!;
                     rats = ratSnapshot.data!.docs;
+                    Provider.of<RatsProvider>(context, listen: false)
+                        .setRats(rats: rats);
                     return myBody(rats, user, ctx);
                     // return const ProfilePage();
                   }
@@ -217,7 +219,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     },
                                     onTap: () {
                                       rat.id = buildItem.id;
-                                      context.read<RatsProvider>().setRats(rat);
+                                      context.read<RatsProvider>().setRat(rat);
                                       navPush(context, Consumer<RatsProvider>(
                                         builder: (context, value, child) {
                                           return RatInfo(
@@ -261,13 +263,35 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   Icons.square_rounded,
                                                   color: colorCode,
                                                 ),
-                                                Image.asset(
-                                                  "asstes/images/logo.png",
-                                                  width: 30,
-                                                  errorBuilder: (context, error,
-                                                          stackTrace) =>
-                                                      const Icon(Icons.image),
-                                                )
+                                                rat.profilePic != ''
+                                                    ? SizedBox(
+                                                        width: 45,
+                                                        child: Image.network(
+                                                          rat.profilePic!,
+                                                          fit: BoxFit.contain,
+                                                          loadingBuilder: (context,
+                                                              child,
+                                                              loadingProgress) {
+                                                            if (loadingProgress ==
+                                                                null) {
+                                                              return child;
+                                                            }
+                                                            return const Center(
+                                                              child: Icon(
+                                                                  Icons.image),
+                                                            );
+                                                          },
+                                                        ),
+                                                      )
+                                                    : Image.asset(
+                                                        "asstes/images/logo.png",
+                                                        width: 30,
+                                                        errorBuilder: (context,
+                                                                error,
+                                                                stackTrace) =>
+                                                            const Icon(
+                                                                Icons.image),
+                                                      )
                                               ],
                                             ),
                                           ),

@@ -10,6 +10,7 @@ import 'package:pocket_puppy_rattery/Models/rat.dart';
 import 'package:pocket_puppy_rattery/Services/breeding_scheme_provider.dart';
 import 'package:pocket_puppy_rattery/Services/custom_widgets.dart';
 import 'package:pocket_puppy_rattery/Views/Breeding%20Scheme/add_pup.dart';
+import 'package:pocket_puppy_rattery/Views/Breeding%20Scheme/pup_info.dart';
 import 'package:provider/provider.dart';
 
 class Pups extends StatefulWidget {
@@ -122,11 +123,12 @@ class _PupsState extends State<Pups> {
                                   borderRadius: BorderRadius.circular(10)),
                               child: ListTile(
                                 onTap: () {
+                                  provider.setPup(pup: pup);
                                   Navigator.of(context).push(
                                     PageRouteBuilder(
                                       pageBuilder: (context, animation,
                                               secondaryAnimation) =>
-                                          AddPup(scheme: scheme, pup: pup),
+                                          const PupInfo(),
                                       transitionsBuilder: (context, animation,
                                           secondaryAnimation, child) {
                                         const begin = Offset(1.0, 0.0);

@@ -14,6 +14,8 @@ class Pup {
     required this.coat,
     this.notes = const [],
     required this.id,
+    this.profilePic,
+    this.photos,
   });
   final String name;
   final String registeredName;
@@ -24,6 +26,8 @@ class Pup {
   final Parents parents;
   final Coats coat;
   final String id;
+  List<dynamic>? photos;
+  String? profilePic;
   List? notes;
 
   toDb() {

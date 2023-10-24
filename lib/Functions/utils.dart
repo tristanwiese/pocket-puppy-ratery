@@ -148,3 +148,7 @@ getMarkingtype(List markings) {
   }
   return "hLocus";
 }
+
+String birthdayView({required DateTime data}) {
+  return "${data.year}/${data.month}/${data.day}";
+}
