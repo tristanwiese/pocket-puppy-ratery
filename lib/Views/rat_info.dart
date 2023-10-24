@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Views/add_rat.dart';
+import 'package:pocket_puppy_rattery/Views/rat_gallery.dart';
 import '../Models/rat.dart';
 import '../Services/custom_widgets.dart';
 
