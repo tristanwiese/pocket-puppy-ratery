@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
-import 'package:pocket_puppy_rattery/Services/breeding_scheme_provider.dart';
-import 'package:pocket_puppy_rattery/Services/card_controller.dart';
-import 'package:pocket_puppy_rattery/Services/filter_provider.dart';
-import 'package:pocket_puppy_rattery/Services/profile_provider.dart';
-import 'package:pocket_puppy_rattery/Services/rats_provider.dart';
+import 'package:pocket_puppy_rattery/providers/breeding_scheme_provider.dart';
+import 'package:pocket_puppy_rattery/providers/card_controller.dart';
+import 'package:pocket_puppy_rattery/providers/controller_provider.dart';
+import 'package:pocket_puppy_rattery/providers/filter_provider.dart';
+import 'package:pocket_puppy_rattery/providers/profile_provider.dart';
+import 'package:pocket_puppy_rattery/providers/pups_provider.dart';
+import 'package:pocket_puppy_rattery/providers/rats_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Login_Register/auth_state.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'Services/controller_provider.dart';
 import 'firebase_options.dart';
 
 Future<void> main() async {
@@ -49,6 +50,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (context) => RatsProvider()),
         ChangeNotifierProvider(create: (context) => FilterProvider()),
         ChangeNotifierProvider(create: (context) => ProfileProvider()),
+        ChangeNotifierProvider(create: (context) => PupsProvider()),
       ],
       child: MaterialApp(
         title: 'Pocket Puppy Ratery',

@@ -9,7 +9,6 @@ class BreedingSchemeModel {
     required this.date,
     this.weightTracker = const [],
     this.notes = const [],
-    this.pups = const ["notSet"],
     this.id = '',
     this.numberOfPups,
     this.dateOfLabour,
@@ -23,7 +22,6 @@ class BreedingSchemeModel {
   bool isCustomRats;
   List<dynamic> notes;
   List<dynamic> weightTracker;
-  List pups;
   int? numberOfPups;
   Timestamp? dateOfLabour;
 
@@ -36,7 +34,6 @@ class BreedingSchemeModel {
       "isCustomRats": isCustomRats,
       "notes": notes,
       "weightTracker": weightTracker,
-      "pups": pups,
       "numberOfPups": numberOfPups,
       "dateOfLabour": dateOfLabour
     };
@@ -53,7 +50,6 @@ class BreedingSchemeModel {
       date: DateTime(dbScheme["dateOfMating"][0], dbScheme["dateOfMating"][1],
           dbScheme["dateOfMating"][2]),
       notes: dbScheme["notes"],
-      pups: dbScheme["pups"],
       weightTracker: dbScheme["weightTracker"],
       id: dbScheme.id,
       numberOfPups: dbScheme["numberOfPups"],

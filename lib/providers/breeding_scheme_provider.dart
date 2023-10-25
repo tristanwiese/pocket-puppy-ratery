@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Models/breeding_scheme_model.dart';
-import 'package:pocket_puppy_rattery/Models/pup_model.dart';
 
 class BreedingSchemeProvider extends ChangeNotifier {
   BreedingSchemeProvider({
@@ -8,18 +7,11 @@ class BreedingSchemeProvider extends ChangeNotifier {
   }) : _scheme = scheme;
 
   late BreedingSchemeModel? _scheme;
-  Pup? _pup;
 
   BreedingSchemeModel get getScheme => _scheme!;
-  Pup? get pup => _pup;
 
   updateScheme(BreedingSchemeModel scheme) {
     _scheme = scheme;
-    notifyListeners();
-  }
-
-  updatePup({required pup}) {
-    _pup = pup;
     notifyListeners();
   }
 
@@ -54,21 +46,5 @@ class BreedingSchemeProvider extends ChangeNotifier {
         _scheme!.weightTracker.removeAt(index!);
     }
     notifyListeners();
-  }
-
-  editPups({required String action, int? index, Map? pup}) {
-    switch (action) {
-      case "add":
-        _scheme!.pups.add(pup);
-        break;
-      case "remove":
-        _scheme!.pups.removeAt(index!);
-        break;
-    }
-    notifyListeners();
-  }
-
-  setPup({required Pup pup}) {
-    _pup = pup;
   }
 }

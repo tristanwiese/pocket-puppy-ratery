@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pocket_puppy_rattery/Models/rat.dart';
 import 'package:pocket_puppy_rattery/Services/custom_widgets.dart';
-import 'package:pocket_puppy_rattery/Services/rats_provider.dart';
+import 'package:pocket_puppy_rattery/providers/rats_provider.dart';
 import 'package:provider/provider.dart';
 
 class RatGallery extends StatefulWidget {

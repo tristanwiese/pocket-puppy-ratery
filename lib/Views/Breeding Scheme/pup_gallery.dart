@@ -1,8 +1,13 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pocket_puppy_rattery/Models/pup_model.dart';
-import 'package:pocket_puppy_rattery/Services/breeding_scheme_provider.dart';
 import 'package:pocket_puppy_rattery/Services/custom_widgets.dart';
+import 'package:pocket_puppy_rattery/providers/pups_provider.dart';
 import 'package:provider/provider.dart';
 
 class PupGallery extends StatefulWidget {
@@ -16,14 +21,14 @@ class _PupGalleryState extends State<PupGallery> {
   bool showload = false;
   @override
   Widget build(BuildContext context) {
-    return Consumer<BreedingSchemeProvider>(builder: (context, value, child) {
+    return Consumer<PupsProvider>(builder: (context, value, child) {
       return Scaffold(
           appBar: AppBar(
-            title: Text('Gallery : ${value.pup!.name}'),
+            title: Text('Gallery : ${value.pup.name}'),
           ),
           body: showload
               ? const Center(child: CircularProgressIndicator())
-              : value.pup!.photos == null || value.pup!.photos!.isEmpty
+              : value.pup.photos == null || value.pup.photos!.isEmpty
                   ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -47,7 +52,7 @@ class _PupGalleryState extends State<PupGallery> {
                                 const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 3,
                             ),
-                            itemCount: value.pup!.photos!.length,
+                            itemCount: value.pup.photos!.length,
                             itemBuilder: (context, index) {
                               return InkWell(
                                 onTap: () {
@@ -70,9 +75,9 @@ class _PupGalleryState extends State<PupGallery> {
                                     },
                                   );
                                 },
-                                child: value.pup!.photos![index] is String
+                                child: value.pup.photos![index] is String
                                     ? Image.network(
-                                        value.pup!.photos![index],
+                                        value.pup.photos![index],
                                         fit: BoxFit.contain,
                                         loadingBuilder:
                                             (context, child, loadingProgress) {
@@ -121,24 +126,39 @@ class _PupGalleryState extends State<PupGallery> {
   void storeImage({
     required Pup pup,
     required List<XFile> images,
-    required BreedingSchemeProvider value,
+    required PupsProvider value,
   }) async {
-    // final store = FirebaseStorage.instance.ref();
+    final store = FirebaseStorage.instance.ref();
 
-    // images.forEach((image) async {
-    //   final storeChild = store.child(
-    //       "${FirebaseAuth.instance.currentUser!.uid}/rats/${rat.id}/${image.name}");
-    //   try {
-    //     await storeChild.putFile(File(image.path));
-    //     final String url = await storeChild.getDownloadURL();
-    //     pup.photos!.add(url);
-    //     value.updatePup(pup: pup);
-    //     setState(() {
-    //       showload = false;
-    //     });
-    //   } on FirebaseException catch (e) {
-    //     print(e);
-    //   }
-    // });
+    images.forEach((image) async {
+      final storeChild = store.child(
+          "${FirebaseAuth.instance.currentUser!.uid}/pups/${pup.id}/${image.name}");
+      try {
+        await storeChild.putFile(File(image.path));
+        final String url = await storeChild.getDownloadURL();
+        pup.photos!.add(url);
+        value.updatePup(pup: pup);
+        setState(() {
+          showload = false;
+        });
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .collection('breedingSchemes')
+            .doc()
+            .update({});
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(FirebaseAuth.instance.currentUser!.uid)
+            .collection('breedingSchemes')
+            .doc()
+            .update({});
+        setState(() {
+          showload = false;
+        });
+      } on FirebaseException catch (e) {
+        print(e);
+      }
+    });
   }
 }

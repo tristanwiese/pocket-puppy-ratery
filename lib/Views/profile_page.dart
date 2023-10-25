@@ -8,7 +8,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pocket_puppy_rattery/Models/user.dart';
-import 'package:pocket_puppy_rattery/Services/profile_provider.dart';
+import 'package:pocket_puppy_rattery/providers/profile_provider.dart';
 import 'package:provider/provider.dart';
 import '../Services/custom_widgets.dart';
 

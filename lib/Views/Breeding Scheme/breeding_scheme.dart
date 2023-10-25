@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Models/breeding_scheme_model.dart';
-import 'package:pocket_puppy_rattery/Services/breeding_scheme_provider.dart';
+import 'package:pocket_puppy_rattery/providers/breeding_scheme_provider.dart';
 import 'package:provider/provider.dart';
 import '../../Services/custom_widgets.dart';
 
@@ -359,16 +359,16 @@ class _BreedingSchemeState extends State<BreedingScheme> {
           .add(scheme.toDB());
     } else {
       final scheme = BreedingSchemeModel(
-          male: male,
-          female: female,
-          name: name,
-          isCustomRats: showCustomRatScreen,
-          date: dateOfBreeding,
-          dateOfLabour: provider.getScheme.dateOfLabour,
-          notes: provider.getScheme.notes,
-          numberOfPups: provider.getScheme.numberOfPups,
-          weightTracker: provider.getScheme.weightTracker,
-          pups: provider.getScheme.pups);
+        male: male,
+        female: female,
+        name: name,
+        isCustomRats: showCustomRatScreen,
+        date: dateOfBreeding,
+        dateOfLabour: provider.getScheme.dateOfLabour,
+        notes: provider.getScheme.notes,
+        numberOfPups: provider.getScheme.numberOfPups,
+        weightTracker: provider.getScheme.weightTracker,
+      );
       FirebaseSchemes.doc(widget.id).update(scheme.toDB());
 
       provider.updateScheme(scheme);

@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
-import 'package:pocket_puppy_rattery/Services/rats_provider.dart';
+import 'package:pocket_puppy_rattery/providers/rats_provider.dart';
 import 'package:provider/provider.dart';
 import '../Functions/utils.dart';
 import '../Models/rat.dart';

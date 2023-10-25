@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:pocket_puppy_rattery/Models/rat.dart';
 
 import '../Services/constants.dart';
@@ -12,8 +13,8 @@ class Pup {
     required this.markings,
     required this.parents,
     required this.coat,
+    this.id,
     this.notes = const [],
-    required this.id,
     this.profilePic,
     this.photos,
   });
@@ -25,7 +26,7 @@ class Pup {
   final List markings;
   final Parents parents;
   final Coats coat;
-  final String id;
+  String? id;
   List<dynamic>? photos;
   String? profilePic;
   List? notes;
@@ -42,12 +43,11 @@ class Pup {
       "father": parents.dad,
       "coat": coat.name.toString(),
       "notes": notes,
-      "id": id,
     };
     return pup;
   }
 
-  static fromDb({required Map<String, dynamic> dbPup}) {
+  static fromDb({required QueryDocumentSnapshot<Object?> dbPup}) {
     return Pup(
       name: dbPup["name"],
       notes: dbPup["notes"],
@@ -61,7 +61,7 @@ class Pup {
       parents: Parents(dad: dbPup["father"], mom: dbPup["mother"]),
       coat: Coats
           .values[coatsList.indexWhere((element) => element == dbPup["coat"])],
-      id: dbPup['id'],
+      id: dbPup.id,
     );
   }
 }

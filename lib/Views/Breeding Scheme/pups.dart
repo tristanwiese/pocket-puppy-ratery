@@ -7,10 +7,11 @@ import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Models/breeding_scheme_model.dart';
 import 'package:pocket_puppy_rattery/Models/pup_model.dart';
 import 'package:pocket_puppy_rattery/Models/rat.dart';
-import 'package:pocket_puppy_rattery/Services/breeding_scheme_provider.dart';
 import 'package:pocket_puppy_rattery/Services/custom_widgets.dart';
 import 'package:pocket_puppy_rattery/Views/Breeding%20Scheme/add_pup.dart';
 import 'package:pocket_puppy_rattery/Views/Breeding%20Scheme/pup_info.dart';
+import 'package:pocket_puppy_rattery/providers/breeding_scheme_provider.dart';
+import 'package:pocket_puppy_rattery/providers/pups_provider.dart';
 import 'package:provider/provider.dart';
 
 class Pups extends StatefulWidget {
@@ -24,10 +25,11 @@ class Pups extends StatefulWidget {
 
 class _PupsState extends State<Pups> {
   late BreedingSchemeModel scheme;
-  late List pups;
+  late List<Pup> pups;
   DateTime? date = DateTime.now();
   int numberOfPups = 0;
-  late BreedingSchemeProvider provider;
+  late BreedingSchemeProvider breedProv;
+  late PupsProvider pupProv;
 
   @override
   void initState() {
@@ -38,8 +40,9 @@ class _PupsState extends State<Pups> {
   Widget build(BuildContext context) {
     return Consumer<BreedingSchemeProvider>(builder: (context, value, child) {
       scheme = value.getScheme;
-      pups = scheme.pups;
-      provider = Provider.of<BreedingSchemeProvider>(context);
+      pups = Provider.of<PupsProvider>(context, listen: false).pups;
+      breedProv = Provider.of<BreedingSchemeProvider>(context);
+      pupProv = Provider.of<PupsProvider>(context);
       return Scaffold(
           appBar: AppBar(
             title: const Text("Pups"),
@@ -116,14 +119,15 @@ class _PupsState extends State<Pups> {
                         child: ListView.builder(
                           itemCount: pups.length,
                           itemBuilder: (context, index) {
-                            final Pup pup = Pup.fromDb(dbPup: pups[index]);
+                            final Pup pup = pups[index];
+                            print(pup.id);
                             return Card(
                               elevation: 5,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10)),
                               child: ListTile(
                                 onTap: () {
-                                  provider.setPup(pup: pup);
+                                  pupProv.setPup(pup: pup);
                                   Navigator.of(context).push(
                                     PageRouteBuilder(
                                       pageBuilder: (context, animation,
@@ -161,16 +165,16 @@ class _PupsState extends State<Pups> {
                                             ),
                                             ElevatedButton(
                                               onPressed: () {
+                                                pups.removeWhere((element) =>
+                                                    element.id == pup.id);
+
                                                 FirebaseSchemes.doc(scheme.id)
-                                                    .update({
-                                                  "pups":
-                                                      FieldValue.arrayRemove(
-                                                          [pups[index]])
-                                                });
-                                                provider.editPups(
-                                                    action: "remove",
-                                                    index: index);
+                                                    .collection('pups')
+                                                    .doc(pup.id)
+                                                    .delete();
                                                 navPop(context);
+
+                                                pupProv.updatePups(pups: pups);
                                               },
                                               style: ElevatedButton.styleFrom(
                                                   backgroundColor:
@@ -278,6 +282,8 @@ class _PupsState extends State<Pups> {
               child: ElevatedButton(
                 style: MyElevatedButtonStyle.buttonStyle,
                 onPressed: () {
+                  print(pupProv.pups.length);
+
                   Navigator.of(context).push(
                     PageRouteBuilder(
                       pageBuilder: (context, animation, secondaryAnimation) =>
@@ -376,15 +382,10 @@ class _PupsState extends State<Pups> {
                     onPressed: () {
                       scheme.dateOfLabour = Timestamp.fromDate(date!);
                       scheme.numberOfPups = numberOfPups;
-                      scheme.pups.clear();
-
                       value.updateScheme(scheme);
 
-                      FirebaseSchemes.doc(scheme.id).update({
-                        "pups": FieldValue.arrayRemove(["notSet"]),
-                        "dateOfLabour": date,
-                        "numberOfPups": numberOfPups
-                      });
+                      FirebaseSchemes.doc(scheme.id).update(
+                          {"dateOfLabour": date, "numberOfPups": numberOfPups});
                     },
                     style: MyElevatedButtonStyle.buttonStyle,
                     child: const Text("Done"));

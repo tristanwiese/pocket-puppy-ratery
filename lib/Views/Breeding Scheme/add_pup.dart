@@ -1,12 +1,11 @@
 // ignore_for_file: use_build_context_synchronously, non_constant_identifier_names
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Models/breeding_scheme_model.dart';
 import 'package:pocket_puppy_rattery/Models/pup_model.dart';
-import 'package:pocket_puppy_rattery/Services/breeding_scheme_provider.dart';
+import 'package:pocket_puppy_rattery/providers/pups_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
+
 import '../../Functions/utils.dart';
 import '../../Models/rat.dart';
 import '../../Services/constants.dart';
@@ -63,6 +62,7 @@ class _AddPupState extends State<AddPup> {
     super.initState();
 
     if (widget.pup != null) {
+      print(widget.pup!.id);
       nameController = TextEditingController(text: widget.pup!.name);
       registeredNameController =
           TextEditingController(text: widget.pup!.registeredName);
@@ -174,84 +174,93 @@ class _AddPupState extends State<AddPup> {
         width: 130,
         height: 40,
         child: ElevatedButton(
-            onPressed: () async {
-              if (!_formKey.currentState!.validate()) {
-                return;
-              }
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return const Center(child: CircularProgressIndicator());
-                },
-              );
-              if (_pickedGender == null) {
-                showError("Gender");
-                navPop(context);
-                return;
-              }
-              if (actvieMarkingsList.isEmpty) {
-                showError("Markings");
-                navPop(context);
-                return;
-              }
-              if (activeColorsList.isEmpty) {
-                showError("Colors");
-                navPop(context);
-                return;
-              }
-              if (earController == null) {
-                showError("Ears");
-                navPop(context);
-                return;
-              }
-              if (coatController == null) {
-                showError("Coat");
-                navPop(context);
-                return;
-              }
-              coatsList.sort();
-              final pup = Pup(
-                name: nameController.text.trim(),
-                registeredName: registeredNameController.text.trim(),
-                colours: activeColorsList,
-                ears: Ears.values[
-                    earsList.indexWhere((element) => element == earController)],
-                gender: _pickedGender!,
-                markings: actvieMarkingsList,
-                parents:
-                    Parents(dad: widget.scheme.male, mom: widget.scheme.female),
-                coat: Coats.values[coatsList
-                    .indexWhere((element) => element == coatController)],
-                id: const Uuid().v4(),
-              );
-              if (widget.pup != null) {
-                final int index = widget.scheme.pups
-                    .indexWhere((element) => element['id'] == widget.pup!.id);
+          onPressed: () async {
+            final PupsProvider pupProv =
+                Provider.of<PupsProvider>(context, listen: false);
+            print(pupProv.pup.id);
+            if (!_formKey.currentState!.validate()) {
+              return;
+            }
+            showDialog(
+              context: context,
+              builder: (context) {
+                return const Center(child: CircularProgressIndicator());
+              },
+            );
+            if (_pickedGender == null) {
+              showError("Gender");
+              navPop(context);
+              return;
+            }
+            if (actvieMarkingsList.isEmpty) {
+              showError("Markings");
+              navPop(context);
+              return;
+            }
+            if (activeColorsList.isEmpty) {
+              showError("Colors");
+              navPop(context);
+              return;
+            }
+            if (earController == null) {
+              showError("Ears");
+              navPop(context);
+              return;
+            }
+            if (coatController == null) {
+              showError("Coat");
+              navPop(context);
+              return;
+            }
+            coatsList.sort();
 
-                await FirebaseSchemes.doc(widget.scheme.id).update({
-                  "pups": FieldValue.arrayRemove([widget.pup!.toDb()])
-                });
-                await FirebaseSchemes.doc(widget.scheme.id).update({
-                  "pups": FieldValue.arrayUnion([pup.toDb()])
-                });
-                Provider.of<BreedingSchemeProvider>(context, listen: false)
-                    .editPups(action: "remove", index: index);
-                Provider.of<BreedingSchemeProvider>(context, listen: false)
-                    .editPups(action: "add", pup: pup.toDb());
-                navPop(context);
-                navPop(context);
-                return;
-              }
-              await FirebaseSchemes.doc(widget.scheme.id).update({
-                "pups": FieldValue.arrayUnion([pup.toDb()])
+            final pup = Pup(
+              name: nameController.text.trim(),
+              registeredName: registeredNameController.text.trim(),
+              colours: activeColorsList,
+              ears: Ears.values[
+                  earsList.indexWhere((element) => element == earController)],
+              gender: _pickedGender!,
+              markings: actvieMarkingsList,
+              parents:
+                  Parents(dad: widget.scheme.male, mom: widget.scheme.female),
+              coat: Coats.values[
+                  coatsList.indexWhere((element) => element == coatController)],
+            );
+
+            if (widget.pup != null) {
+              FirebaseSchemes.doc(widget.scheme.id)
+                  .collection('pups')
+                  .doc(widget.pup!.id)
+                  .update(pup.toDb());
+
+              pup.id = widget.pup!.id;
+
+              pupProv.updatePup(pup: pup);
+              final List<Pup> pups = pupProv.pups;
+              int index = pupProv.pups.indexWhere((element) {
+                return element.id == widget.pup!.id;
               });
-              Provider.of<BreedingSchemeProvider>(context, listen: false)
-                  .editPups(action: "add", pup: pup.toDb());
+
+              pups[index] = pup;
+
+              pupProv.updatePups(pups: pups);
               navPop(context);
               navPop(context);
-            },
-            style: MyElevatedButtonStyle.buttonStyle,
-            child: const Text('Save')),
+              return;
+            }
+            await FirebaseSchemes.doc(widget.scheme.id)
+                .collection('pups')
+                .add(pup.toDb());
+
+            pupProv.updatePups(pups: pupProv.pups);
+
+            navPop(context);
+            navPop(context);
+          },
+          style: MyElevatedButtonStyle.buttonStyle,
+          child: const Text('Save'),
+        ),
       ),
     );
   }

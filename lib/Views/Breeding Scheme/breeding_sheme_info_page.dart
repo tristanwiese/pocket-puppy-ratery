@@ -2,14 +2,16 @@
 import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Models/breeding_scheme_model.dart';
 import 'package:pocket_puppy_rattery/Models/pup_model.dart';
-import 'package:pocket_puppy_rattery/Services/breeding_scheme_provider.dart';
 import 'package:pocket_puppy_rattery/Views/Breeding%20Scheme/pups.dart';
+import 'package:pocket_puppy_rattery/providers/breeding_scheme_provider.dart';
+import 'package:pocket_puppy_rattery/providers/pups_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../../Services/custom_widgets.dart';
@@ -238,18 +240,41 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
   MyInfoCard pups() {
     return MyInfoCard(
       title: "Pups",
-      child: Column(
-        children: [
-          scheme.pups.isNotEmpty && !scheme.pups.contains("notSet")
-              ? SizedBox(
+      child: StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('users')
+              .doc(FirebaseAuth.instance.currentUser!.uid)
+              .collection('breedingSchemes')
+              .doc(scheme.id)
+              .collection('pups')
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            final pups = snapshot.data!.docs;
+            if (pups.isEmpty) {
+              Provider.of<PupsProvider>(context, listen: false)
+                  .setPups(pups: []);
+              return Center(child: Text('No pups'));
+            }
+            final List<Pup> pupModels = [];
+            pups.forEach((element) {
+              pupModels.add(Pup.fromDb(dbPup: element));
+            });
+            Provider.of<PupsProvider>(context, listen: false)
+                .setPups(pups: pupModels);
+            return Column(
+              children: [
+                SizedBox(
                   height: listContainerHeight(
-                    itemLenght: scheme.pups.length,
+                    itemLenght: pups.length,
                     custoSizePerLine: 60,
                   ),
                   child: ListView.builder(
-                    itemCount: scheme.pups.length,
+                    itemCount: pups.length,
                     itemBuilder: (context, index) {
-                      final Pup pup = Pup.fromDb(dbPup: scheme.pups[index]);
+                      final Pup pup = Pup.fromDb(dbPup: pups[index]);
                       return Card(
                         elevation: 5,
                         shape: RoundedRectangleBorder(
@@ -262,24 +287,9 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                     },
                   ),
                 )
-              : const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("No Pups"),
-                  ],
-                ),
-          // const SizedBox(height: 10),
-          // ElevatedButton.icon(
-          //   onPressed: () {},
-          //   icon: const Icon(
-          //     Icons.add,
-          //     color: Colors.green,
-          //   ),
-          //   style: MyElevatedButtonStyle.buttonStyle,
-          //   label: const Text("Add Pups"),
-          // ),
-        ],
-      ),
+              ],
+            );
+          }),
     );
   }
 
