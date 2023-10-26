@@ -120,7 +120,6 @@ class _PupsState extends State<Pups> {
                           itemCount: pups.length,
                           itemBuilder: (context, index) {
                             final Pup pup = pups[index];
-                            print(pup.id);
                             return Card(
                               elevation: 5,
                               shape: RoundedRectangleBorder(
@@ -228,6 +227,8 @@ class _PupsState extends State<Pups> {
                                                     child:
                                                         CircularProgressIndicator()),
                                               );
+                                              print("fire");
+
                                               await FirebaseFirestore.instance
                                                   .collection("users")
                                                   .doc(FirebaseAuth.instance
@@ -235,6 +236,7 @@ class _PupsState extends State<Pups> {
                                                   .collection("rats")
                                                   .doc()
                                                   .set(rat.toDb());
+                                              print("fire");
                                               navPop(context);
                                               navPop(context);
                                             },

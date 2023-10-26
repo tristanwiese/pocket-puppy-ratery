@@ -12,6 +12,7 @@ import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Models/breeding_scheme_model.dart';
 import 'package:pocket_puppy_rattery/Models/genes.dart';
+import 'package:pocket_puppy_rattery/Models/pup_model.dart';
 import 'package:pocket_puppy_rattery/Models/rat.dart';
 import 'package:pocket_puppy_rattery/Models/user.dart';
 import 'package:pocket_puppy_rattery/Services/constants.dart';
@@ -230,6 +231,9 @@ class _MyHomePageState extends State<MyHomePage> {
                                     child: Consumer<CardController>(
                                         builder: (context, value, child) {
                                       value.setRat = rat;
+                                      final bool hasProfile =
+                                          (rat.profilePic != null &&
+                                              rat.profilePic != '');
                                       return Card(
                                         elevation: 3,
                                         shadowColor:
@@ -263,7 +267,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   Icons.square_rounded,
                                                   color: colorCode,
                                                 ),
-                                                rat.profilePic != ''
+                                                hasProfile
                                                     ? SizedBox(
                                                         width: 45,
                                                         child: Image.network(
@@ -1184,7 +1188,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                         .image
                                     : null,
                             child: value.user.profilePicUrl == ''
-                                ? const Icon(Icons.person_outline)
+                                ? const Icon(
+                                    Icons.person_outline,
+                                    color: Colors.black,
+                                  )
                                 : null,
                           ),
                           onTap: () {

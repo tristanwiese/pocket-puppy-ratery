@@ -41,6 +41,7 @@ class _PupInfoState extends State<PupInfo> {
               colors(value: value),
               pupNotes(value: value),
               buttonRow(value: value),
+              const SizedBox(height: 20),
             ],
           ),
         ),
@@ -445,8 +446,8 @@ class _PupInfoState extends State<PupInfo> {
                 ]),
               });
               navPop(context);
-              titleController.dispose();
-              noteController.dispose();
+              // titleController.dispose();
+              // noteController.dispose();
             },
             style: MyElevatedButtonStyle.doneButtonStyle,
             child:

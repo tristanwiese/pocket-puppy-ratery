@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pocket_puppy_rattery/Models/pup_model.dart';
 import 'package:pocket_puppy_rattery/Services/custom_widgets.dart';
+import 'package:pocket_puppy_rattery/providers/breeding_scheme_provider.dart';
 import 'package:pocket_puppy_rattery/providers/pups_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -128,16 +129,26 @@ class _PupGalleryState extends State<PupGallery> {
     required List<XFile> images,
     required PupsProvider value,
   }) async {
+    final BreedingSchemeProvider breedProv =
+        Provider.of<BreedingSchemeProvider>(context, listen: false);
     final store = FirebaseStorage.instance.ref();
 
     images.forEach((image) async {
       final storeChild = store.child(
           "${FirebaseAuth.instance.currentUser!.uid}/pups/${pup.id}/${image.name}");
       try {
-        await storeChild.putFile(File(image.path));
+        final data = await image.readAsBytes();
+        print(data);
+        kIsWeb
+            ? await storeChild.putData(data)
+            : await storeChild.putFile(File(image.path));
         final String url = await storeChild.getDownloadURL();
+        print(url);
         pup.photos!.add(url);
+        print('test2');
         value.updatePup(pup: pup);
+        print('test2');
+
         setState(() {
           showload = false;
         });
@@ -145,17 +156,18 @@ class _PupGalleryState extends State<PupGallery> {
             .collection('users')
             .doc(FirebaseAuth.instance.currentUser!.uid)
             .collection('breedingSchemes')
-            .doc()
-            .update({});
-        FirebaseFirestore.instance
-            .collection('users')
-            .doc(FirebaseAuth.instance.currentUser!.uid)
-            .collection('breedingSchemes')
-            .doc()
-            .update({});
-        setState(() {
-          showload = false;
+            .doc(breedProv.getScheme.id)
+            .collection('pups')
+            .doc(pup.id)
+            .update({
+          "photos": FieldValue.arrayUnion([url])
         });
+        // FirebaseFirestore.instance
+        //     .collection('users')
+        //     .doc(FirebaseAuth.instance.currentUser!.uid)
+        //     .collection('breedingSchemes')
+        //     .doc()
+        //     .update({});
       } on FirebaseException catch (e) {
         print(e);
       }

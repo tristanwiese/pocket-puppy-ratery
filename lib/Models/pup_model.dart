@@ -62,6 +62,7 @@ class Pup {
       coat: Coats
           .values[coatsList.indexWhere((element) => element == dbPup["coat"])],
       id: dbPup.id,
+      photos: dbPup['photos'],
     );
   }
 }
