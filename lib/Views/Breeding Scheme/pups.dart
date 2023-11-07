@@ -189,7 +189,6 @@ class _PupsState extends State<Pups> {
                                 ),
                                 leading: IconButton(
                                   onPressed: () async {
-                                    // print(scheme.isCustomRats);
                                     final Rat rat = Rat(
                                       name: pup.name,
                                       registeredName: pup.registeredName,
@@ -227,7 +226,6 @@ class _PupsState extends State<Pups> {
                                                     child:
                                                         CircularProgressIndicator()),
                                               );
-                                              print("fire");
 
                                               await FirebaseFirestore.instance
                                                   .collection("users")
@@ -236,7 +234,6 @@ class _PupsState extends State<Pups> {
                                                   .collection("rats")
                                                   .doc()
                                                   .set(rat.toDb());
-                                              print("fire");
                                               navPop(context);
                                               navPop(context);
                                             },
@@ -284,8 +281,6 @@ class _PupsState extends State<Pups> {
               child: ElevatedButton(
                 style: MyElevatedButtonStyle.buttonStyle,
                 onPressed: () {
-                  print(pupProv.pups.length);
-
                   Navigator.of(context).push(
                     PageRouteBuilder(
                       pageBuilder: (context, animation, secondaryAnimation) =>

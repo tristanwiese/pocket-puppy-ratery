@@ -608,28 +608,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  // Widget test() {
-  //   return StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
-  //       stream: FirebaseFirestore.instance
-  //           .collection("users")
-  //           .doc(FirebaseAuth.instance.currentUser!.uid)
-  //           // .collection("breedingSchemes")
-  //           .snapshots(),
-  //       builder: (context, snapshot) {
-  //         if (!snapshot.hasData) {
-  //           return const Center(
-  //             child: Text(
-  //               "Fethcing Schemes..",
-  //               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-  //             ),
-  //           );
-  //         } else {
-  //           print(snapshot.data!.data());
-  //           return Container();
-  //         }
-  //       });
-  // }
-
   Widget breedTracker() {
     return StreamBuilder<QuerySnapshot>(
       stream: FirebaseFirestore.instance

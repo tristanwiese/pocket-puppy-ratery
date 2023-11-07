@@ -25,7 +25,6 @@ class _PupInfoState extends State<PupInfo> {
   Widget build(BuildContext context) {
     breedProv = Provider.of<BreedingSchemeProvider>(context, listen: false);
     return Consumer<PupsProvider>(builder: (context, value, child) {
-      print(value.pup.id);
       return Scaffold(
         appBar: AppBar(
           title: Text("Pup: ${value.pup.name}"),

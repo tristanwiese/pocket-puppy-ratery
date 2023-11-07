@@ -56,7 +56,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
               ),
               const SizedBox(height: 10),
               const Text(
-                "Check inox for link",
+                "Check inbox for link",
                 style: TextStyle(fontSize: 20),
               ),
               const SizedBox(height: 10),

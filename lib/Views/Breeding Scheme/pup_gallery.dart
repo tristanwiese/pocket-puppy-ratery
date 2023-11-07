@@ -138,16 +138,12 @@ class _PupGalleryState extends State<PupGallery> {
           "${FirebaseAuth.instance.currentUser!.uid}/pups/${pup.id}/${image.name}");
       try {
         final data = await image.readAsBytes();
-        print(data);
         kIsWeb
             ? await storeChild.putData(data)
             : await storeChild.putFile(File(image.path));
         final String url = await storeChild.getDownloadURL();
-        print(url);
         pup.photos!.add(url);
-        print('test2');
         value.updatePup(pup: pup);
-        print('test2');
 
         setState(() {
           showload = false;

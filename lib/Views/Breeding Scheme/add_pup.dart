@@ -62,7 +62,6 @@ class _AddPupState extends State<AddPup> {
     super.initState();
 
     if (widget.pup != null) {
-      print(widget.pup!.id);
       nameController = TextEditingController(text: widget.pup!.name);
       registeredNameController =
           TextEditingController(text: widget.pup!.registeredName);
@@ -177,7 +176,6 @@ class _AddPupState extends State<AddPup> {
           onPressed: () async {
             final PupsProvider pupProv =
                 Provider.of<PupsProvider>(context, listen: false);
-            print(pupProv.pup.id);
             if (!_formKey.currentState!.validate()) {
               return;
             }

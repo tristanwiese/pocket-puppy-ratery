@@ -7,6 +7,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:pocket_puppy_rattery/Functions/nav.dart';
+import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Models/user.dart';
 import 'package:pocket_puppy_rattery/providers/profile_provider.dart';
 import 'package:provider/provider.dart';
@@ -20,6 +22,8 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,7 +90,126 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             const SizedBox(height: 30),
             Text("Username: ${user.userName}"),
-            Text("Email: ${user.email}")
+            Text("Email: ${user.email}"),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                final TextEditingController usernameController =
+                    TextEditingController();
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text("Enter new Username"),
+                      content: Form(
+                        key: _formKey,
+                        child: TextFormField(
+                          controller: usernameController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'required';
+                            }
+                            return null;
+                          },
+                          decoration:
+                              const InputDecoration(hintText: "Username"),
+                        ),
+                      ),
+                      actions: [
+                        ElevatedButton(
+                          onPressed: () {
+                            navPop(context);
+                          },
+                          style: MyElevatedButtonStyle.doneButtonStyle,
+                          child: const Text('Cancel'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              user.userName = usernameController.text.trim();
+                              setState(() {});
+                              FirebaseFirestore.instance
+                                  .collection("users")
+                                  .doc(FirebaseAuth.instance.currentUser!.uid)
+                                  .update({
+                                'userName': usernameController.text.trim()
+                              });
+                              navPop(context);
+                            }
+                          },
+                          style: MyElevatedButtonStyle.buttonStyle,
+                          child: const Text('Done'),
+                        )
+                      ],
+                    );
+                  },
+                );
+              },
+              style: MyElevatedButtonStyle.buttonStyle,
+              child: const Text('Edit Username'),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                final TextEditingController emailController =
+                    TextEditingController();
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text("Enter new Email"),
+                      content: Form(
+                        key: _formKey,
+                        child: TextFormField(
+                          controller: emailController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'required';
+                            }
+                            return null;
+                          },
+                          decoration: const InputDecoration(hintText: "Email"),
+                        ),
+                      ),
+                      actions: [
+                        ElevatedButton(
+                          onPressed: () {
+                            navPop(context);
+                          },
+                          style: MyElevatedButtonStyle.doneButtonStyle,
+                          child: const Text('Cancel'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            if (_formKey.currentState!.validate()) {
+                              try {
+                                await FirebaseAuth.instance.currentUser!
+                                    .updateEmail(emailController.text.trim());
+                                FirebaseAuth.instance.signOut();
+                              } on FirebaseAuthException catch (e) {
+                                if (e.code == 'email-already-in-use') {
+                                  alert(text: 'Email already exists');
+                                }
+                                if (e.code == 'requires-recent-login') {
+                                  alert(
+                                      text:
+                                          'Something went wrong. Please re-login to proceed');
+                                }
+                                print(e);
+                              }
+                            }
+                          },
+                          style: MyElevatedButtonStyle.buttonStyle,
+                          child: const Text('Done'),
+                        )
+                      ],
+                    );
+                  },
+                );
+              },
+              style: MyElevatedButtonStyle.buttonStyle,
+              child: const Text('Change Email'),
+            )
           ],
         );
       }),

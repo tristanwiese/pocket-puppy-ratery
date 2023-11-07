@@ -3,7 +3,7 @@ class UserModel {
       {required this.email, required this.userName, this.profilePicUrl = ''});
 
   final String email;
-  final String userName;
+  String userName;
   String profilePicUrl;
 
   Map<String, dynamic> toDB() {
