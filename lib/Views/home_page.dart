@@ -21,9 +21,9 @@ import 'package:pocket_puppy_rattery/providers/card_controller.dart';
 import 'package:pocket_puppy_rattery/Services/custom_widgets.dart';
 import 'package:pocket_puppy_rattery/Views/add_rat.dart';
 import 'package:pocket_puppy_rattery/Views/Breeding%20Scheme/breeding_sheme_info_page.dart';
-import 'package:pocket_puppy_rattery/Views/profile_page.dart';
+import 'package:pocket_puppy_rattery/Views/settings/profile_page.dart';
 import 'package:pocket_puppy_rattery/Views/rat_info.dart';
-import 'package:pocket_puppy_rattery/Views/settings_page.dart';
+import 'package:pocket_puppy_rattery/Views/settings/settings_page.dart';
 import 'package:pocket_puppy_rattery/providers/controller_provider.dart';
 import 'package:pocket_puppy_rattery/providers/filter_provider.dart';
 import 'package:pocket_puppy_rattery/providers/profile_provider.dart';
@@ -239,7 +239,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         shadowColor:
                                             (AgeCalculator.age(birthdate)
                                                         .years >=
-                                                    3)
+                                                    value.seniorAge)
                                                 ? value.state
                                                     ? Color(value.color)
                                                     : Colors.black
@@ -249,7 +249,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 Radius.circular(15))),
                                         color: (AgeCalculator.age(birthdate)
                                                     .years >=
-                                                3)
+                                                value.seniorAge)
                                             ? value.state
                                                 ? Color(value.color)
                                                 : null

@@ -118,25 +118,26 @@ class _PupInfoState extends State<PupInfo> {
                                           ["title"]),
                                   title: Text(value.pup.notes![index]['title']),
                                   trailing: IconButton(
-                                      onPressed: () {
-                                        FirebaseSchemes.doc(
-                                                breedProv.getScheme.id)
-                                            .collection('pups')
-                                            .doc(value.pup.id)
-                                            .update({
-                                          'notes': FieldValue.arrayRemove(
-                                              [value.pup.notes![index]])
-                                        });
+                                    onPressed: () {
+                                      FirebaseSchemes.doc(
+                                              breedProv.getScheme.id)
+                                          .collection('pups')
+                                          .doc(value.pup.id)
+                                          .update({
+                                        'notes': FieldValue.arrayRemove(
+                                            [value.pup.notes![index]])
+                                      });
 
-                                        final Pup pup = value.pup;
+                                      final Pup pup = value.pup;
 
-                                        pup.notes!.removeAt(index);
-                                        value.updatePup(pup: pup);
-                                        setState(
-                                          () {},
-                                        );
-                                      },
-                                      icon: const DeleteIcon()),
+                                      pup.notes!.removeAt(index);
+                                      value.updatePup(pup: pup);
+                                      setState(
+                                        () {},
+                                      );
+                                    },
+                                    icon: const DeleteIcon(),
+                                  ),
                                 ),
                               );
                             },
@@ -146,6 +147,9 @@ class _PupInfoState extends State<PupInfo> {
                         return SizedBox(
                           height: 400,
                           child: AlertDialog(
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
                             title: title,
                             actions: actions,
                             content: content,
@@ -489,6 +493,9 @@ class _PupInfoState extends State<PupInfo> {
         );
 
         return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           title: title,
           actions: actions,
           content: content,

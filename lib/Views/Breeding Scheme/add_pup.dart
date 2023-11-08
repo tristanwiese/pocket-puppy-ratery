@@ -224,6 +224,7 @@ class _AddPupState extends State<AddPup> {
                   Parents(dad: widget.scheme.male, mom: widget.scheme.female),
               coat: Coats.values[
                   coatsList.indexWhere((element) => element == coatController)],
+              notes: widget.pup!.notes,
             );
 
             if (widget.pup != null) {

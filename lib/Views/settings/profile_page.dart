@@ -12,7 +12,7 @@ import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Models/user.dart';
 import 'package:pocket_puppy_rattery/providers/profile_provider.dart';
 import 'package:provider/provider.dart';
-import '../Services/custom_widgets.dart';
+import '../../Services/custom_widgets.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});

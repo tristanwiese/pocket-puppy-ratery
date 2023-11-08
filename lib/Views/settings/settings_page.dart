@@ -2,13 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:numberpicker/numberpicker.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/providers/card_controller.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Services/custom_widgets.dart';
+import '../../Services/custom_widgets.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -21,6 +22,8 @@ class _SettingsPageState extends State<SettingsPage> {
   late Color seniorColour;
 
   late final SharedPreferences prefs;
+
+  late int seniorAge;
 
   bool loading = true;
 
@@ -45,6 +48,12 @@ class _SettingsPageState extends State<SettingsPage> {
       seniorColorBool = true;
     } else {
       seniorColorBool = false;
+    }
+    int? x = prefs.getInt('seniorAge');
+    if (x != null) {
+      seniorAge = x;
+    } else {
+      seniorAge = 3;
     }
     setState(() {
       loading = false;
@@ -80,26 +89,67 @@ class _SettingsPageState extends State<SettingsPage> {
                               showDialog(
                                 context: context,
                                 builder: (context) {
-                                  return AlertDialog(
-                                    title: const Text("Pick a Colour"),
-                                    content: ColorPicker(
-                                        pickerColor: seniorColour,
-                                        onColorChanged: changeColour),
-                                    actions: [
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          prefs.setInt("seniorColor",
-                                              seniorColour.value);
-                                          context
-                                              .read<CardController>()
-                                              .changeColor(seniorColour.value);
-                                          navPop(context);
-                                        },
-                                        style:
-                                            MyElevatedButtonStyle.buttonStyle,
-                                        child: const Text("Done"),
-                                      ),
-                                    ],
+                                  return StatefulBuilder(
+                                    builder: (context, changeState) {
+                                      return AlertDialog(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(20)),
+                                        title: const Text("Pick a Colour"),
+                                        content: Column(
+                                          children: [
+                                            ColorPicker(
+                                              pickerColor: seniorColour,
+                                              onColorChanged: changeColour,
+                                            ),
+                                            const Text(
+                                              'Select age at when colour is applied',
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 20,
+                                              ),
+                                            ),
+                                            const SizedBox(height: 20),
+                                            NumberPicker(
+                                              axis: Axis.horizontal,
+                                              minValue: 1,
+                                              maxValue: 10,
+                                              value: seniorAge,
+                                              onChanged: (value) {
+                                                seniorAge = value;
+                                                setState(() {});
+                                                changeState(
+                                                  () {},
+                                                );
+                                              },
+                                            )
+                                          ],
+                                        ),
+                                        actions: [
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              prefs.setInt("seniorColor",
+                                                  seniorColour.value);
+                                              prefs.setInt(
+                                                  'seniorAge', seniorAge);
+                                              context
+                                                  .read<CardController>()
+                                                  .changeColor(
+                                                      seniorColour.value);
+                                              context
+                                                  .read<CardController>()
+                                                  .updateSeniorAge(
+                                                      age: seniorAge);
+                                              navPop(context);
+                                            },
+                                            style: MyElevatedButtonStyle
+                                                .buttonStyle,
+                                            child: const Text("Done"),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   );
                                 },
                               );
@@ -108,8 +158,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                 title: "Senior Colour",
                                 child: Column(
                                   children: [
-                                    const Text(
-                                        "Change the rat card colour for rats over 3 years old"),
+                                    Text(
+                                        "Change the rat card colour for rats over $seniorAge years old"),
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
