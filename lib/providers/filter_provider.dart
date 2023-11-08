@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class FilterProvider extends ChangeNotifier {
-  List<String> _filters = ["Gender", "Age"];
+  final List<String> _filters = ["Gender", "Age"];
   List<QueryDocumentSnapshot> _filteredRats = [];
   String _activeFilters = "";
   String _activeSort = "";

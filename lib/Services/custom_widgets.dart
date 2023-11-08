@@ -298,7 +298,7 @@ class DrawerTitle extends StatelessWidget {
                           child: IconButton(
                               onPressed: onPressReverse,
                               highlightColor:
-                                  Color.fromARGB(178, 136, 136, 136),
+                                  const Color.fromARGB(178, 136, 136, 136),
                               splashRadius: 20,
                               padding: EdgeInsets.zero,
                               icon: Icon(reversed!

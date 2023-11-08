@@ -256,9 +256,10 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
             if (pups.isEmpty) {
               Provider.of<PupsProvider>(context, listen: false)
                   .setPups(pups: []);
-              return Center(child: Text('No pups'));
+              return const Center(child: Text('No pups'));
             }
             final List<Pup> pupModels = [];
+            // ignore: avoid_function_literals_in_foreach_calls
             pups.forEach((element) {
               pupModels.add(Pup.fromDb(dbPup: element));
             });

@@ -133,6 +133,7 @@ class _PupGalleryState extends State<PupGallery> {
         Provider.of<BreedingSchemeProvider>(context, listen: false);
     final store = FirebaseStorage.instance.ref();
 
+    // ignore: avoid_function_literals_in_foreach_calls
     images.forEach((image) async {
       final storeChild = store.child(
           "${FirebaseAuth.instance.currentUser!.uid}/pups/${pup.id}/${image.name}");
@@ -165,6 +166,7 @@ class _PupGalleryState extends State<PupGallery> {
         //     .doc()
         //     .update({});
       } on FirebaseException catch (e) {
+        // ignore: avoid_print
         print(e);
       }
     });
