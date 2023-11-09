@@ -368,6 +368,7 @@ class _BreedingSchemeState extends State<BreedingScheme> {
         notes: provider.getScheme.notes,
         numberOfPups: provider.getScheme.numberOfPups,
         weightTracker: provider.getScheme.weightTracker,
+        id: provider.getScheme.id,
       );
       FirebaseSchemes.doc(widget.id).update(scheme.toDB());
 
