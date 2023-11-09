@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:pocket_puppy_rattery/Functions/db.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Models/breeding_scheme_model.dart';
@@ -252,6 +253,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
             if (!snapshot.hasData) {
               return const Center(child: CircularProgressIndicator());
             }
+
             final pups = snapshot.data!.docs;
             if (pups.isEmpty) {
               Provider.of<PupsProvider>(context, listen: false)
@@ -261,6 +263,13 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
             final List<Pup> pupModels = [];
             // ignore: avoid_function_literals_in_foreach_calls
             pups.forEach((element) {
+              createFieldPups(
+                breedID: scheme.id,
+                boolean: checkDBScheme(db: element.toString(), key: 'photos'),
+                buildItem: element,
+                data: [],
+                key: 'photos',
+              );
               pupModels.add(Pup.fromDb(dbPup: element));
             });
             Provider.of<PupsProvider>(context, listen: false)

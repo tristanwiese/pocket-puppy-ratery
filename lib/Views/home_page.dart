@@ -8,6 +8,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_launcher_icons/main.dart';
+import 'package:pocket_puppy_rattery/Functions/db.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Models/breeding_scheme_model.dart';
@@ -171,7 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         ? value.filteredRats[i]
                                         : rats[i];
 
-                                createField(
+                                createFieldRats(
                                   boolean: checkDBScheme(
                                       db: buildItem.data().toString(),
                                       key: 'photos'),
@@ -179,7 +180,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   data: [],
                                   key: 'photos',
                                 );
-                                createField(
+                                createFieldRats(
                                   boolean: checkDBScheme(
                                       db: buildItem.data().toString(),
                                       key: 'customParents'),
@@ -187,7 +188,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   data: true,
                                   key: 'customParents',
                                 );
-                                createField(
+                                createFieldRats(
                                   boolean: checkDBScheme(
                                       db: buildItem.data().toString(),
                                       key: 'profilePic'),
@@ -195,7 +196,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   data: '',
                                   key: 'profilePic',
                                 );
-                                createField(
+                                createFieldRats(
                                   boolean: checkDBScheme(
                                       db: buildItem.data().toString(),
                                       key: 'notes'),
@@ -1418,24 +1419,5 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       },
     );
-  }
-
-  bool checkDBScheme({required String db, required String key}) {
-    return db.contains(key);
-  }
-
-  void createField(
-      {required bool boolean,
-      required String key,
-      required dynamic data,
-      required buildItem}) {
-    if (!boolean) {
-      FirebaseFirestore.instance
-          .collection("users")
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .collection("rats")
-          .doc(buildItem.id)
-          .update({key: data});
-    }
   }
 }

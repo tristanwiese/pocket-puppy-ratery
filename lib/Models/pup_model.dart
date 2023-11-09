@@ -16,7 +16,7 @@ class Pup {
     this.id,
     this.notes = const [],
     this.profilePic,
-    this.photos,
+    this.photos = const [],
   });
   final String name;
   final String registeredName;
