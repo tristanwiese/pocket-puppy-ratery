@@ -17,6 +17,7 @@ import 'package:pocket_puppy_rattery/Models/pup_model.dart';
 import 'package:pocket_puppy_rattery/Models/rat.dart';
 import 'package:pocket_puppy_rattery/Models/user.dart';
 import 'package:pocket_puppy_rattery/Services/constants.dart';
+import 'package:pocket_puppy_rattery/Views/settings/archives.dart';
 import 'package:pocket_puppy_rattery/providers/breeding_scheme_provider.dart';
 import 'package:pocket_puppy_rattery/providers/card_controller.dart';
 import 'package:pocket_puppy_rattery/Services/custom_widgets.dart';
@@ -344,9 +345,11 @@ class _MyHomePageState extends State<MyHomePage> {
                                                             itemType: "rat",
                                                           ),
                                                 title: Text(rat.name),
-                                                subtitle: Text("${rat.gender}"
-                                                    "\n"
-                                                    "Age: ${defaultAgeCalculator(birthdate)}"),
+                                                subtitle: Text(
+                                                  "${rat.gender.name}"
+                                                  "\n"
+                                                  "Age: ${defaultAgeCalculator(birthdate)}",
+                                                ),
                                                 contentPadding:
                                                     const EdgeInsets.all(10),
                                               ),
@@ -682,18 +685,41 @@ class _MyHomePageState extends State<MyHomePage> {
                           itemCount: schemes.length,
                           itemBuilder: (context, index) {
                             final scheme = schemes[index];
+                            String maleName;
+                            String femaleName;
                             dynamic male;
                             dynamic female;
                             if (!scheme['isCustomRats']) {
                               male = List.from(rats.where(
                                   (element) => element.id == scheme['male']));
-                              male = male[0].data()['name'];
+                              List maleBreeding = male[0].data()['breedings'];
+
+                              maleName = male[0].data()['archived']
+                                  ? male[0].data()['name'] + '(archived)'
+                                  : male[0].data()['name'];
                               female = List.from(rats.where(
                                   (element) => element.id == scheme['female']));
-                              female = female[0].data()['name'];
+                              List femaleBreeding =
+                                  female[0].data()['breedings'];
+                              femaleName = female[0].data()['archived']
+                                  ? female[0].data()['name'] + '(archived)'
+                                  : female[0].data()['name'];
+
+                              if (!maleBreeding.contains(scheme.id)) {
+                                FirebaseRats.doc(scheme['male']).update({
+                                  'breedings':
+                                      FieldValue.arrayUnion([scheme.id])
+                                });
+                              }
+                              if (!femaleBreeding.contains(scheme.id)) {
+                                FirebaseRats.doc(scheme['female']).update({
+                                  'breedings':
+                                      FieldValue.arrayUnion([scheme.id])
+                                });
+                              }
                             } else {
-                              male = scheme["male"];
-                              female = scheme["female"];
+                              maleName = scheme["male"];
+                              femaleName = scheme["female"];
                             }
                             return Padding(
                               padding: const EdgeInsets.all(8.0),
@@ -701,15 +727,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                 elevation: 3,
                                 shape: BeveledRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
-                                  // side: BorderSide(color: secondaryThemeColor),
                                 ),
                                 child: ListTile(
                                   title: Text(scheme['isCustomRats']
                                       ? scheme['name'] + " (custom rats)"
                                       : scheme["name"]),
                                   isThreeLine: true,
-                                  subtitle:
-                                      Text("Male: $male \nFemale: $female"),
+                                  subtitle: Text(
+                                      "Male: $maleName \nFemale: $femaleName"),
                                   trailing: myIconButton(
                                       item: scheme, itemType: "scheme"),
                                   onTap: () {
@@ -718,16 +743,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                         .updateScheme(
                                             BreedingSchemeModel.fromDb(
                                                 dbScheme: scheme));
-                                    // if (!scheme['isCustomRats']) {
-                                    //   context
-                                    //       .read<BreedingSchemeProvider>()
-                                    //       .editBreedPair(
-                                    //           name: male, gender: 'male');
-                                    //   context
-                                    //       .read<BreedingSchemeProvider>()
-                                    //       .editBreedPair(
-                                    //           name: female, gender: 'female');
-                                    // }
+
                                     navPush(
                                       context,
                                       BreedingShcemeInfoPage(
@@ -809,46 +825,49 @@ class _MyHomePageState extends State<MyHomePage> {
   IconButton myIconButton(
           {required QueryDocumentSnapshot item, required String itemType}) =>
       IconButton(
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: const Text("Warning"),
-                  content: SizedBox(
-                    height: 150,
-                    child: Column(
-                      children: [
-                        Text("Are you sure you want to remove this $itemType?"),
-                        const SizedBox(height: 30),
-                        Text(
-                          item["name"],
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 20),
-                        ),
-                      ],
-                    ),
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text("Warning"),
+                content: SizedBox(
+                  height: 150,
+                  child: Column(
+                    children: [
+                      Text("Are you sure you want to remove this $itemType?"),
+                      const SizedBox(height: 30),
+                      Text(
+                        item["name"],
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20),
+                      ),
+                    ],
                   ),
-                  actions: [
-                    ElevatedButton(
-                      onPressed: () => navPop(context),
-                      style: MyElevatedButtonStyle.cancelButtonStyle,
-                      child: const Text('Cancel'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () => deleteRat(item.id, itemType),
-                      style: MyElevatedButtonStyle.deleteButtonStyle,
-                      child: const Text("Delete"),
-                    ),
-                  ],
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
+                ),
+                actions: [
+                  ElevatedButton(
+                    onPressed: () => navPop(context),
+                    style: MyElevatedButtonStyle.cancelButtonStyle,
+                    child: const Text('Cancel'),
                   ),
-                );
-              },
-            );
-          },
-          icon: const DeleteIcon());
+                  ElevatedButton(
+                    onPressed: () {
+                      deleteRat(item, itemType);
+                    },
+                    style: MyElevatedButtonStyle.deleteButtonStyle,
+                    child: const Text("Delete"),
+                  ),
+                ],
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              );
+            },
+          );
+        },
+        icon: const DeleteIcon(),
+      );
 
   myAppBar(BuildContext context) {
     AppBar appBar = AppBar();
@@ -1153,7 +1172,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  deleteRat(String name, String itemType) async {
+  deleteRat(QueryDocumentSnapshot item, String itemType) async {
     showDialog(
       context: context,
       builder: (context) => const Center(child: CircularProgressIndicator()),
@@ -1163,14 +1182,24 @@ class _MyHomePageState extends State<MyHomePage> {
             .collection('users')
             .doc(FirebaseAuth.instance.currentUser!.uid)
             .collection("rats")
-            .doc(name)
+            .doc(item.id)
             .delete()
         : await FirebaseFirestore.instance
             .collection('users')
             .doc(FirebaseAuth.instance.currentUser!.uid)
             .collection("breedingSchemes")
-            .doc(name)
+            .doc(item.id)
             .delete();
+    if (itemType == 'scheme') {
+      if (!item['isCustomRats']) {
+        FirebaseRats.doc(item['male']).update({
+          'breedings': FieldValue.arrayRemove([item.id])
+        });
+        FirebaseRats.doc(item['female']).update({
+          'breedings': FieldValue.arrayRemove([item.id])
+        });
+      }
+    }
     navPop(context);
     navPop(context);
   }
@@ -1227,6 +1256,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       },
                       title: "Settings",
                       iconData: Icons.settings,
+                    ),
+                    DrawerCard(
+                      onTap: () {
+                        navPush(context, const Archives());
+                      },
+                      title: "Archives",
+                      iconData: Icons.archive,
                     ),
                     DrawerCard(
                       onTap: () {

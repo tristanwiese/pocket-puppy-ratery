@@ -240,7 +240,7 @@ class _PupInfoState extends State<PupInfo> {
                 children: [
                   Text("Name: ${value.pup.name}"),
                   Text("Registered Name: ${value.pup.registeredName}"),
-                  Text("Gender: ${value.pup.gender}"),
+                  Text("Gender: ${value.pup.gender.name}"),
                 ],
               )),
         ),
