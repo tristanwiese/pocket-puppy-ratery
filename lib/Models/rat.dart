@@ -21,6 +21,9 @@ class Rat {
     this.profilePic,
     this.photos,
     this.notes = const [],
+    this.breedings = const [],
+    this.archived = false,
+    this.id,
   });
   final String name;
   final String registeredName;
@@ -37,6 +40,8 @@ class Rat {
   String? id;
   bool customParents;
   List? notes;
+  List breedings;
+  bool archived;
 
   static hLocusToList() {
     const markingsList = H_Locus.values;
@@ -133,6 +138,8 @@ class Rat {
       "photos": photos,
       "profilePic": profilePic,
       'notes': notes,
+      'breedings': breedings,
+      'archived': archived,
     };
     return rat;
   }
@@ -158,6 +165,9 @@ class Rat {
       photos: dbRat['photos'],
       profilePic: dbRat['profilePic'],
       notes: dbRat['notes'],
+      breedings: dbRat['breedings'],
+      archived: dbRat['archived'],
+      id: dbRat.id,
     );
   }
 }

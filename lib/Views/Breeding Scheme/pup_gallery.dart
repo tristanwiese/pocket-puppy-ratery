@@ -29,7 +29,7 @@ class _PupGalleryState extends State<PupGallery> {
           ),
           body: showload
               ? const Center(child: CircularProgressIndicator())
-              : value.pup.photos == null || value.pup.photos!.isEmpty
+              : value.pup.photos.isEmpty
                   ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -53,7 +53,7 @@ class _PupGalleryState extends State<PupGallery> {
                                 const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 3,
                             ),
-                            itemCount: value.pup.photos!.length,
+                            itemCount: value.pup.photos.length,
                             itemBuilder: (context, index) {
                               return InkWell(
                                 onTap: () {
@@ -76,9 +76,9 @@ class _PupGalleryState extends State<PupGallery> {
                                     },
                                   );
                                 },
-                                child: value.pup.photos![index] is String
+                                child: value.pup.photos[index] is String
                                     ? Image.network(
-                                        value.pup.photos![index],
+                                        value.pup.photos[index],
                                         fit: BoxFit.contain,
                                         loadingBuilder:
                                             (context, child, loadingProgress) {
@@ -143,7 +143,7 @@ class _PupGalleryState extends State<PupGallery> {
             ? await storeChild.putData(data)
             : await storeChild.putFile(File(image.path));
         final String url = await storeChild.getDownloadURL();
-        pup.photos!.add(url);
+        pup.photos.add(url);
         value.updatePup(pup: pup);
 
         setState(() {

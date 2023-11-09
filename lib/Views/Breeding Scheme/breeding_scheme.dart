@@ -191,6 +191,7 @@ class _BreedingSchemeState extends State<BreedingScheme> {
                           if (showCustomRatScreen) {
                             if (_formKey.currentState!.validate()) {
                               await addScheme(
+                                isCustomRats: true,
                                 dateOfBreeding: (customDate == null)
                                     ? DateTime.now()
                                     : customDate!,
@@ -223,6 +224,7 @@ class _BreedingSchemeState extends State<BreedingScheme> {
                                   (element) => element["gender"] == "Female")];
 
                           await addScheme(
+                            isCustomRats: false,
                             male: male.id,
                             female: female.id,
                             name: _nameController.text.trim(),
@@ -274,6 +276,7 @@ class _BreedingSchemeState extends State<BreedingScheme> {
                 onFieldSubmited: (p0) {
                   if (_formKey.currentState!.validate()) {
                     addScheme(
+                        isCustomRats: true,
                         dateOfBreeding:
                             (customDate == null) ? DateTime.now() : customDate!,
                         male: _maleController.text.trim(),
@@ -334,6 +337,7 @@ class _BreedingSchemeState extends State<BreedingScheme> {
     required String female,
     required String name,
     required DateTime dateOfBreeding,
+    required isCustomRats,
   }) async {
     BreedingSchemeProvider provider =
         Provider.of<BreedingSchemeProvider>(context, listen: false);
@@ -352,11 +356,20 @@ class _BreedingSchemeState extends State<BreedingScheme> {
         isCustomRats: showCustomRatScreen,
         date: dateOfBreeding,
       );
-      await FirebaseFirestore.instance
+      final docRef = await FirebaseFirestore.instance
           .collection("users")
           .doc(FirebaseAuth.instance.currentUser!.uid)
           .collection("breedingSchemes")
           .add(scheme.toDB());
+
+      if (!isCustomRats) {
+        FirebaseRats.doc(male).update({
+          'breedings': FieldValue.arrayUnion([docRef.id])
+        });
+        FirebaseRats.doc(female).update({
+          'breedings': FieldValue.arrayUnion([docRef.id])
+        });
+      }
     } else {
       final scheme = BreedingSchemeModel(
         male: male,

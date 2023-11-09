@@ -27,7 +27,7 @@ class Pup {
   final Parents parents;
   final Coats coat;
   String? id;
-  List<dynamic>? photos;
+  List<dynamic> photos;
   String? profilePic;
   List? notes;
 
@@ -43,6 +43,7 @@ class Pup {
       "father": parents.dad,
       "coat": coat.name.toString(),
       "notes": notes,
+      "photos": photos,
     };
     return pup;
   }

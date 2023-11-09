@@ -204,6 +204,22 @@ class _MyHomePageState extends State<MyHomePage> {
                                   data: [],
                                   key: 'notes',
                                 );
+                                createFieldRats(
+                                  boolean: checkDBScheme(
+                                      db: buildItem.data().toString(),
+                                      key: 'breedings'),
+                                  buildItem: buildItem,
+                                  data: [],
+                                  key: 'breedings',
+                                );
+                                createFieldRats(
+                                  boolean: checkDBScheme(
+                                      db: buildItem.data().toString(),
+                                      key: 'archived'),
+                                  buildItem: buildItem,
+                                  data: false,
+                                  key: 'archived',
+                                );
 
                                 final Rat rat = Rat.fromDB(dbRat: buildItem);
                                 DateTime birthdate = rat.birthday;
@@ -216,111 +232,128 @@ class _MyHomePageState extends State<MyHomePage> {
                                   case "red":
                                     colorCode = Colors.red[300];
                                 }
-                                return Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: InkWell(
-                                    onLongPress: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) {
-                                          return colorCodePicker(i);
-                                        },
-                                      );
-                                    },
-                                    onTap: () {
-                                      rat.id = buildItem.id;
-                                      context.read<RatsProvider>().setRat(rat);
-                                      navPush(context, Consumer<RatsProvider>(
-                                        builder: (context, value, child) {
-                                          return RatInfo(
-                                              rat: value.rat, rats: rats);
-                                        },
-                                      ));
-                                    },
-                                    child: Consumer<CardController>(
-                                        builder: (context, value, child) {
-                                      value.setRat = rat;
-                                      final bool hasProfile =
-                                          (rat.profilePic != null &&
-                                              rat.profilePic != '');
-                                      return Card(
-                                        elevation: 3,
-                                        shadowColor:
-                                            (AgeCalculator.age(birthdate)
-                                                        .years >=
-                                                    value.seniorAge)
-                                                ? value.state
-                                                    ? Color(value.color)
-                                                    : Colors.black
-                                                : Colors.black,
-                                        shape: const BeveledRectangleBorder(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(15))),
-                                        color: (AgeCalculator.age(birthdate)
-                                                    .years >=
-                                                value.seniorAge)
-                                            ? value.state
-                                                ? Color(value.color)
-                                                : null
-                                            : null,
-                                        child: ListTile(
-                                          isThreeLine: true,
-                                          leading: SizedBox(
-                                            width: 70,
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
-                                              children: [
-                                                Icon(
-                                                  Icons.square_rounded,
-                                                  color: colorCode,
+                                return rat.archived
+                                    ? Container()
+                                    : Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: InkWell(
+                                          onLongPress: () {
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                return colorCodePicker(i);
+                                              },
+                                            );
+                                          },
+                                          onTap: () {
+                                            context
+                                                .read<RatsProvider>()
+                                                .setRat(rat);
+                                            navPush(context,
+                                                Consumer<RatsProvider>(
+                                              builder: (context, value, child) {
+                                                return RatInfo(
+                                                    rat: value.rat, rats: rats);
+                                              },
+                                            ));
+                                          },
+                                          child: Consumer<CardController>(
+                                              builder: (context, value, child) {
+                                            value.setRat = rat;
+                                            final bool hasProfile =
+                                                (rat.profilePic != null &&
+                                                    rat.profilePic != '');
+                                            return Card(
+                                              elevation: 3,
+                                              shadowColor:
+                                                  (AgeCalculator.age(birthdate)
+                                                              .years >=
+                                                          value.seniorAge)
+                                                      ? value.state
+                                                          ? Color(value.color)
+                                                          : Colors.black
+                                                      : Colors.black,
+                                              shape:
+                                                  const BeveledRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.all(
+                                                              Radius.circular(
+                                                                  15))),
+                                              color:
+                                                  (AgeCalculator.age(birthdate)
+                                                              .years >=
+                                                          value.seniorAge)
+                                                      ? value.state
+                                                          ? Color(value.color)
+                                                          : null
+                                                      : null,
+                                              child: ListTile(
+                                                isThreeLine: true,
+                                                leading: SizedBox(
+                                                  width: 70,
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Icon(
+                                                        Icons.square_rounded,
+                                                        color: colorCode,
+                                                      ),
+                                                      hasProfile
+                                                          ? SizedBox(
+                                                              width: 45,
+                                                              child:
+                                                                  Image.network(
+                                                                rat.profilePic!,
+                                                                fit: BoxFit
+                                                                    .contain,
+                                                                loadingBuilder:
+                                                                    (context,
+                                                                        child,
+                                                                        loadingProgress) {
+                                                                  if (loadingProgress ==
+                                                                      null) {
+                                                                    return child;
+                                                                  }
+                                                                  return const Center(
+                                                                    child: Icon(
+                                                                        Icons
+                                                                            .image),
+                                                                  );
+                                                                },
+                                                              ),
+                                                            )
+                                                          : Image.asset(
+                                                              "asstes/images/logo.png",
+                                                              width: 30,
+                                                              errorBuilder: (context,
+                                                                      error,
+                                                                      stackTrace) =>
+                                                                  const Icon(Icons
+                                                                      .image),
+                                                            )
+                                                    ],
+                                                  ),
                                                 ),
-                                                hasProfile
-                                                    ? SizedBox(
-                                                        width: 45,
-                                                        child: Image.network(
-                                                          rat.profilePic!,
-                                                          fit: BoxFit.contain,
-                                                          loadingBuilder: (context,
-                                                              child,
-                                                              loadingProgress) {
-                                                            if (loadingProgress ==
-                                                                null) {
-                                                              return child;
-                                                            }
-                                                            return const Center(
-                                                              child: Icon(
-                                                                  Icons.image),
-                                                            );
-                                                          },
-                                                        ),
-                                                      )
-                                                    : Image.asset(
-                                                        "asstes/images/logo.png",
-                                                        width: 30,
-                                                        errorBuilder: (context,
-                                                                error,
-                                                                stackTrace) =>
-                                                            const Icon(
-                                                                Icons.image),
-                                                      )
-                                              ],
-                                            ),
-                                          ),
-                                          trailing: myIconButton(
-                                              item: buildItem, itemType: "rat"),
-                                          title: Text(rat.name),
-                                          subtitle: Text("${rat.gender}"
-                                              "\n"
-                                              "Age: ${defaultAgeCalculator(birthdate)}"),
-                                          contentPadding:
-                                              const EdgeInsets.all(10),
+                                                trailing:
+                                                    rat.breedings.isNotEmpty
+                                                        ? archiveRat(rat: rat)
+                                                        : myIconButton(
+                                                            item: buildItem,
+                                                            itemType: "rat",
+                                                          ),
+                                                title: Text(rat.name),
+                                                subtitle: Text("${rat.gender}"
+                                                    "\n"
+                                                    "Age: ${defaultAgeCalculator(birthdate)}"),
+                                                contentPadding:
+                                                    const EdgeInsets.all(10),
+                                              ),
+                                            );
+                                          }),
                                         ),
                                       );
-                                    }),
-                                  ),
-                                );
                               }),
                         ),
                       ),
@@ -1418,6 +1451,61 @@ class _MyHomePageState extends State<MyHomePage> {
           },
         );
       },
+    );
+  }
+
+  archiveRat({required Rat rat}) {
+    return IconButton(
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text("Warning"),
+              content: SizedBox(
+                height: 150,
+                child: Column(
+                  children: [
+                    Text(
+                        "${rat.name} is part of an active breeding and can not be deleted. It will instead be archived and can be unarchived in the settings menu!"),
+                    const SizedBox(height: 30),
+                    Text(
+                      rat.name,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () => navPop(context),
+                  style: MyElevatedButtonStyle.cancelButtonStyle,
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    showDialog(
+                      context: context,
+                      builder: (context) =>
+                          const Center(child: CircularProgressIndicator()),
+                    );
+                    await FirebaseRats.doc(rat.id).update({'archived': true});
+                    navPop(context);
+                    navPop(context);
+                  },
+                  style: MyElevatedButtonStyle.deleteButtonStyle,
+                  child: const Text("Archive"),
+                ),
+              ],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            );
+          },
+        );
+      },
+      icon: const DeleteIcon(),
     );
   }
 }
