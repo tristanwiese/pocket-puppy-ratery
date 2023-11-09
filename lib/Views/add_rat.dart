@@ -228,6 +228,7 @@ class _AddRatState extends State<AddRat> {
             );
             if (widget.rat != null) {
               rat.colorCode = widget.rat!.colorCode;
+              rat.notes = widget.rat!.notes;
               await FirebaseFirestore.instance
                   .collection("users")
                   .doc(FirebaseAuth.instance.currentUser!.uid)

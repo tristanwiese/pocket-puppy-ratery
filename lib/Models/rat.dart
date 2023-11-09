@@ -20,6 +20,7 @@ class Rat {
     this.colorCode = "none",
     this.profilePic,
     this.photos,
+    this.notes = const [],
   });
   final String name;
   final String registeredName;
@@ -35,6 +36,7 @@ class Rat {
   String colorCode;
   String? id;
   bool customParents;
+  List? notes;
 
   static hLocusToList() {
     const markingsList = H_Locus.values;
@@ -130,6 +132,7 @@ class Rat {
       "customParents": customParents,
       "photos": photos,
       "profilePic": profilePic,
+      'notes': notes,
     };
     return rat;
   }
@@ -154,6 +157,7 @@ class Rat {
       colorCode: dbRat['colorCode'],
       photos: dbRat['photos'],
       profilePic: dbRat['profilePic'],
+      notes: dbRat['notes'],
     );
   }
 }

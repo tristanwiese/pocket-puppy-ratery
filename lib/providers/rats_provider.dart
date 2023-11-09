@@ -21,4 +21,18 @@ class RatsProvider extends ChangeNotifier {
     _rat = rat;
     notifyListeners();
   }
+
+  editNotes({required String action, int? index, Map? note}) {
+    switch (action) {
+      case "add":
+        _rat!.notes!.add(note);
+        break;
+      case "update":
+        _rat!.notes![index!] = note;
+        break;
+      case "remove":
+        _rat!.notes!.removeAt(index!);
+    }
+    notifyListeners();
+  }
 }

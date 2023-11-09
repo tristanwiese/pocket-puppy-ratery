@@ -195,6 +195,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                   data: '',
                                   key: 'profilePic',
                                 );
+                                createField(
+                                  boolean: checkDBScheme(
+                                      db: buildItem.data().toString(),
+                                      key: 'notes'),
+                                  buildItem: buildItem,
+                                  data: [],
+                                  key: 'notes',
+                                );
 
                                 final Rat rat = Rat.fromDB(dbRat: buildItem);
                                 DateTime birthdate = rat.birthday;
