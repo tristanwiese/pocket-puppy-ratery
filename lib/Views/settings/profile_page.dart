@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
+import 'package:pocket_puppy_rattery/Login_Register/auth_state.dart';
 import 'package:pocket_puppy_rattery/Models/user.dart';
 import 'package:pocket_puppy_rattery/providers/profile_provider.dart';
 import 'package:provider/provider.dart';
@@ -183,9 +184,17 @@ class _ProfilePageState extends State<ProfilePage> {
                           onPressed: () async {
                             if (_formKey.currentState!.validate()) {
                               try {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                );
                                 await FirebaseAuth.instance.currentUser!
                                     .updateEmail(emailController.text.trim());
                                 navPop(context);
+                                navPop(context);
+
                                 FirebaseFirestore.instance
                                     .collection('users')
                                     .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -193,6 +202,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   {'email': emailController.text.trim()},
                                 );
                                 FirebaseAuth.instance.signOut();
+                                navReplace(context, const AuthState());
                               } on FirebaseAuthException catch (e) {
                                 if (e.code == 'email-already-in-use') {
                                   navPop(context);
