@@ -98,35 +98,37 @@ class _SettingsPageState extends State<SettingsPage> {
                                             borderRadius:
                                                 BorderRadius.circular(20)),
                                         title: const Text("Pick a Colour"),
-                                        content: Column(
-                                          children: [
-                                            ColorPicker(
-                                              pickerColor: seniorColour,
-                                              onColorChanged: changeColour,
-                                            ),
-                                            const Text(
-                                              'Select age at when colour is applied',
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 20,
+                                        content: SingleChildScrollView(
+                                          child: Column(
+                                            children: [
+                                              ColorPicker(
+                                                pickerColor: seniorColour,
+                                                onColorChanged: changeColour,
                                               ),
-                                            ),
-                                            const SizedBox(height: 20),
-                                            NumberPicker(
-                                              axis: Axis.horizontal,
-                                              minValue: 1,
-                                              maxValue: 10,
-                                              value: seniorAge,
-                                              onChanged: (value) {
-                                                seniorAge = value;
-                                                setState(() {});
-                                                changeState(
-                                                  () {},
-                                                );
-                                              },
-                                            )
-                                          ],
+                                              const Text(
+                                                'Select age at when colour is applied',
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 20,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 20),
+                                              NumberPicker(
+                                                axis: Axis.horizontal,
+                                                minValue: 1,
+                                                maxValue: 10,
+                                                value: seniorAge,
+                                                onChanged: (value) {
+                                                  seniorAge = value;
+                                                  setState(() {});
+                                                  changeState(
+                                                    () {},
+                                                  );
+                                                },
+                                              )
+                                            ],
+                                          ),
                                         ),
                                         actions: [
                                           ElevatedButton(
@@ -161,7 +163,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                 child: Column(
                                   children: [
                                     Text(
-                                        "Change the rat card colour for rats over $seniorAge years old"),
+                                      "Change the rat card colour for rats over $seniorAge years old",
+                                    ),
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,

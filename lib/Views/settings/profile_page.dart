@@ -185,17 +185,26 @@ class _ProfilePageState extends State<ProfilePage> {
                               try {
                                 await FirebaseAuth.instance.currentUser!
                                     .updateEmail(emailController.text.trim());
+                                navPop(context);
+                                FirebaseFirestore.instance
+                                    .collection('users')
+                                    .doc(FirebaseAuth.instance.currentUser!.uid)
+                                    .update(
+                                  {'email': emailController.text.trim()},
+                                );
                                 FirebaseAuth.instance.signOut();
                               } on FirebaseAuthException catch (e) {
                                 if (e.code == 'email-already-in-use') {
+                                  navPop(context);
                                   alert(text: 'Email already exists');
                                 }
                                 if (e.code == 'requires-recent-login') {
+                                  navPop(context);
                                   alert(
-                                      text:
-                                          'Something went wrong. Please re-login to proceed');
+                                    text:
+                                        'Something went wrong. Please re-login to proceed',
+                                  );
                                 }
-                                print(e);
                               }
                             }
                           },

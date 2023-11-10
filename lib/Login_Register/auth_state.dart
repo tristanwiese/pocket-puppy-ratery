@@ -12,11 +12,12 @@ class AuthState extends StatelessWidget {
     return StreamBuilder(
       stream: FirebaseAuth.instance.authStateChanges(),
       builder: (context, snapshot) {
-        if (snapshot.data == null){
+        if (snapshot.data == null) {
           return const Authenticate();
         } else {
           return const VerifyEmail();
         }
-      },);
+      },
+    );
   }
 }
