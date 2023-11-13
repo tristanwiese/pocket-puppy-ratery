@@ -95,6 +95,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           Flexible(
                             child: RichText(
                               text: TextSpan(
+                                style: const TextStyle(color: Colors.black),
                                 children: [
                                   const TextSpan(
                                     text: 'Username: ',
@@ -111,6 +112,9 @@ class _ProfilePageState extends State<ProfilePage> {
                             child: RichText(
                               textAlign: TextAlign.center,
                               text: TextSpan(
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                ),
                                 children: [
                                   const TextSpan(
                                     text: 'Email: ',

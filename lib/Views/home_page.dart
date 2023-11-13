@@ -1254,14 +1254,34 @@ class _MyHomePageState extends State<MyHomePage> {
                                 const Color.fromARGB(255, 211, 211, 211),
                             backgroundImage: value.profilePicture != null
                                 ? kIsWeb
-                                    ? Image.network(value.profilePicture.path)
-                                        .image
+                                    ? Image.network(
+                                        value.profilePicture.path,
+                                        loadingBuilder:
+                                            (context, child, loadingProgress) {
+                                          if (loadingProgress == null) {
+                                            return child;
+                                          }
+                                          return const Center(
+                                            child: CircularProgressIndicator(),
+                                          );
+                                        },
+                                      ).image
                                     : Image.file(
                                             File(value.profilePicture.path))
                                         .image
                                 : value.user.profilePicUrl != ''
-                                    ? Image.network(value.user.profilePicUrl)
-                                        .image
+                                    ? Image.network(
+                                        value.user.profilePicUrl,
+                                        loadingBuilder:
+                                            (context, child, loadingProgress) {
+                                          if (loadingProgress == null) {
+                                            return child;
+                                          }
+                                          return const Center(
+                                            child: CircularProgressIndicator(),
+                                          );
+                                        },
+                                      ).image
                                     : null,
                             child: value.user.profilePicUrl == ''
                                 ? const Icon(

@@ -573,7 +573,10 @@ class _PupInfoState extends State<PupInfo> {
                           children: [
                             RichText(
                               text: TextSpan(
-                                style: const TextStyle(fontSize: 20),
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.black,
+                                ),
                                 children: [
                                   const TextSpan(
                                       text: 'Are you sure you want to export '),

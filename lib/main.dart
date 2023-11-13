@@ -58,6 +58,20 @@ class _MyAppState extends State<MyApp> {
         scaffoldMessengerKey: scaffoldKey,
         theme: ThemeData(
           appBarTheme: AppBarTheme(color: primaryThemeColor),
+          textTheme: const TextTheme(
+            bodyLarge: TextStyle(color: Colors.black),
+            bodyMedium: TextStyle(color: Colors.black),
+            bodySmall: TextStyle(color: Colors.black),
+            displayLarge: TextStyle(color: Colors.black),
+            displayMedium: TextStyle(color: Colors.black),
+            displaySmall: TextStyle(color: Colors.black),
+            labelLarge: TextStyle(color: Colors.black),
+            labelMedium: TextStyle(color: Colors.black),
+            labelSmall: TextStyle(color: Colors.black),
+            titleLarge: TextStyle(color: Colors.black),
+            titleMedium: TextStyle(color: Colors.black),
+            titleSmall: TextStyle(color: Colors.black),
+          ),
           colorScheme: ColorScheme(
             brightness: Brightness.light,
             primary: primaryThemeColor,
