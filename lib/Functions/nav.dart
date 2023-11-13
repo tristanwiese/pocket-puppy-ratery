@@ -16,3 +16,9 @@ navPush(context, path) {
 navPop(context) {
   Navigator.pop(context);
 }
+
+popUntil({context, required bool Function(Route<dynamic>) callback}) {
+  Navigator.popUntil(context, (route) {
+    return callback(route);
+  });
+}

@@ -15,7 +15,7 @@ class Pup {
     required this.coat,
     this.id,
     this.notes = const [],
-    this.profilePic,
+    this.profilePic = '',
     this.photos = const [],
   });
   final String name;
@@ -28,7 +28,7 @@ class Pup {
   final Coats coat;
   String? id;
   List<dynamic> photos;
-  String? profilePic;
+  String profilePic;
   List? notes;
 
   toDb() {
@@ -44,6 +44,7 @@ class Pup {
       "coat": coat.name.toString(),
       "notes": notes,
       "photos": photos,
+      "profilePicture": profilePic,
     };
     return pup;
   }
@@ -64,6 +65,7 @@ class Pup {
           .values[coatsList.indexWhere((element) => element == dbPup["coat"])],
       id: dbPup.id,
       photos: dbPup['photos'],
+      profilePic: dbPup['profilePicture'],
     );
   }
 }

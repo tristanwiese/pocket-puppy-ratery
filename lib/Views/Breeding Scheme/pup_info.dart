@@ -1,8 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Models/pup_model.dart';
+import 'package:pocket_puppy_rattery/Models/rat.dart';
 import 'package:pocket_puppy_rattery/Services/custom_widgets.dart';
 import 'package:pocket_puppy_rattery/Views/Breeding%20Scheme/add_pup.dart';
 import 'package:pocket_puppy_rattery/Views/Breeding%20Scheme/pup_gallery.dart';
@@ -40,6 +44,8 @@ class _PupInfoState extends State<PupInfo> {
               colors(value: value),
               pupNotes(value: value),
               buttonRow(value: value),
+              const SizedBox(height: 10),
+              export(value: value),
               const SizedBox(height: 20),
             ],
           ),
@@ -501,6 +507,99 @@ class _PupInfoState extends State<PupInfo> {
           content: content,
         );
       },
+    );
+  }
+
+  export({required PupsProvider value}) {
+    return Row(
+      children: [
+        Expanded(
+          child: SizedBox(
+            height: 50,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: ElevatedButton(
+                style: MyElevatedButtonStyle.buttonStyle,
+                onPressed: () async {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text('Export Pup'),
+                        actions: [
+                          ElevatedButton(
+                            onPressed: () => navPop(context),
+                            style: MyElevatedButtonStyle.cancelButtonStyle,
+                            child: const Text('Cancel'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () async {
+                              showDialog(
+                                context: context,
+                                builder: (context) => const Center(
+                                    child: CircularProgressIndicator()),
+                              );
+                              final Rat rat = Rat(
+                                name: value.pup.name,
+                                registeredName: value.pup.registeredName,
+                                colours: value.pup.colours,
+                                ears: value.pup.ears,
+                                gender: value.pup.gender,
+                                markings: value.pup.markings,
+                                parents: value.pup.parents,
+                                coat: value.pup.coat,
+                                birthday:
+                                    breedProv.getScheme.dateOfLabour!.toDate(),
+                                customParents: breedProv.getScheme.isCustomRats,
+                                notes: value.pup.notes,
+                                photos: value.pup.photos,
+                                profilePic: value.pup.profilePic,
+                              );
+                              await FirebaseFirestore.instance
+                                  .collection("users")
+                                  .doc(FirebaseAuth.instance.currentUser!.uid)
+                                  .collection("rats")
+                                  .doc()
+                                  .set(rat.toDb());
+                              navPop(context);
+                              navPop(context);
+                            },
+                            style: MyElevatedButtonStyle.doneButtonStyle,
+                            child: const Text('Export'),
+                          ),
+                        ],
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            RichText(
+                              text: TextSpan(
+                                style: const TextStyle(fontSize: 20),
+                                children: [
+                                  const TextSpan(
+                                      text: 'Are you sure you want to export '),
+                                  TextSpan(
+                                      text: value.pup.name,
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold)),
+                                  const TextSpan(text: ' to main rats'),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            const Text(
+                                'Continuing will remove pup from the breeding scheme and add it to main rats')
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
+                child: const Text('Export'),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

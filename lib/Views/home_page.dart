@@ -6,6 +6,7 @@ import 'dart:io';
 import 'package:age_calculator/age_calculator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_launcher_icons/main.dart';
 import 'package:pocket_puppy_rattery/Functions/db.dart';
@@ -1230,8 +1231,12 @@ class _MyHomePageState extends State<MyHomePage> {
                             backgroundColor:
                                 const Color.fromARGB(255, 211, 211, 211),
                             backgroundImage: value.profilePicture != null
-                                ? Image.file(File(value.profilePicture.path))
-                                    .image
+                                ? kIsWeb
+                                    ? Image.network(value.profilePicture.path)
+                                        .image
+                                    : Image.file(
+                                            File(value.profilePicture.path))
+                                        .image
                                 : value.user.profilePicUrl != ''
                                     ? Image.network(value.user.profilePicUrl)
                                         .image

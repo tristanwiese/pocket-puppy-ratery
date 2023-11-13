@@ -1,14 +1,12 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Models/breeding_scheme_model.dart';
 import 'package:pocket_puppy_rattery/Models/pup_model.dart';
-import 'package:pocket_puppy_rattery/Models/rat.dart';
 import 'package:pocket_puppy_rattery/Services/custom_widgets.dart';
 import 'package:pocket_puppy_rattery/Views/Breeding%20Scheme/add_pup.dart';
 import 'package:pocket_puppy_rattery/Views/Breeding%20Scheme/pup_info.dart';
@@ -44,7 +42,7 @@ class _PupsState extends State<Pups> {
       scheme = value.getScheme;
       pups = Provider.of<PupsProvider>(context, listen: false).pups;
       breedProv = Provider.of<BreedingSchemeProvider>(context);
-      pupProv = Provider.of<PupsProvider>(context);
+      pupProv = Provider.of<PupsProvider>(context, listen: false);
       return Scaffold(
           appBar: AppBar(
             title: const Text("Pups"),
@@ -189,65 +187,24 @@ class _PupsState extends State<Pups> {
                                   },
                                   icon: const DeleteIcon(),
                                 ),
-                                leading: IconButton(
-                                  onPressed: () async {
-                                    final Rat rat = Rat(
-                                      name: pup.name,
-                                      registeredName: pup.registeredName,
-                                      colours: pup.colours,
-                                      ears: pup.ears,
-                                      gender: pup.gender,
-                                      markings: pup.markings,
-                                      parents: pup.parents,
-                                      coat: pup.coat,
-                                      birthday: dateOfLabour,
-                                      customParents: scheme.isCustomRats,
-                                    );
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: const Text('Export Pup to Rats'),
-                                        content: Text(
-                                          'Export ${pup.name} to your current rats?',
+                                leading: CircleAvatar(
+                                  backgroundColor:
+                                      const Color.fromARGB(255, 211, 211, 211),
+                                  child: pup.profilePic == ''
+                                      ? Image.asset('asstes/images/logo.png')
+                                      : Image.network(
+                                          pup.profilePic,
+                                          loadingBuilder: (context, child,
+                                              loadingProgress) {
+                                            if (loadingProgress == null) {
+                                              return child;
+                                            }
+                                            return const Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            );
+                                          },
                                         ),
-                                        actions: [
-                                          ElevatedButton(
-                                            onPressed: () {
-                                              navPop(context);
-                                            },
-                                            style: MyElevatedButtonStyle
-                                                .cancelButtonStyle,
-                                            child: const Text('Cancel'),
-                                          ),
-                                          ElevatedButton(
-                                            onPressed: () async {
-                                              // navPop(context);
-                                              showDialog(
-                                                context: context,
-                                                builder: (context) => const Center(
-                                                    child:
-                                                        CircularProgressIndicator()),
-                                              );
-
-                                              await FirebaseFirestore.instance
-                                                  .collection("users")
-                                                  .doc(FirebaseAuth.instance
-                                                      .currentUser!.uid)
-                                                  .collection("rats")
-                                                  .doc()
-                                                  .set(rat.toDb());
-                                              navPop(context);
-                                              navPop(context);
-                                            },
-                                            style: MyElevatedButtonStyle
-                                                .doneButtonStyle,
-                                            child: const Text('Export'),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  },
-                                  icon: const Icon(Icons.upload),
                                 ),
                                 title: Row(
                                   children: [

@@ -64,12 +64,72 @@ class _PupGalleryState extends State<PupGallery> {
                                         actions: [
                                           PopupMenuItem(
                                             child: const Text('Delete photo'),
-                                            onTap: () async {},
+                                            onTap: () async {
+                                              final Pup pup = value.pup;
+
+                                              final String name =
+                                                  value.pup.photos[index];
+
+                                              pup.photos.removeAt(index);
+                                              value.updatePup(pup: pup);
+
+                                              final deleteRef = FirebaseStorage
+                                                  .instance
+                                                  .refFromURL(name);
+
+                                              deleteRef.delete();
+
+                                              final BreedingSchemeProvider
+                                                  breedProv = Provider.of<
+                                                          BreedingSchemeProvider>(
+                                                      context,
+                                                      listen: false);
+
+                                              FirebaseFirestore.instance
+                                                  .collection('users')
+                                                  .doc(FirebaseAuth.instance
+                                                      .currentUser!.uid)
+                                                  .collection('breedingSchemes')
+                                                  .doc(breedProv.getScheme.id)
+                                                  .collection('pups')
+                                                  .doc(pup.id)
+                                                  .update({
+                                                'photos':
+                                                    FieldValue.arrayRemove(
+                                                        [name])
+                                              });
+                                            },
                                           ),
                                           PopupMenuItem(
                                             child: const Text(
                                                 'Set as profile photo'),
-                                            onTap: () {},
+                                            onTap: () {
+                                              final String name =
+                                                  value.pup.photos[index];
+
+                                              final Pup pup = value.pup;
+
+                                              pup.profilePic = name;
+
+                                              value.updatePup(pup: pup);
+
+                                              final BreedingSchemeProvider
+                                                  breedProv = Provider.of<
+                                                          BreedingSchemeProvider>(
+                                                      context,
+                                                      listen: false);
+
+                                              FirebaseFirestore.instance
+                                                  .collection('users')
+                                                  .doc(FirebaseAuth.instance
+                                                      .currentUser!.uid)
+                                                  .collection('breedingSchemes')
+                                                  .doc(breedProv.getScheme.id)
+                                                  .collection('pups')
+                                                  .doc(pup.id)
+                                                  .update(
+                                                      {'profilePicture': name});
+                                            },
                                           ),
                                         ],
                                       );
@@ -149,6 +209,7 @@ class _PupGalleryState extends State<PupGallery> {
         setState(() {
           showload = false;
         });
+        print('fire');
         FirebaseFirestore.instance
             .collection('users')
             .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -159,12 +220,6 @@ class _PupGalleryState extends State<PupGallery> {
             .update({
           "photos": FieldValue.arrayUnion([url])
         });
-        // FirebaseFirestore.instance
-        //     .collection('users')
-        //     .doc(FirebaseAuth.instance.currentUser!.uid)
-        //     .collection('breedingSchemes')
-        //     .doc()
-        //     .update({});
       } on FirebaseException catch (e) {
         // ignore: avoid_print
         print(e);

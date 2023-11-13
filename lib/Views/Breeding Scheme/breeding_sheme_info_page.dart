@@ -265,7 +265,8 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
             pups.forEach((element) {
               createFieldPups(
                 breedID: scheme.id,
-                boolean: checkDBScheme(db: element.toString(), key: 'photos'),
+                boolean:
+                    checkDBScheme(db: element.data().toString(), key: 'photos'),
                 buildItem: element,
                 data: [],
                 key: 'photos',
