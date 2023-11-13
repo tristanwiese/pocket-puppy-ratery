@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 bool checkDBScheme({required String db, required String key}) {
   return db.contains(key);
@@ -35,5 +36,29 @@ void createFieldPups(
         .collection('pups')
         .doc(buildItem.id)
         .update({key: data});
+  }
+}
+
+Future<bool> deletePupMedia({required String reference}) async {
+  final ref = FirebaseStorage.instance.ref();
+  final deleteRef =
+      ref.child('${FirebaseAuth.instance.currentUser!.uid}/pups/$reference');
+  try {
+    await deleteRef.delete();
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+Future<bool> deleteRatMedia({required String reference}) async {
+  final ref = FirebaseStorage.instance.ref();
+  final deleteRef =
+      ref.child('${FirebaseAuth.instance.currentUser!.uid}/rats/$reference');
+  try {
+    await deleteRef.delete();
+    return true;
+  } catch (e) {
+    return false;
   }
 }

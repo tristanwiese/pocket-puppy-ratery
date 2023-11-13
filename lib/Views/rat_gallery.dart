@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:pocket_puppy_rattery/Models/rat.dart';
@@ -30,7 +31,7 @@ class _RatGalleryState extends State<RatGallery> {
           ),
           body: showload
               ? const Center(child: CircularProgressIndicator())
-              : value.rat.photos == null || value.rat.photos!.isEmpty
+              : value.rat.photos.isEmpty
                   ? Center(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -54,7 +55,7 @@ class _RatGalleryState extends State<RatGallery> {
                                 const SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 3,
                             ),
-                            itemCount: value.rat.photos!.length,
+                            itemCount: value.rat.photos.length,
                             itemBuilder: (context, index) {
                               return InkWell(
                                 onTap: () {
@@ -69,9 +70,19 @@ class _RatGalleryState extends State<RatGallery> {
                                               final Rat rat = value.rat;
 
                                               final String name =
-                                                  value.rat.photos![index];
+                                                  value.rat.photos[index];
 
-                                              rat.photos!.removeAt(index);
+                                              rat.photos.removeAt(index);
+                                              if (rat.profilePic == name) {
+                                                FirebaseFirestore.instance
+                                                    .collection('users')
+                                                    .doc(FirebaseAuth.instance
+                                                        .currentUser!.uid)
+                                                    .collection('rats')
+                                                    .doc(value.rat.id)
+                                                    .update({'profilePic': ''});
+                                                rat.profilePic = '';
+                                              }
                                               value.updateRat(rat);
 
                                               final deleteRef = FirebaseStorage
@@ -98,7 +109,7 @@ class _RatGalleryState extends State<RatGallery> {
                                             onTap: () {
                                               final Rat rat = value.rat;
                                               rat.profilePic =
-                                                  value.rat.photos![index];
+                                                  value.rat.photos[index];
                                               value.updateRat(rat);
 
                                               FirebaseFirestore.instance
@@ -109,7 +120,7 @@ class _RatGalleryState extends State<RatGallery> {
                                                   .doc(rat.id)
                                                   .update({
                                                 'profilePic':
-                                                    value.rat.photos![index]
+                                                    value.rat.photos[index]
                                               });
                                             },
                                           ),
@@ -118,9 +129,9 @@ class _RatGalleryState extends State<RatGallery> {
                                     },
                                   );
                                 },
-                                child: value.rat.photos![index] is String
+                                child: value.rat.photos[index] is String
                                     ? Image.network(
-                                        value.rat.photos![index],
+                                        value.rat.photos[index],
                                         fit: BoxFit.contain,
                                         loadingBuilder:
                                             (context, child, loadingProgress) {
@@ -176,9 +187,11 @@ class _RatGalleryState extends State<RatGallery> {
       final storeChild = store.child(
           "${FirebaseAuth.instance.currentUser!.uid}/rats/${rat.id}/${image.name}");
       try {
-        await storeChild.putFile(File(image.path));
+        kIsWeb
+            ? await storeChild.putData(await image.readAsBytes())
+            : await storeChild.putFile(File(image.path));
         final String url = await storeChild.getDownloadURL();
-        rat.photos!.add(url);
+        rat.photos.add(url);
         value.updateRat(rat);
         FirebaseFirestore.instance
             .collection('users')

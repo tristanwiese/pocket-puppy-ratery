@@ -271,6 +271,14 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                 data: [],
                 key: 'photos',
               );
+              createFieldPups(
+                breedID: scheme.id,
+                boolean: checkDBScheme(
+                    db: element.data().toString(), key: 'profilePicture'),
+                buildItem: element,
+                data: '',
+                key: 'profilePicture',
+              );
               pupModels.add(Pup.fromDb(dbPup: element));
             });
             Provider.of<PupsProvider>(context, listen: false)

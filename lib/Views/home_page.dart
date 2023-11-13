@@ -173,6 +173,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                             !value.activeSort.isEmpty
                                         ? value.filteredRats[i]
                                         : rats[i];
+                                //TODO: remove for production
 
                                 createFieldRats(
                                   boolean: checkDBScheme(
@@ -222,7 +223,24 @@ class _MyHomePageState extends State<MyHomePage> {
                                   data: false,
                                   key: 'archived',
                                 );
-
+                                if (buildItem['profilePic'] == null) {
+                                  FirebaseFirestore.instance
+                                      .collection("users")
+                                      .doc(FirebaseAuth
+                                          .instance.currentUser!.uid)
+                                      .collection('rats')
+                                      .doc(buildItem.id)
+                                      .update({'profilePic': ''});
+                                }
+                                if (buildItem['photos'] == null) {
+                                  FirebaseFirestore.instance
+                                      .collection("users")
+                                      .doc(FirebaseAuth
+                                          .instance.currentUser!.uid)
+                                      .collection('rats')
+                                      .doc(buildItem.id)
+                                      .update({'photos': []});
+                                }
                                 final Rat rat = Rat.fromDB(dbRat: buildItem);
                                 DateTime birthdate = rat.birthday;
                                 Color? colorCode;
@@ -263,8 +281,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                               builder: (context, value, child) {
                                             value.setRat = rat;
                                             final bool hasProfile =
-                                                (rat.profilePic != null &&
-                                                    rat.profilePic != '');
+                                                (rat.profilePic != '');
                                             return Card(
                                               elevation: 3,
                                               shadowColor:
@@ -307,7 +324,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                               width: 45,
                                                               child:
                                                                   Image.network(
-                                                                rat.profilePic!,
+                                                                rat.profilePic,
                                                                 fit: BoxFit
                                                                     .contain,
                                                                 loadingBuilder:
@@ -1191,6 +1208,11 @@ class _MyHomePageState extends State<MyHomePage> {
             .collection("breedingSchemes")
             .doc(item.id)
             .delete();
+    if (itemType == 'rat') {
+      if (item['photos'].isNotEmpty) {
+        deleteRatMedia(reference: item.id);
+      }
+    }
     if (itemType == 'scheme') {
       if (!item['isCustomRats']) {
         FirebaseRats.doc(item['male']).update({

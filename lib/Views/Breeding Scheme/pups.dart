@@ -3,6 +3,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:pocket_puppy_rattery/Functions/db.dart';
 import 'package:pocket_puppy_rattery/Functions/nav.dart';
 import 'package:pocket_puppy_rattery/Functions/utils.dart';
 import 'package:pocket_puppy_rattery/Models/breeding_scheme_model.dart';
@@ -42,7 +43,7 @@ class _PupsState extends State<Pups> {
       scheme = value.getScheme;
       pups = Provider.of<PupsProvider>(context, listen: false).pups;
       breedProv = Provider.of<BreedingSchemeProvider>(context);
-      pupProv = Provider.of<PupsProvider>(context, listen: false);
+      pupProv = Provider.of<PupsProvider>(context);
       return Scaffold(
           appBar: AppBar(
             title: const Text("Pups"),
@@ -114,121 +115,130 @@ class _PupsState extends State<Pups> {
                 const SizedBox(height: 10),
                 pups.isEmpty
                     ? const Text("No Pups")
-                    : SizedBox(
-                        height: 300,
-                        child: ListView.builder(
-                          itemCount: pups.length,
-                          itemBuilder: (context, index) {
-                            final Pup pup = pups[index];
-                            return Card(
-                              elevation: 5,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: ListTile(
-                                onTap: () {
-                                  pupProv.setPup(pup: pup);
-                                  Navigator.of(context).push(
-                                    PageRouteBuilder(
-                                      pageBuilder: (context, animation,
-                                              secondaryAnimation) =>
-                                          const PupInfo(),
-                                      transitionsBuilder: (context, animation,
-                                          secondaryAnimation, child) {
-                                        const begin = Offset(1.0, 0.0);
-                                        const end = Offset.zero;
-                                        final tween =
-                                            Tween(begin: begin, end: end);
-                                        final offsetAnimation =
-                                            animation.drive(tween);
-                                        return SlideTransition(
-                                          position: offsetAnimation,
-                                          child: child,
-                                        );
-                                      },
-                                    ),
-                                  );
-                                },
-                                trailing: IconButton(
-                                  onPressed: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          title: Text("Delete ${pup.name}"),
-                                          actions: [
-                                            ElevatedButton(
-                                              onPressed: () => navPop(context),
-                                              style: MyElevatedButtonStyle
-                                                  .cancelButtonStyle,
-                                              child: const Text("Cancel"),
-                                            ),
-                                            ElevatedButton(
-                                              onPressed: () {
-                                                pups.removeWhere((element) =>
-                                                    element.id == pup.id);
-
-                                                FirebaseSchemes.doc(scheme.id)
-                                                    .collection('pups')
-                                                    .doc(pup.id)
-                                                    .delete();
-                                                navPop(context);
-
-                                                pupProv.updatePups(pups: pups);
-                                              },
-                                              style: ElevatedButton.styleFrom(
-                                                  backgroundColor:
-                                                      Colors.red[200]),
-                                              child: const Text("Delete"),
-                                            ),
-                                          ],
-                                        );
-                                      },
+                    : Builder(builder: (context) {
+                        return SizedBox(
+                          height: 300,
+                          child: ListView.builder(
+                            itemCount: pups.length,
+                            itemBuilder: (context, index) {
+                              final Pup pup = pups[index];
+                              return Card(
+                                elevation: 5,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: ListTile(
+                                  onTap: () {
+                                    pupProv.setPup(pup: pup);
+                                    Navigator.of(context).push(
+                                      PageRouteBuilder(
+                                        pageBuilder: (context, animation,
+                                                secondaryAnimation) =>
+                                            const PupInfo(),
+                                        transitionsBuilder: (context, animation,
+                                            secondaryAnimation, child) {
+                                          const begin = Offset(1.0, 0.0);
+                                          const end = Offset.zero;
+                                          final tween =
+                                              Tween(begin: begin, end: end);
+                                          final offsetAnimation =
+                                              animation.drive(tween);
+                                          return SlideTransition(
+                                            position: offsetAnimation,
+                                            child: child,
+                                          );
+                                        },
+                                      ),
                                     );
                                   },
-                                  icon: const DeleteIcon(),
-                                ),
-                                leading: CircleAvatar(
-                                  backgroundColor:
-                                      const Color.fromARGB(255, 211, 211, 211),
-                                  child: pup.profilePic == ''
-                                      ? Image.asset('asstes/images/logo.png')
-                                      : Image.network(
-                                          pup.profilePic,
-                                          loadingBuilder: (context, child,
-                                              loadingProgress) {
-                                            if (loadingProgress == null) {
-                                              return child;
-                                            }
-                                            return const Center(
-                                              child:
-                                                  CircularProgressIndicator(),
-                                            );
-                                          },
+                                  trailing: IconButton(
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return AlertDialog(
+                                            title: Text("Delete ${pup.name}"),
+                                            actions: [
+                                              ElevatedButton(
+                                                onPressed: () =>
+                                                    navPop(context),
+                                                style: MyElevatedButtonStyle
+                                                    .cancelButtonStyle,
+                                                child: const Text("Cancel"),
+                                              ),
+                                              ElevatedButton(
+                                                onPressed: () {
+                                                  pups.removeWhere((element) =>
+                                                      element.id == pup.id);
+
+                                                  FirebaseSchemes.doc(scheme.id)
+                                                      .collection('pups')
+                                                      .doc(pup.id)
+                                                      .delete();
+                                                  navPop(context);
+
+                                                  if (pup.photos.isNotEmpty) {
+                                                    deletePupMedia(
+                                                        reference: pup.id!);
+                                                  }
+
+                                                  pupProv.updatePups(
+                                                      pups: pups);
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        Colors.red[200]),
+                                                child: const Text("Delete"),
+                                              ),
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
+                                    icon: const DeleteIcon(),
+                                  ),
+                                  leading: CircleAvatar(
+                                    backgroundColor: const Color.fromARGB(
+                                        255, 211, 211, 211),
+                                    child: pup.profilePic == ''
+                                        ? Image.asset('asstes/images/logo.png')
+                                        : Image.network(
+                                            pup.profilePic,
+                                            loadingBuilder: (context, child,
+                                                loadingProgress) {
+                                              if (loadingProgress == null) {
+                                                return child;
+                                              }
+                                              return const Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              );
+                                            },
+                                          ),
+                                  ),
+                                  title: Row(
+                                    children: [
+                                      const DirectiveText(text: "Name:"),
+                                      Text(pup.name),
+                                    ],
+                                  ),
+                                  subtitle: Row(
+                                    children: [
+                                      const DirectiveText(
+                                          text: "Registered name:"),
+                                      Flexible(
+                                        child: Text(
+                                          pup.registeredName,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                                title: Row(
-                                  children: [
-                                    const DirectiveText(text: "Name:"),
-                                    Text(pup.name),
-                                  ],
-                                ),
-                                subtitle: Row(
-                                  children: [
-                                    const DirectiveText(
-                                        text: "Registered name:"),
-                                    Flexible(
-                                      child: Text(
-                                        pup.registeredName,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
+                              );
+                            },
+                          ),
+                        );
+                      }),
               ],
             ),
           ),

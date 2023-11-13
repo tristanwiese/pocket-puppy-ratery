@@ -18,8 +18,8 @@ class Rat {
     required this.birthday,
     required this.customParents,
     this.colorCode = "none",
-    this.profilePic,
-    this.photos,
+    this.profilePic = '',
+    this.photos = const [],
     this.notes = const [],
     this.breedings = const [],
     this.archived = false,
@@ -34,8 +34,8 @@ class Rat {
   final Parents parents;
   final Coats coat;
   final DateTime birthday;
-  List<dynamic>? photos;
-  String? profilePic;
+  List<dynamic> photos;
+  String profilePic;
   String colorCode;
   String? id;
   bool customParents;
