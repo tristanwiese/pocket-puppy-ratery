@@ -1,0 +1,73 @@
+Date : 2023-11-13 18:53:32
+Directory : c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib
+Total : 39 files,  2546 codes, -24 comments, 139 blanks, all 2661 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| Dart     |         39 |      2,546 |        -24 |        139 |      2,661 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                               | files      | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                  |         39 |      2,546 |        -24 |        139 |      2,661 |
+| . (Files)                                                                                          |          1 |         19 |          0 |         -1 |         18 |
+| Functions                                                                                          |          3 |         76 |          0 |          9 |         85 |
+| Login_Register                                                                                     |          1 |          1 |          0 |          1 |          2 |
+| Models                                                                                             |          5 |         48 |          0 |          2 |         50 |
+| Services                                                                                           |          7 |       -124 |          1 |        -31 |       -154 |
+| Views                                                                                              |         15 |      2,339 |        -26 |        111 |      2,424 |
+| Views (Files)                                                                                      |          6 |        535 |        -26 |          7 |        516 |
+| Views\Breeding Scheme                                                                              |          6 |        945 |         -2 |         65 |      1,008 |
+| Views\settings                                                                                     |          3 |        859 |          2 |         39 |        900 |
+| providers                                                                                          |          7 |        187 |          1 |         48 |        236 |
++----------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++----------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                           | language | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Functions\db.dart                                   | Dart     |         59 |          0 |          6 |         65 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Functions\nav.dart                                  | Dart     |          5 |          0 |          1 |          6 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Functions\utils.dart                                | Dart     |         12 |          0 |          2 |         14 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Login_Register\auth_state.dart                      | Dart     |          1 |          0 |          1 |          2 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Models\breeding_scheme_model.dart                   | Dart     |         -4 |          0 |          0 |         -4 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Models\db_scheme.dart                               | Dart     |          5 |          0 |          1 |          6 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Models\pup_model.dart                               | Dart     |         13 |          0 |          0 |         13 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Models\rat.dart                                     | Dart     |         27 |          0 |          0 |         27 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Models\user.dart                                    | Dart     |          7 |          0 |          1 |          8 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Services\breeding_scheme_provider.dart              | Dart     |        -54 |          0 |         -9 |        -63 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Services\card_controller.dart                       | Dart     |        -20 |          0 |         -6 |        -26 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Services\constants.dart                             | Dart     |          3 |          0 |          0 |          3 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Services\controller_provider.dart                   | Dart     |         -9 |          0 |         -4 |        -13 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Services\custom_widgets.dart                        | Dart     |         -1 |          1 |          0 |          0 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Services\filter_provider.dart                       | Dart     |        -30 |          0 |         -7 |        -37 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Services\rats_provider.dart                         | Dart     |        -13 |          0 |         -5 |        -18 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\Breeding Scheme\add_pup.dart                  | Dart     |         42 |          0 |         11 |         53 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\Breeding Scheme\breeding_scheme.dart          | Dart     |         14 |          0 |          1 |         15 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\Breeding Scheme\breeding_sheme_info_page.dart | Dart     |         51 |         -8 |          1 |         44 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\Breeding Scheme\pup_gallery.dart              | Dart     |        207 |          2 |         20 |        229 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\Breeding Scheme\pup_info.dart                 | Dart     |        578 |          3 |         28 |        609 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\Breeding Scheme\pups.dart                     | Dart     |         53 |          1 |          4 |         58 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\add_rat.dart                                  | Dart     |         -5 |          0 |         -1 |         -6 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\home_page.dart                                | Dart     |        251 |        -27 |          1 |        225 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\profile_page.dart                             | Dart     |        -42 |          0 |         -5 |        -47 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\rat_gallery.dart                              | Dart     |        197 |          1 |         15 |        213 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\rat_info.dart                                 | Dart     |        264 |          0 |         10 |        274 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\settings\archives.dart                        | Dart     |        125 |          0 |          4 |        129 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\settings\profile_page.dart                    | Dart     |        476 |          1 |         18 |        495 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\settings\settings_page.dart                   | Dart     |        258 |          1 |         17 |        276 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\settings_page.dart                            | Dart     |       -130 |          0 |        -13 |       -143 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\main.dart                                           | Dart     |         19 |          0 |         -1 |         18 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\providers\breeding_scheme_provider.dart             | Dart     |         43 |          0 |          8 |         51 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\providers\card_controller.dart                      | Dart     |         26 |          0 |          7 |         33 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\providers\controller_provider.dart                  | Dart     |          9 |          0 |          4 |         13 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\providers\filter_provider.dart                      | Dart     |         30 |          0 |          7 |         37 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\providers\profile_provider.dart                     | Dart     |         22 |          1 |          6 |         29 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\providers\pups_provider.dart                        | Dart     |         26 |          0 |          8 |         34 |
+| c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\providers\rats_provider.dart                        | Dart     |         31 |          0 |          8 |         39 |
+| Total                                                                                              |          |      2,546 |        -24 |        139 |      2,661 |
++----------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

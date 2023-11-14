@@ -1,0 +1,39 @@
+"filename", "language", "Dart", "comment", "blank", "total"
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Dev\dev_page.dart", "Dart", 39, 0, 5, 44
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Functions\db.dart", "Dart", 59, 0, 6, 65
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Functions\nav.dart", "Dart", 20, 0, 5, 25
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Functions\utils.dart", "Dart", 125, 3, 27, 155
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Login_Register\auth_state.dart", "Dart", 20, 0, 4, 24
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Login_Register\authenticate.dart", "Dart", 214, 3, 24, 241
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Login_Register\verifyemail.dart", "Dart", 94, 0, 15, 109
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Models\breeding_scheme_model.dart", "Dart", 54, 0, 6, 60
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Models\db_scheme.dart", "Dart", 5, 0, 1, 6
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Models\genes.dart", "Dart", 57, 0, 13, 70
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Models\pup_model.dart", "Dart", 67, 0, 5, 72
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Models\rat.dart", "Dart", 159, 13, 21, 193
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Models\user.dart", "Dart", 22, 0, 4, 26
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Services\constants.dart", "Dart", 65, 1, 10, 76
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Services\custom_widgets.dart", "Dart", 304, 6, 38, 348
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\Breeding Scheme\add_pup.dart", "Dart", 476, 3, 38, 517
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\Breeding Scheme\breeding_scheme.dart", "Dart", 366, 1, 26, 393
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\Breeding Scheme\breeding_sheme_info_page.dart", "Dart", 707, 3, 37, 747
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\Breeding Scheme\pup_gallery.dart", "Dart", 207, 2, 20, 229
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\Breeding Scheme\pup_info.dart", "Dart", 578, 3, 28, 609
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\Breeding Scheme\pups.dart", "Dart", 352, 1, 13, 366
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\add_rat.dart", "Dart", 504, 33, 28, 565
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\home_page.dart", "Dart", 1531, 6, 58, 1595
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\rat_gallery.dart", "Dart", 197, 1, 15, 213
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\rat_info.dart", "Dart", 495, 3, 30, 528
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\settings\archives.dart", "Dart", 125, 0, 4, 129
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\settings\profile_page.dart", "Dart", 476, 1, 18, 495
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\Views\settings\settings_page.dart", "Dart", 258, 1, 17, 276
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\firebase_options.dart", "Dart", 66, 12, 6, 84
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\main.dart", "Dart", 87, 0, 7, 94
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\providers\breeding_scheme_provider.dart", "Dart", 43, 0, 8, 51
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\providers\card_controller.dart", "Dart", 26, 0, 7, 33
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\providers\controller_provider.dart", "Dart", 9, 0, 4, 13
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\providers\filter_provider.dart", "Dart", 30, 0, 7, 37
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\providers\profile_provider.dart", "Dart", 22, 1, 6, 29
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\providers\pups_provider.dart", "Dart", 26, 0, 8, 34
+"c:\Flutter\Apps\GitHub\pocket-puppy-ratery\lib\providers\rats_provider.dart", "Dart", 31, 0, 8, 39
+"Total", "-", 7916, 97, 577, 8590

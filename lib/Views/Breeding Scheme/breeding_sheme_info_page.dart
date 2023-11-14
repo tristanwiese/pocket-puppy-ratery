@@ -195,20 +195,21 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                                       noteTitle: scheme.notes[index]["title"]),
                                   title: Text(scheme.notes[index]['title']),
                                   trailing: IconButton(
-                                      onPressed: () {
-                                        FirebaseSchemes.doc(scheme.id).update({
-                                          "notes": FieldValue.arrayRemove(
-                                            [scheme.notes[index]],
-                                          )
-                                        });
+                                    onPressed: () {
+                                      FirebaseSchemes.doc(scheme.id).update({
+                                        "notes": FieldValue.arrayRemove(
+                                          [scheme.notes[index]],
+                                        )
+                                      });
 
-                                        provider.editNotes(
-                                            action: "remove", index: index);
-                                        setState(
-                                          () {},
-                                        );
-                                      },
-                                      icon: const DeleteIcon()),
+                                      provider.editNotes(
+                                          action: "remove", index: index);
+                                      setState(
+                                        () {},
+                                      );
+                                    },
+                                    icon: const DeleteIcon(),
+                                  ),
                                 ),
                               );
                             },
@@ -263,6 +264,7 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
             final List<Pup> pupModels = [];
             // ignore: avoid_function_literals_in_foreach_calls
             pups.forEach((element) {
+              //TODO: remove for production
               createFieldPups(
                 breedID: scheme.id,
                 boolean:
@@ -465,8 +467,8 @@ class _BreedingShcemeInfoPageState extends State<BreedingShcemeInfoPage> {
                 ]),
               });
               navPop(context);
-              titleController.dispose();
-              noteController.dispose();
+              // titleController.dispose();
+              // noteController.dispose();
             },
             style: MyElevatedButtonStyle.doneButtonStyle,
             child:

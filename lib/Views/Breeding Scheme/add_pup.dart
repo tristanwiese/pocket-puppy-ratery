@@ -248,11 +248,9 @@ class _AddPupState extends State<AddPup> {
               navPop(context);
               return;
             }
-            print('one');
             await FirebaseSchemes.doc(widget.scheme.id)
                 .collection('pups')
                 .add(pup.toDb());
-            print('one');
 
             pupProv.addPup(pup: pup);
             navPop(context);

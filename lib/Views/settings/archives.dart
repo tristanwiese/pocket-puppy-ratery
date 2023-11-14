@@ -46,8 +46,7 @@ class _ArchivesState extends State<Archives> {
                   child: Consumer<CardController>(
                       builder: (context, value, child) {
                     value.setRat = rat;
-                    final bool hasProfile =
-                        (rat.profilePic != null && rat.profilePic != '');
+                    final bool hasProfile = (rat.profilePic != '');
                     return Card(
                       elevation: 3,
                       shadowColor: (AgeCalculator.age(birthdate).years >=
@@ -79,7 +78,7 @@ class _ArchivesState extends State<Archives> {
                                   ? SizedBox(
                                       width: 45,
                                       child: Image.network(
-                                        rat.profilePic!,
+                                        rat.profilePic,
                                         fit: BoxFit.contain,
                                         loadingBuilder:
                                             (context, child, loadingProgress) {

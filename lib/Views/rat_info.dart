@@ -228,8 +228,8 @@ class _RatInfoState extends State<RatInfo> {
                 ]),
               });
               navPop(context);
-              titleController.dispose();
-              noteController.dispose();
+              // titleController.dispose();
+              // noteController.dispose();
             },
             style: MyElevatedButtonStyle.doneButtonStyle,
             child:

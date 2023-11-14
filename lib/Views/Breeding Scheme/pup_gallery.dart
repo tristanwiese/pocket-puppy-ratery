@@ -209,7 +209,6 @@ class _PupGalleryState extends State<PupGallery> {
         setState(() {
           showload = false;
         });
-        print('fire');
         FirebaseFirestore.instance
             .collection('users')
             .doc(FirebaseAuth.instance.currentUser!.uid)

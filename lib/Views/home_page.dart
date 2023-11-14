@@ -1326,9 +1326,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                 )
                               ],
                               content: SizedBox(
-                                height: 150,
+                                // height: 150,
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Row(
                                       children: [
