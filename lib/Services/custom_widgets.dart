@@ -1,4 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:pocket_puppy_rattery/Functions/db.dart';
+import 'package:pocket_puppy_rattery/Functions/nav.dart';
 
 import '../Functions/utils.dart';
 
@@ -80,6 +83,56 @@ class MyInfoCard extends StatelessWidget {
     );
   }
 }
+
+IconButton myIconButton({
+  required QueryDocumentSnapshot item,
+  required String itemType,
+  required BuildContext context,
+}) =>
+    IconButton(
+      onPressed: () {
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: const Text("Warning"),
+              content: SizedBox(
+                height: 150,
+                child: Column(
+                  children: [
+                    Text("Are you sure you want to remove this $itemType?"),
+                    const SizedBox(height: 30),
+                    Text(
+                      item["name"],
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () => navPop(context),
+                  style: MyElevatedButtonStyle.cancelButtonStyle,
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    deleteRat(item, itemType, context);
+                  },
+                  style: MyElevatedButtonStyle.deleteButtonStyle,
+                  child: const Text("Delete"),
+                ),
+              ],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+            );
+          },
+        );
+      },
+      icon: const DeleteIcon(),
+    );
 
 class MyInputText extends StatelessWidget {
   const MyInputText(

@@ -164,15 +164,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: ConstrainedBox(
                           constraints: BoxConstraints(maxWidth: getSize()),
                           child: ListView.builder(
-                              itemCount: value.activeFilters.isEmpty
-                                  ? rats.length
-                                  : value.filteredRats.length,
+                              itemCount: rats.length,
                               itemBuilder: (BuildContext context, i) {
-                                final QueryDocumentSnapshot buildItem =
-                                    !value.activeFilters.isEmpty ||
-                                            !value.activeSort.isEmpty
-                                        ? value.filteredRats[i]
-                                        : rats[i];
+                                final QueryDocumentSnapshot buildItem = rats[i];
                                 //TODO: remove for production
 
                                 createFieldRats(
@@ -359,6 +353,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                     rat.breedings.isNotEmpty
                                                         ? archiveRat(rat: rat)
                                                         : myIconButton(
+                                                            context: context,
                                                             item: buildItem,
                                                             itemType: "rat",
                                                           ),
@@ -466,9 +461,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   color: Colors.red,
                 ),
                 onTap: () {
-                  QueryDocumentSnapshot rat = value.activeFilters.isEmpty
-                      ? rats[i]
-                      : value.filteredRats[i];
+                  QueryDocumentSnapshot rat = rats[i];
                   FirebaseFirestore.instance
                       .collection("users")
                       .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -490,9 +483,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   color: Colors.blue,
                 ),
                 onTap: () {
-                  QueryDocumentSnapshot rat = value.activeFilters.isEmpty
-                      ? rats[i]
-                      : value.filteredRats[i];
+                  QueryDocumentSnapshot rat = rats[i];
                   FirebaseFirestore.instance
                       .collection("users")
                       .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -514,9 +505,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   color: Colors.green,
                 ),
                 onTap: () {
-                  QueryDocumentSnapshot rat = value.activeFilters.isEmpty
-                      ? rats[i]
-                      : value.filteredRats[i];
+                  QueryDocumentSnapshot rat = rats[i];
                   FirebaseFirestore.instance
                       .collection("users")
                       .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -537,9 +526,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Icons.square,
                 ),
                 onTap: () {
-                  QueryDocumentSnapshot rat = value.activeFilters.isEmpty
-                      ? rats[i]
-                      : value.filteredRats[i];
+                  QueryDocumentSnapshot rat = rats[i];
                   FirebaseFirestore.instance
                       .collection("users")
                       .doc(FirebaseAuth.instance.currentUser!.uid)
@@ -754,7 +741,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                   subtitle: Text(
                                       "Male: $maleName \nFemale: $femaleName"),
                                   trailing: myIconButton(
-                                      item: scheme, itemType: "scheme"),
+                                    context: context,
+                                    item: scheme,
+                                    itemType: "scheme",
+                                  ),
                                   onTap: () {
                                     context
                                         .read<BreedingSchemeProvider>()
@@ -840,53 +830,6 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  IconButton myIconButton(
-          {required QueryDocumentSnapshot item, required String itemType}) =>
-      IconButton(
-        onPressed: () {
-          showDialog(
-            context: context,
-            builder: (context) {
-              return AlertDialog(
-                title: const Text("Warning"),
-                content: SizedBox(
-                  height: 150,
-                  child: Column(
-                    children: [
-                      Text("Are you sure you want to remove this $itemType?"),
-                      const SizedBox(height: 30),
-                      Text(
-                        item["name"],
-                        style: const TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
-                      ),
-                    ],
-                  ),
-                ),
-                actions: [
-                  ElevatedButton(
-                    onPressed: () => navPop(context),
-                    style: MyElevatedButtonStyle.cancelButtonStyle,
-                    child: const Text('Cancel'),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      deleteRat(item, itemType);
-                    },
-                    style: MyElevatedButtonStyle.deleteButtonStyle,
-                    child: const Text("Delete"),
-                  ),
-                ],
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              );
-            },
-          );
-        },
-        icon: const DeleteIcon(),
-      );
-
   myAppBar(BuildContext context) {
     AppBar appBar = AppBar();
 
@@ -968,12 +911,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       width: 80,
                       child: ElevatedButton(
                         onPressed: () {
-                          if (value.activeFilters == "Female") {
-                            value.setActiveFilters(filter: "");
-                            return;
-                          }
-                          value.setActiveFilters(filter: "Female");
-                          filterRats(filter: "Female");
+                          //TODO: create gender filter
                         },
                         style: (value.activeFilters != "Female")
                             ? MyElevatedButtonStyle.buttonStyle
@@ -989,12 +927,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       width: 80,
                       child: ElevatedButton(
                         onPressed: () {
-                          if (value.activeFilters == "Male") {
-                            value.setActiveFilters(filter: "");
-                            return;
-                          }
-                          value.setActiveFilters(filter: "Male");
-                          filterRats(filter: "Male");
+                          //TODO: create gender filter
                         },
                         style: (value.activeFilters != "Male")
                             ? MyElevatedButtonStyle.buttonStyle
@@ -1012,11 +945,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 text: "Sort by",
                 reversed: value.reversed,
                 onPressReverse: () {
-                  final List<QueryDocumentSnapshot<Object?>> list =
-                      value.reversed ? rats : List.from(rats.reversed);
-
-                  value.setFilteredRats(rats: list);
-                  value.setReversed();
+                  //TODO: create reverse sort direction
                 },
               ),
               Padding(
@@ -1026,19 +955,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   children: [
                     MyDrawerButton(
                       onPressed: () {
-                        rats.sort((a, b) {
-                          value.setActiveSort(sort: 'Age');
-                          final Rat ratA = Rat.fromDB(dbRat: a);
-                          final Rat ratB = Rat.fromDB(dbRat: b);
-
-                          return ageCalculatorDay(ratA.birthday)
-                              .compareTo(ageCalculatorDay(ratB.birthday));
-                        });
-
-                        final List<QueryDocumentSnapshot<Object?>> list =
-                            value.reversed ? List.from(rats.reversed) : rats;
-
-                        value.setFilteredRats(rats: list);
+                        //TODO: sort by age
                       },
                       text: "Age",
                       style: value.activeSort == "Age"
@@ -1047,21 +964,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     MyDrawerButton(
                       onPressed: () {
-                        value.setActiveSort(sort: 'Alphabetical');
-
-                        rats.sort(
-                          (a, b) {
-                            final Rat ratA = Rat.fromDB(dbRat: a);
-                            final Rat ratB = Rat.fromDB(dbRat: b);
-
-                            return ratA.name.compareTo(ratB.name);
-                          },
-                        );
-
-                        final List<QueryDocumentSnapshot<Object?>> list =
-                            value.reversed ? List.from(rats.reversed) : rats;
-
-                        value.setFilteredRats(rats: list);
+                        //TODO: sort alphabeticaly
                       },
                       text: "Alphabetical",
                       style: value.activeSort == "Alphabetical"
@@ -1176,55 +1079,12 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
-  filterRats({required String filter}) {
-    final prov = Provider.of<FilterProvider>(context, listen: false);
-    final filteredRats = rats.where((rat) => rat["gender"] == filter).toList();
-    prov.setFilteredRats(rats: filteredRats);
-  }
-
   double getSize() {
     if (MediaQuery.of(context).size.width < 435) {
       return MediaQuery.of(context).size.width / 1;
     } else {
       return MediaQuery.of(context).size.width / 1.3;
     }
-  }
-
-  deleteRat(QueryDocumentSnapshot item, String itemType) async {
-    showDialog(
-      context: context,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
-    );
-    itemType == "rat"
-        ? await FirebaseFirestore.instance
-            .collection('users')
-            .doc(FirebaseAuth.instance.currentUser!.uid)
-            .collection("rats")
-            .doc(item.id)
-            .delete()
-        : await FirebaseFirestore.instance
-            .collection('users')
-            .doc(FirebaseAuth.instance.currentUser!.uid)
-            .collection("breedingSchemes")
-            .doc(item.id)
-            .delete();
-    if (itemType == 'rat') {
-      if (item['photos'].isNotEmpty) {
-        deleteRatMedia(reference: item.id);
-      }
-    }
-    if (itemType == 'scheme') {
-      if (!item['isCustomRats']) {
-        FirebaseRats.doc(item['male']).update({
-          'breedings': FieldValue.arrayRemove([item.id])
-        });
-        FirebaseRats.doc(item['female']).update({
-          'breedings': FieldValue.arrayRemove([item.id])
-        });
-      }
-    }
-    navPop(context);
-    navPop(context);
   }
 
   myDrawer() {

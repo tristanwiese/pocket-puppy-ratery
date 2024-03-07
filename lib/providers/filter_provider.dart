@@ -10,8 +10,8 @@ class FilterProvider extends ChangeNotifier {
 
   get filters => _filters;
   get filteredRats => _filteredRats;
-  get activeFilters => _activeFilters;
-  get activeSort => _activeSort;
+  String get activeFilters => _activeFilters;
+  String get activeSort => _activeSort;
   get reversed => _reversed;
 
   setActiveFilters({required String filter}) {
