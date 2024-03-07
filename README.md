@@ -1,16 +1,8 @@
-# pocket_puppy_rattery
+# Pocket Puppy Rattery
 
-A new Flutter project.
+A Flutter project.
 
-## Getting Started
+This is a mobile app designed to manage the breeding of pet rats!
+It started with my sister needing to manage her rats and their breeding but interest grew quick!
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+It is still in the early stages of development and we are looking to push to testing soon!
